@@ -504,8 +504,8 @@
     function buildMetricPlot(metricName, divId, soil, peff, peffLabel) {
       const metricInfo = METRIC_INFO[metricName] || METRIC_INFO.eta_p_pct;
 
-      // Select colorscale by metric (Plasma, Viridis, Cividis)
-      let colorscale = 'Plasma';
+      // Select colorscale by metric (Turbo, Viridis, Cividis)
+      let colorscale = 'Turbo';
       if (metricName === 'DetTime_min') {
         colorscale = 'Viridis';
       } else if (metricName === 'Delta_tp_min') {
@@ -650,7 +650,7 @@
             linewidth: 2
           },
           yaxis: {
-            title: 'Media depth, $L_d$ [m]',
+            title: 'Media depth, L_d [m]',
             zeroline: false,
             showgrid: true,
             gridcolor: '#e0e0e0',
@@ -661,7 +661,7 @@
             linewidth: 2
           },
           zaxis: {
-            title: 'Time to peak, $t_p$ [min]',
+            title: 'Time to peak, t_p [min]',
             zeroline: false,
             showgrid: true,
             gridcolor: '#e0e0e0',
@@ -787,12 +787,12 @@
         line: { width: 2, color: '#0000A3' }
       };
 
-      const title =
-        'Hydrographs — ' + scen.soilName +
-        ', P_eff = ' + formatPeffLabel(scen.Peff_catch_mm) +
-        ', area-ratio = ' + (scen.area_ratio * 100).toFixed(1) + '% ' +
-        ', $L_d$ = ' + scen.Ld_m.toFixed(2) + '\\,\\mathrm{m}, ' +
-        '$t_p$ = ' + scen.tp_min.toFixed(1) + '\\,\\mathrm{min}';
+    const title =
+      'Hydrographs — ' + scen.soilName +
+      ', P_eff = ' + formatPeffLabel(scen.Peff_catch_mm) +
+      ', area-ratio = ' + (scen.area_ratio * 100).toFixed(1) + '% ' +
+      ', L_d = ' + scen.Ld_m.toFixed(2) + ' m, ' +
+      't_p = ' + scen.tp_min.toFixed(1) + ' min';
 
       const layout = {
         title: { text: title, font: { size: 14 } },

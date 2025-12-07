@@ -1,232 +1,513 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>DRAIN-LID Design Explorer</title>
+  <meta charset="UTF-8" />
+  <title>DRAIN-LID Design Performance Explorer</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- Plotly -->
   <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+
   <style>
+    :root {
+      --bg: #ffffff;
+      --fg: #222222;
+      --accent: #1f77b4;
+      --muted: #777777;
+      --border: #dddddd;
+      --panel-bg: #f8f8f8;
+      --font-main: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+                   Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
     body {
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       margin: 0;
-      padding: 1rem 2rem;
-      background: #f7f7f7;
+      padding: 1.5rem;
+      font-family: var(--font-main);
+      background: var(--bg);
+      color: var(--fg);
     }
+
     h1 {
-      margin-top: 0;
+      font-size: 1.6rem;
+      margin: 0 0 0.5rem 0;
     }
+
+    h2 {
+      font-size: 1.1rem;
+      margin: 0 0 0.5rem 0;
+      color: var(--muted);
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
     .controls {
       display: flex;
       flex-wrap: wrap;
       gap: 1rem;
+      padding: 1rem;
       margin-bottom: 1rem;
-      align-items: center;
+      background: var(--panel-bg);
+      border-radius: 0.75rem;
+      border: 1px solid var(--border);
     }
+
     .control-group {
       display: flex;
       flex-direction: column;
-      font-size: 0.9rem;
+      min-width: 180px;
     }
+
+    .control-group label {
+      font-size: 0.85rem;
+      margin-bottom: 0.25rem;
+      color: var(--muted);
+    }
+
     select {
-      padding: 0.25rem 0.4rem;
+      padding: 0.35rem 0.5rem;
+      border-radius: 0.5rem;
+      border: 1px solid var(--border);
       font-size: 0.9rem;
+      background: #fff;
+      cursor: pointer;
     }
+
+    select:disabled {
+      background: #f0f0f0;
+      cursor: not-allowed;
+      color: #aaaaaa;
+    }
+
     #plot {
       width: 100%;
-      height: 80vh;
-      border-radius: 8px;
-      background: white;
+      height: 650px;
+      border-radius: 0.75rem;
+      border: 1px solid var(--border);
     }
-    .note {
-      font-size: 0.8rem;
-      color: #555;
+
+    .status {
       margin-top: 0.5rem;
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+
+    .status.error {
+      color: #b00020;
+    }
+
+    .legend-note {
+      margin-top: 0.4rem;
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+
+    a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
     }
   </style>
 </head>
 <body>
-  <h1>DRAIN-LID Design Performance Explorer</h1>
+  <div class="container">
+    <h1>DRAIN-LID Design Performance Explorer</h1>
+    <h2>Interactive design-space visualization from the DRAIN-LID database</h2>
 
-  <div class="controls">
-    <div class="control-group">
-      <label for="soil-select">Soil type</label>
-      <select id="soil-select"></select>
+    <div class="controls">
+      <div class="control-group">
+        <label for="soil-select">Soil type</label>
+        <select id="soil-select" disabled></select>
+      </div>
+
+      <div class="control-group">
+        <label for="peff-select">Effective precipitation, \(P_{\mathrm{eff}}\)</label>
+        <select id="peff-select" disabled></select>
+      </div>
+
+      <div class="control-group">
+        <label for="metric-select">Performance metric (color axis)</label>
+        <select id="metric-select">
+          <option value="eta_p_pct">Peak flow reduction, \(\eta_p\) [%]</option>
+          <option value="DetTime_min">Detention time [min]</option>
+          <option value="Delta_tp_min">Time-to-peak delay, \(\Delta t_p\) [min]</option>
+        </select>
+      </div>
+
+      <div class="control-group">
+        <label for="aup-select">Upstream area \(A_{\mathrm{up}}\) (for now, single value)</label>
+        <select id="aup-select" disabled></select>
+      </div>
     </div>
 
-    <div class="control-group">
-      <label for="metric-select">Metric</label>
-      <select id="metric-select">
-        <option value="eta_p_pct">Peak flow reduction [%]</option>
-        <option value="DetTime_min">Detention time [min]</option>
-        <option value="Delta_tp_min">Time-to-peak delay [min]</option>
-      </select>
-    </div>
+    <div id="plot"></div>
 
-    <div class="control-group">
-      <label for="peff-select">Effective precipitation</label>
-      <select id="peff-select"></select>
+    <div id="status" class="status">
+      Loading data…
     </div>
-  </div>
-
-  <div id="plot"></div>
-  <div class="note">
-    Rotate: drag with mouse. Zoom: scroll wheel.  
-    Points with no color are infeasible or failed simulations.
+    <div class="legend-note">
+      Axes: area ratio = \(A_{\mathrm{TC}} / A_{\mathrm{up}}\) [%]; media depth \(L_d\) [m];
+      time-to-peak \(t_p\) [min].  
+      Points without color (gray outline) are designs for which the solver failed or ponding constraints were violated.
+    </div>
   </div>
 
   <script>
-    // Path to JSON file exported from MATLAB
-    const DATA_URL = 'drain_lid_database.json'; // adjust path if needed
+    // === CONFIG ==============================================================
 
-    let db = null;
+    const DATA_URL = 'drain_lid_database.json';  // must be in the same folder as index.html
 
-    // Utility: degrees -> radians (if needed)
-    function mmToInches(mm) {
+    // Metric metadata for labels and units
+    const METRIC_INFO = {
+      eta_p_pct: {
+        label: 'Peak flow reduction, \u03b7\u209a [%]',
+        colorbarTitle: '\u03b7\u209a [%]'
+      },
+      DetTime_min: {
+        label: 'Detention time [min]',
+        colorbarTitle: 'Detention [min]'
+      },
+      Delta_tp_min: {
+        label: 'Time-to-peak delay, \u0394t\u209a [min]',
+        colorbarTitle: '\u0394t\u209a [min]'
+      }
+    };
+
+    // === GLOBAL STATE ========================================================
+
+    let dbMetrics = [];   // full flat array of metric objects
+    let soilList = [];
+    let peffList = [];
+    let aupList = [];
+
+    // === HELPERS =============================================================
+
+    function uniqueSorted(arr) {
+      return Array.from(new Set(arr)).sort((a, b) => {
+        if (typeof a === 'string') return a.localeCompare(b);
+        return a - b;
+      });
+    }
+
+    function mmToInch(mm) {
       return mm / 25.4;
     }
 
-    // Fetch data and initialize UI
-    fetch(DATA_URL)
-      .then(res => res.json())
-      .then(json => {
-        db = json;
-        initUI();
-        updatePlot();
-      })
-      .catch(err => {
-        console.error('Error loading JSON:', err);
-        alert('Error loading data. Check console for details.');
-      });
-
-    function initUI() {
-      const soilSelect = document.getElementById('soil-select');
-      const peffSelect = document.getElementById('peff-select');
-
-      // Populate soil dropdown
-      db.soils.forEach(soil => {
-        const opt = document.createElement('option');
-        opt.value = soil;
-        opt.textContent = soil;
-        soilSelect.appendChild(opt);
-      });
-
-      // Populate Peff dropdown (show in inches)
-      db.Peff_mm.forEach(mm => {
-        const opt = document.createElement('option');
-        opt.value = mm;
-        opt.textContent = `${mmToInches(mm).toFixed(2)} in (${mm.toFixed(1)} mm)`;
-        peffSelect.appendChild(opt);
-      });
-
-      // Attach listeners
-      soilSelect.addEventListener('change', updatePlot);
-      peffSelect.addEventListener('change', updatePlot);
-      document.getElementById('metric-select').addEventListener('change', updatePlot);
+    // Format Peff label: "12.7 mm (0.50 in)"
+    function formatPeffLabel(mmVal) {
+      const inch = mmToInch(mmVal);
+      return `${mmVal.toFixed(1)} mm (${inch.toFixed(2)} in)`;
     }
 
-    function updatePlot() {
-      if (!db) return;
+    function setStatus(msg, isError = false) {
+      const el = document.getElementById('status');
+      el.textContent = msg;
+      el.className = 'status' + (isError ? ' error' : '');
+    }
 
-      const soil = document.getElementById('soil-select').value || db.soils[0];
-      const metricField = document.getElementById('metric-select').value;
-      const peffVal = parseFloat(document.getElementById('peff-select').value || db.Peff_mm[0]);
+    // === UI INIT =============================================================
 
-      // Filter metrics for selected soil and Peff
-      const rows = db.metrics.filter(row =>
-        row.soilName === soil && Math.abs(row.Peff_catch_mm - peffVal) < 1e-6
-      );
+    function initUI() {
+      const soilSel  = document.getElementById('soil-select');
+      const peffSel  = document.getElementById('peff-select');
+      const metricSel = document.getElementById('metric-select');
+      const aupSel   = document.getElementById('aup-select');
 
-      // Prepare arrays for 3D scatter
-      const x = [];  // area ratio (as percentage)
-      const y = [];  // tp [min]
-      const z = [];  // Ld [m]
-      const c = [];  // metric
-      const text = [];
-
-      rows.forEach(row => {
-        // Skip rows with NaN metric
-        const val = row[metricField];
-        if (val === null || typeof val === 'undefined' || Number.isNaN(val)) {
-          return;
-        }
-
-        const ar_pct = row.area_ratio * 100.0;
-        x.push(ar_pct);
-        y.push(row.tp_min);
-        z.push(row.Ld_m);
-
-        // DetTime/Delta_tp originally in minutes → keep as min here
-        c.push(val);
-
-        text.push(
-          `Soil: ${row.soilName}` +
-          `<br>Peff: ${mmToInches(row.Peff_catch_mm).toFixed(2)} in` +
-          `<br>Area ratio: ${ar_pct.toFixed(1)} %` +
-          `<br>Ld: ${row.Ld_m.toFixed(2)} m` +
-          `<br>tp: ${row.tp_min.toFixed(1)} min` +
-          `<br>${metricField}: ${val.toFixed(2)}`
-        );
+      // 1. Populate soil list
+      soilList = uniqueSorted(dbMetrics.map(m => m.soilName));
+      soilSel.innerHTML = '';
+      soilList.forEach(name => {
+        const opt = document.createElement('option');
+        opt.value = name;
+        opt.textContent = name;
+        soilSel.appendChild(opt);
       });
 
-      // If no points, show message
-      if (x.length === 0) {
-        Plotly.newPlot('plot', [], {
-          title: `No feasible data for ${soil} at Peff = ${mmToInches(peffVal).toFixed(2)} in`,
-        });
+      // 2. Populate upstream area list (Aup)
+      aupList = uniqueSorted(dbMetrics.map(m => m.Aup_m2));
+      aupSel.innerHTML = '';
+      aupList.forEach(val => {
+        const opt = document.createElement('option');
+        opt.value = val;
+        opt.textContent = `${val.toFixed ? val.toFixed(0) : val} m²`;
+        aupSel.appendChild(opt);
+      });
+
+      // For now, we default to first Aup (your idea: compare later)
+      if (aupList.length > 0) {
+        aupSel.value = aupList[0];
+      }
+
+      // 3. Populate Peff list for the first soil + first Aup
+      updatePeffOptions();
+
+      // Enable selects now that data is loaded
+      soilSel.disabled = soilList.length === 0;
+      peffSel.disabled = peffList.length === 0;
+      aupSel.disabled  = aupList.length === 0;
+
+      // Event listeners
+      soilSel.addEventListener('change', () => {
+        updatePeffOptions();
+        updatePlot();
+      });
+
+      peffSel.addEventListener('change', () => {
+        updatePlot();
+      });
+
+      metricSel.addEventListener('change', () => {
+        updatePlot();
+      });
+
+      aupSel.addEventListener('change', () => {
+        updatePeffOptions();
+        updatePlot();
+      });
+
+      // First plot
+      updatePlot();
+    }
+
+    function updatePeffOptions() {
+      const soilSel = document.getElementById('soil-select');
+      const aupSel  = document.getElementById('aup-select');
+      const peffSel = document.getElementById('peff-select');
+
+      const soil = soilSel.value;
+      const aup  = parseFloat(aupSel.value);
+
+      const filtered = dbMetrics.filter(m =>
+        m.soilName === soil && m.Aup_m2 === aup
+      );
+
+      peffList = uniqueSorted(filtered.map(m => m.Peff_catch_mm));
+
+      peffSel.innerHTML = '';
+      peffList.forEach(val => {
+        const opt = document.createElement('option');
+        opt.value = val;
+        opt.textContent = formatPeffLabel(val);
+        peffSel.appendChild(opt);
+      });
+
+      if (peffList.length > 0) {
+        peffSel.value = peffList[0];
+        peffSel.disabled = false;
+      } else {
+        peffSel.disabled = true;
+      }
+    }
+
+    // === PLOTTING ============================================================
+
+    function updatePlot() {
+      if (!dbMetrics || dbMetrics.length === 0) {
+        setStatus('No data loaded.', true);
         return;
       }
 
-      const trace = {
+      const soilSel   = document.getElementById('soil-select');
+      const peffSel   = document.getElementById('peff-select');
+      const metricSel = document.getElementById('metric-select');
+      const aupSel    = document.getElementById('aup-select');
+
+      const soil  = soilSel.value;
+      const peff  = parseFloat(peffSel.value);
+      const metricName = metricSel.value;
+      const aup  = parseFloat(aupSel.value);
+
+      const metricInfo = METRIC_INFO[metricName] || METRIC_INFO.eta_p_pct;
+
+      // Filter database: single soil, single Peff, single Aup
+      const subset = dbMetrics.filter(m =>
+        m.soilName === soil &&
+        m.Peff_catch_mm === peff &&
+        m.Aup_m2 === aup
+      );
+
+      if (subset.length === 0) {
+        setStatus('No records found for this combination.', true);
+        Plotly.react('plot', [], {title: 'No data'});
+        return;
+      }
+
+      // Build coordinate arrays:
+      // x = area_ratio [%], y = Ld [m], z = tp [min]
+      const x = [];
+      const y = [];
+      const z = [];
+      const c = [];  // color = metric value
+
+      const x_unfeasible = [];
+      const y_unfeasible = [];
+      const z_unfeasible = [];
+
+      subset.forEach(m => {
+        const ar_percent = m.area_ratio * 100.0;
+        const Ld = m.Ld_m;
+        const tp = m.tp_min;
+
+        const val = m[metricName];
+
+        if (val == null || isNaN(val)) {
+          x_unfeasible.push(ar_percent);
+          y_unfeasible.push(Ld);
+          z_unfeasible.push(tp);
+        } else {
+          x.push(ar_percent);
+          y.push(Ld);
+          z.push(tp);
+          c.push(val);
+        }
+      });
+
+      // Trace for feasible designs (colored)
+      const traceFeasible = {
         x: x,
         y: y,
         z: z,
-        text: text,
         mode: 'markers',
         type: 'scatter3d',
+        name: 'Feasible',
         marker: {
-          size: 4,
+          size: 6,
           color: c,
-          colorscale: 'Viridis',
+          colorscale: 'Plasma',
+          cmin: c.length ? Math.min(...c) : 0,
+          cmax: c.length ? Math.max(...c) : 1,
           colorbar: {
-            title: metricField,
-            thickness: 15
+            title: metricInfo.colorbarTitle,
+            titleside: 'right'
           },
           line: {
-            width: 0.5,
-            color: 'rgba(0,0,0,0.5)'
+            width: 1.5,
+            color: 'rgba(0,0,0,0.7)'
           }
         },
-        hovertemplate: '%{text}<extra></extra>'
+        hovertemplate:
+          'Area ratio: %{x:.1f}%<br>' +
+          'L_d: %{y:.2f} m<br>' +
+          't_p: %{z:.1f} min<br>' +
+          metricInfo.colorbarTitle + ': %{marker.color:.2f}<extra></extra>'
       };
+
+      // Trace for unfeasible designs (no metric)
+      const traceUnfeasible = {
+        x: x_unfeasible,
+        y: y_unfeasible,
+        z: z_unfeasible,
+        mode: 'markers',
+        type: 'scatter3d',
+        name: 'Unfeasible / Failed',
+        marker: {
+          size: 5,
+          color: 'rgba(200,200,200,0.2)',
+          line: {
+            width: 1.5,
+            color: 'rgba(80,80,80,0.7)'
+          }
+        },
+        hovertemplate:
+          'Area ratio: %{x:.1f}%<br>' +
+          'L_d: %{y:.2f} m<br>' +
+          't_p: %{z:.1f} min<br>' +
+          '<b>Unfeasible or failed simulation</b><extra></extra>'
+      };
+
+      // Axes labels
+      const peffLabel = formatPeffLabel(peff);
 
       const layout = {
-        scene: {
-          xaxis: {
-            title: 'A_TC / A_up [%]',
-            ticks: 'outside',
-            showgrid: true,
-            gridcolor: 'rgba(200,200,200,0.6)'
-          },
-          yaxis: {
-            title: 't_p [min]',
-            ticks: 'outside',
-            showgrid: true,
-            gridcolor: 'rgba(200,200,200,0.6)'
-          },
-          zaxis: {
-            title: 'L_d [m]',
-            ticks: 'outside',
-            showgrid: true,
-            gridcolor: 'rgba(200,200,200,0.6)'
+        title: {
+          text: `${soil} — A_up = ${aup.toFixed(0)} m² — P_eff = ${peffLabel}`,
+          font: {
+            size: 18
           }
         },
-        margin: { l: 0, r: 0, t: 40, b: 0 },
-        paper_bgcolor: '#f7f7f7',
-        plot_bgcolor: '#ffffff',
-        title: `${soil} – ${metricField} – Peff = ${mmToInches(peffVal).toFixed(2)} in`
+        scene: {
+          xaxis: {
+            title: 'Area ratio, A_TC / A_up [%]',
+            zeroline: false,
+            showgrid: true,
+            gridcolor: '#e0e0e0',
+            ticks: 'outside',
+            ticklen: 4
+          },
+          yaxis: {
+            title: 'Media depth, L_d [m]',
+            zeroline: false,
+            showgrid: true,
+            gridcolor: '#e0e0e0',
+            ticks: 'outside',
+            ticklen: 4
+          },
+          zaxis: {
+            title: 'Time to peak, t_p [min]',
+            zeroline: false,
+            showgrid: true,
+            gridcolor: '#e0e0e0',
+            ticks: 'outside',
+            ticklen: 4
+          }
+        },
+        margin: {l: 0, r: 0, t: 60, b: 0},
+        legend: {
+          x: 0.02,
+          y: 0.98,
+          bgcolor: 'rgba(255,255,255,0.8)'
+        }
       };
 
-      Plotly.newPlot('plot', [trace], layout, {responsive: true});
+      const data = [];
+      if (x.length > 0) data.push(traceFeasible);
+      if (x_unfeasible.length > 0) data.push(traceUnfeasible);
+
+      Plotly.react('plot', data, layout, {responsive: true});
+
+      setStatus(`Soil: ${soil} | P_eff: ${peffLabel} | A_up: ${aup.toFixed(0)} m² | Metric: ${metricInfo.label}`);
     }
+
+    // === DATA LOADING ========================================================
+
+    async function loadData() {
+      try {
+        setStatus('Loading data…');
+
+        const resp = await fetch(DATA_URL, {cache: 'no-cache'});
+        if (!resp.ok) {
+          throw new Error(`HTTP ${resp.status} while fetching ${DATA_URL}`);
+        }
+        const raw = await resp.json();
+
+        // Accept both {Metrics:[...]} and bare [...]
+        dbMetrics = Array.isArray(raw) ? raw : (raw.Metrics || []);
+
+        if (!Array.isArray(dbMetrics) || dbMetrics.length === 0) {
+          throw new Error('No Metrics array found in JSON.');
+        }
+
+        setStatus('Data loaded. Use the controls above to explore the design space.');
+        initUI();
+      } catch (err) {
+        console.error(err);
+        setStatus(`Error loading data: ${err.message}`, true);
+        alert('Could not load drain_lid_database.json. Make sure the file is in the same folder as index.html and has a "Metrics" array.');
+      }
+    }
+
+    // Kick things off
+    loadData();
   </script>
 </body>
 </html>

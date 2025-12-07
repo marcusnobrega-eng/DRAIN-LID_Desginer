@@ -131,21 +131,21 @@
       </div>
 
       <div class="control-group">
-        <label for="peff-select">Effective precipitation, \(P_{\mathrm{eff}}\)</label>
+        <label for="peff-select">Effective precipitation, P<sub>eff</sub></label>
         <select id="peff-select" disabled></select>
       </div>
 
       <div class="control-group">
         <label for="metric-select">Performance metric (color axis)</label>
         <select id="metric-select">
-          <option value="eta_p_pct">Peak flow reduction, \(\eta_p\) [%]</option>
+          <option value="eta_p_pct">Peak flow reduction, ηₚ [%]</option>
           <option value="DetTime_min">Detention time [min]</option>
-          <option value="Delta_tp_min">Time-to-peak delay, \(\Delta t_p\) [min]</option>
+          <option value="Delta_tp_min">Time-to-peak delay, Δtₚ [min]</option>
         </select>
       </div>
 
       <div class="control-group">
-        <label for="aup-select">Upstream area \(A_{\mathrm{up}}\) (for now, single value)</label>
+        <label for="aup-select">Upstream area A<sub>up</sub> (for now, single value)</label>
         <select id="aup-select" disabled></select>
       </div>
     </div>
@@ -156,9 +156,9 @@
       Loading data…
     </div>
     <div class="legend-note">
-      Axes: area ratio = \(A_{\mathrm{TC}} / A_{\mathrm{up}}\) [%]; media depth \(L_d\) [m];
-      time-to-peak \(t_p\) [min].  
-      Points without color (gray outline) are designs for which the solver failed or ponding constraints were violated.
+      Axes: area ratio = A<sub>TC</sub> / A<sub>up</sub> [%]; media depth L<sub>d</sub> [m];
+      time-to-peak t<sub>p</sub> [min]. Points without color (gray outline) are
+      designs for which the solver failed or ponding constraints were violated.
     </div>
   </div>
 
@@ -170,16 +170,16 @@
     // Metric metadata for labels and units
     const METRIC_INFO = {
       eta_p_pct: {
-        label: 'Peak flow reduction, \u03b7\u209a [%]',
-        colorbarTitle: '\u03b7\u209a [%]'
+        label: 'Peak flow reduction, ηₚ [%]',
+        colorbarTitle: 'ηₚ [%]'
       },
       DetTime_min: {
         label: 'Detention time [min]',
         colorbarTitle: 'Detention [min]'
       },
       Delta_tp_min: {
-        label: 'Time-to-peak delay, \u0394t\u209a [min]',
-        colorbarTitle: '\u0394t\u209a [min]'
+        label: 'Time-to-peak delay, Δtₚ [min]',
+        colorbarTitle: 'Δtₚ [min]'
       }
     };
 
@@ -243,7 +243,7 @@
         aupSel.appendChild(opt);
       });
 
-      // For now, we default to first Aup (your idea: compare later)
+      // Default to first Aup
       if (aupList.length > 0) {
         aupSel.value = aupList[0];
       }
@@ -479,34 +479,35 @@
     }
 
     // === DATA LOADING ========================================================
-    
+
     async function loadData() {
       try {
         setStatus('Loading data…');
-    
-        const resp = await fetch(DATA_URL, {cache: 'no-cache'});
+
+        const resp = await fetch(DATA_URL, { cache: 'no-cache' });
         if (!resp.ok) {
           throw new Error(`HTTP ${resp.status} while fetching ${DATA_URL}`);
         }
+
         const raw = await resp.json();
-    
-        // Your MATLAB JSON uses `metrics` (lowercase):
-        //   { "soils": [...], "Peff_mm": [...], ..., "metrics": [ {...}, {...} ] }
-        // Accept both lowercase `metrics` and capital `Metrics` just in case.
-        dbMetrics = Array.isArray(raw)
-          ? raw
-          : (raw.metrics || raw.Metrics || []);
-    
-        if (!Array.isArray(dbMetrics) || dbMetrics.length === 0) {
-          throw new Error('No "metrics" array found in JSON.');
+
+        // Expect: { soils: [...], Peff_mm: [...], ..., metrics: [ {...}, {...} ] }
+        if (!raw || !Array.isArray(raw.metrics)) {
+          throw new Error('JSON does not contain a "metrics" array at top level.');
         }
-    
+
+        dbMetrics = raw.metrics;
+
+        if (dbMetrics.length === 0) {
+          throw new Error('"metrics" array is empty.');
+        }
+
         setStatus('Data loaded. Use the controls above to explore the design space.');
         initUI();
       } catch (err) {
-        console.error(err);
+        console.error('loadData error:', err);
         setStatus(`Error loading data: ${err.message}`, true);
-        alert('Could not load drain_lid_database.json. Check the console for more details.');
+        alert('Could not load drain_lid_database.json. Check the browser console (F12 → Console) for details.');
       }
     }
 

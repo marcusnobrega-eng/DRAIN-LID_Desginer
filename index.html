@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>DRAIN-LID Design Explorer</title>
+  <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      margin: 0;
+      padding: 1rem 2rem;
+      background: #f7f7f7;
+    }
+    h1 {
+      margin-top: 0;
+    }
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-bottom: 1rem;
+      align-items: center;
+    }
+    .control-group {
+      display: flex;
+      flex-direction: column;
+      font-size: 0.9rem;
+    }
+    select {
+      padding: 0.25rem 0.4rem;
+      font-size: 0.9rem;
+    }
+    #plot {
+      width: 100%;
+      height: 80vh;
+      border-radius: 8px;
+      background: white;
+    }
+    .note {
+      font-size: 0.8rem;
+      color: #555;
+      margin-top: 0.5rem;
+    }
+  </style>
+</head>
+<body>
+  <h1>DRAIN-LID Design Performance Explorer</h1>
+
+  <div class="controls">
+    <div class="control-group">
+      <label for="soil-select">Soil type</label>
+      <select id="soil-select"></select>
+    </div>
+
+    <div class="control-group">
+      <label for="metric-select">Metric</label>
+      <select id="metric-select">
+        <option value="eta_p_pct">Peak flow reduction [%]</option>
+        <option value="DetTime_min">Detention time [min]</option>
+        <option value="Delta_tp_min">Time-to-peak delay [min]</option>
+      </select>
+    </div>
+
+    <div class="control-group">
+      <label for="peff-select">Effective precipitation</label>
+      <select id="peff-select"></select>
+    </div>
+  </div>
+
+  <div id="plot"></div>
+  <div class="note">
+    Rotate: drag with mouse. Zoom: scroll wheel.  
+    Points with no color are infeasible or failed simulations.
+  </div>
+
+  <script>
+    // Path to JSON file exported from MATLAB
+    const DATA_URL = 'drain_lid_database.json'; // adjust path if needed
+
+    let db = null;
+
+    // Utility: degrees -> radians (if needed)
+    function mmToInches(mm) {
+      return mm / 25.4;
+    }
+
+    // Fetch data and initialize UI
+    fetch(DATA_URL)
+      .then(res => res.json())
+      .then(json => {
+        db = json;
+        initUI();
+        updatePlot();
+      })
+      .catch(err => {
+        console.error('Error loading JSON:', err);
+        alert('Error loading data. Check console for details.');
+      });
+
+    function initUI() {
+      const soilSelect = document.getElementById('soil-select');
+      const peffSelect = document.getElementById('peff-select');
+
+      // Populate soil dropdown
+      db.soils.forEach(soil => {
+        const opt = document.createElement('option');
+        opt.value = soil;
+        opt.textContent = soil;
+        soilSelect.appendChild(opt);
+      });
+
+      // Populate Peff dropdown (show in inches)
+      db.Peff_mm.forEach(mm => {
+        const opt = document.createElement('option');
+        opt.value = mm;
+        opt.textContent = `${mmToInches(mm).toFixed(2)} in (${mm.toFixed(1)} mm)`;
+        peffSelect.appendChild(opt);
+      });
+
+      // Attach listeners
+      soilSelect.addEventListener('change', updatePlot);
+      peffSelect.addEventListener('change', updatePlot);
+      document.getElementById('metric-select').addEventListener('change', updatePlot);
+    }
+
+    function updatePlot() {
+      if (!db) return;
+
+      const soil = document.getElementById('soil-select').value || db.soils[0];
+      const metricField = document.getElementById('metric-select').value;
+      const peffVal = parseFloat(document.getElementById('peff-select').value || db.Peff_mm[0]);
+
+      // Filter metrics for selected soil and Peff
+      const rows = db.metrics.filter(row =>
+        row.soilName === soil && Math.abs(row.Peff_catch_mm - peffVal) < 1e-6
+      );
+
+      // Prepare arrays for 3D scatter
+      const x = [];  // area ratio (as percentage)
+      const y = [];  // tp [min]
+      const z = [];  // Ld [m]
+      const c = [];  // metric
+      const text = [];
+
+      rows.forEach(row => {
+        // Skip rows with NaN metric
+        const val = row[metricField];
+        if (val === null || typeof val === 'undefined' || Number.isNaN(val)) {
+          return;
+        }
+
+        const ar_pct = row.area_ratio * 100.0;
+        x.push(ar_pct);
+        y.push(row.tp_min);
+        z.push(row.Ld_m);
+
+        // DetTime/Delta_tp originally in minutes → keep as min here
+        c.push(val);
+
+        text.push(
+          `Soil: ${row.soilName}` +
+          `<br>Peff: ${mmToInches(row.Peff_catch_mm).toFixed(2)} in` +
+          `<br>Area ratio: ${ar_pct.toFixed(1)} %` +
+          `<br>Ld: ${row.Ld_m.toFixed(2)} m` +
+          `<br>tp: ${row.tp_min.toFixed(1)} min` +
+          `<br>${metricField}: ${val.toFixed(2)}`
+        );
+      });
+
+      // If no points, show message
+      if (x.length === 0) {
+        Plotly.newPlot('plot', [], {
+          title: `No feasible data for ${soil} at Peff = ${mmToInches(peffVal).toFixed(2)} in`,
+        });
+        return;
+      }
+
+      const trace = {
+        x: x,
+        y: y,
+        z: z,
+        text: text,
+        mode: 'markers',
+        type: 'scatter3d',
+        marker: {
+          size: 4,
+          color: c,
+          colorscale: 'Viridis',
+          colorbar: {
+            title: metricField,
+            thickness: 15
+          },
+          line: {
+            width: 0.5,
+            color: 'rgba(0,0,0,0.5)'
+          }
+        },
+        hovertemplate: '%{text}<extra></extra>'
+      };
+
+      const layout = {
+        scene: {
+          xaxis: {
+            title: 'A_TC / A_up [%]',
+            ticks: 'outside',
+            showgrid: true,
+            gridcolor: 'rgba(200,200,200,0.6)'
+          },
+          yaxis: {
+            title: 't_p [min]',
+            ticks: 'outside',
+            showgrid: true,
+            gridcolor: 'rgba(200,200,200,0.6)'
+          },
+          zaxis: {
+            title: 'L_d [m]',
+            ticks: 'outside',
+            showgrid: true,
+            gridcolor: 'rgba(200,200,200,0.6)'
+          }
+        },
+        margin: { l: 0, r: 0, t: 40, b: 0 },
+        paper_bgcolor: '#f7f7f7',
+        plot_bgcolor: '#ffffff',
+        title: `${soil} – ${metricField} – Peff = ${mmToInches(peffVal).toFixed(2)} in`
+      };
+
+      Plotly.newPlot('plot', [trace], layout, {responsive: true});
+    }
+  </script>
+</body>
+</html>

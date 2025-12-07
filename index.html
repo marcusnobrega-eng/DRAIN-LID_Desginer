@@ -479,30 +479,34 @@
     }
 
     // === DATA LOADING ========================================================
-
+    
     async function loadData() {
       try {
         setStatus('Loading data…');
-
+    
         const resp = await fetch(DATA_URL, {cache: 'no-cache'});
         if (!resp.ok) {
           throw new Error(`HTTP ${resp.status} while fetching ${DATA_URL}`);
         }
         const raw = await resp.json();
-
-        // Accept both {Metrics:[...]} and bare [...]
-        dbMetrics = Array.isArray(raw) ? raw : (raw.Metrics || []);
-
+    
+        // Your MATLAB JSON uses `metrics` (lowercase):
+        //   { "soils": [...], "Peff_mm": [...], ..., "metrics": [ {...}, {...} ] }
+        // Accept both lowercase `metrics` and capital `Metrics` just in case.
+        dbMetrics = Array.isArray(raw)
+          ? raw
+          : (raw.metrics || raw.Metrics || []);
+    
         if (!Array.isArray(dbMetrics) || dbMetrics.length === 0) {
-          throw new Error('No Metrics array found in JSON.');
+          throw new Error('No "metrics" array found in JSON.');
         }
-
+    
         setStatus('Data loaded. Use the controls above to explore the design space.');
         initUI();
       } catch (err) {
         console.error(err);
         setStatus(`Error loading data: ${err.message}`, true);
-        alert('Could not load drain_lid_database.json. Make sure the file is in the same folder as index.html and has a "Metrics" array.');
+        alert('Could not load drain_lid_database.json. Check the console for more details.');
       }
     }
 

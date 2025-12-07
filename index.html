@@ -8,14 +8,12 @@
   <!-- Plotly -->
   <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
 
-  <!-- MathJax v2 (compatible with Plotly for LaTeX in labels) -->
-  <script type="text/x-mathjax-config">
-    MathJax.Hub.Config({
-      tex2jax: { inlineMath: [['\\(','\\)'], ['$', '$']] },
-      SVG: { font: "TeX" }
-    });
+  <!-- MathJax for LaTeX in normal HTML text (NOT inside Plotly axes) -->
+  <script>
+    window.PlotlyConfig = { MathJaxConfig: 'local' };
   </script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/MathJax.js?config=TeX-AMS-MML_SVG"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
+          id="MathJax-script"></script>
 
   <style>
     :root {
@@ -46,46 +44,41 @@
       margin: 0 auto;
     }
 
-    .header-row {
+    header {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 1rem;
-      margin-bottom: 0.5rem;
+      margin-bottom: 0.75rem;
     }
 
-    .header-left h1 {
-      font-size: 1.6rem;
+    h1 {
+      font-size: 1.7rem;
       margin: 0 0 0.25rem 0;
     }
 
-    .header-left h2 {
-      font-size: 1.1rem;
+    h2 {
+      font-size: 1.0rem;
       margin: 0;
       color: var(--muted);
+      font-weight: 400;
     }
 
-    .header-right img {
-      max-height: 60px;
-      width: auto;
+    .logo-container img {
+      max-height: 70px;
     }
 
-    #soil-params {
-      margin-bottom: 0.5rem;
-      font-size: 0.85rem;
-      color: var(--muted);
-    }
-
-    #soil-params strong {
+    .soil-params {
+      font-size: 0.95rem;
       color: var(--fg);
+      margin-bottom: 0.8rem;
     }
 
     .controls {
       display: flex;
       flex-wrap: wrap;
       gap: 1rem;
-      padding: 1rem;
-      margin-bottom: 0.5rem;
+      padding: 0.9rem 1rem;
+      margin-bottom: 1rem;
       background: var(--panel-bg);
       border-radius: 0.75rem;
       border: 1px solid var(--border);
@@ -94,7 +87,7 @@
     .control-group {
       display: flex;
       flex-direction: column;
-      min-width: 180px;
+      min-width: 190px;
     }
 
     .control-group label {
@@ -119,45 +112,54 @@
     }
 
     .plots-row {
-      display: flex;
-      flex-wrap: wrap;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
       gap: 0.75rem;
-      margin-bottom: 1rem;
+      margin-bottom: 1.0rem;
     }
 
-    .plot3d {
-      flex: 1 1 300px;
-      min-width: 300px;
-      height: 420px;
+    .plot-panel {
       border-radius: 0.75rem;
       border: 1px solid var(--border);
+      overflow: hidden;
+      min-height: 360px;
+    }
+
+    .plot-panel-title {
+      font-size: 0.95rem;
+      font-weight: 600;
+      padding: 0.5rem 0.75rem;
+      border-bottom: 1px solid var(--border);
+      background: #fafafa;
+    }
+
+    .plot-div {
+      width: 100%;
+      height: 340px;
+    }
+
+    #hydro-panel {
+      border-radius: 0.75rem;
+      border: 1px solid var(--border);
+      margin-bottom: 1rem;
+      overflow: hidden;
+    }
+
+    #hydro-header {
+      font-size: 0.95rem;
+      font-weight: 600;
+      padding: 0.5rem 0.75rem;
+      border-bottom: 1px solid var(--border);
+      background: #fafafa;
     }
 
     #hydro-plot {
       width: 100%;
-      height: 380px;
-      border-radius: 0.75rem;
-      border: 1px solid var(--border);
-      margin-bottom: 0.4rem;
-    }
-
-    #download-csv {
-      padding: 0.4rem 0.8rem;
-      font-size: 0.85rem;
-      border-radius: 0.5rem;
-      border: 1px solid var(--border);
-      background: #f0f0f5;
-      cursor: pointer;
-    }
-
-    #download-csv:disabled {
-      background: #f5f5f5;
-      color: #aaaaaa;
-      cursor: not-allowed;
+      height: 320px;
     }
 
     .status {
-      margin-top: 0.5rem;
+      margin-top: 0.4rem;
       font-size: 0.85rem;
       color: var(--muted);
     }
@@ -166,15 +168,20 @@
       color: #b00020;
     }
 
-    .legend-note,
-    .method-note {
+    .legend-note {
       margin-top: 0.4rem;
       font-size: 0.8rem;
       color: var(--muted);
     }
 
-    .method-note strong {
-      color: var(--fg);
+    .method-note {
+      margin-top: 1.0rem;
+      padding: 0.75rem 1rem;
+      border-radius: 0.75rem;
+      border: 1px solid var(--border);
+      background: #fafafa;
+      font-size: 0.9rem;
+      line-height: 1.45;
     }
 
     a {
@@ -186,29 +193,50 @@
       text-decoration: underline;
     }
 
-    @media (max-width: 900px) {
-      .plot3d {
-        height: 360px;
+    button.export-btn {
+      margin-left: auto;
+      margin-right: 0.75rem;
+      margin-top: 0.35rem;
+      padding: 0.25rem 0.6rem;
+      font-size: 0.85rem;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: white;
+      cursor: pointer;
+    }
+
+    button.export-btn:hover {
+      background: #f2f2f2;
+    }
+
+    @media (max-width: 1050px) {
+      .plots-row {
+        grid-template-columns: 1fr;
+      }
+      .plot-div {
+        height: 320px;
+      }
+      #hydro-plot {
+        height: 260px;
       }
     }
   </style>
 </head>
 <body>
   <div class="container">
-
-    <div class="header-row">
-      <div class="header-left">
+    <header>
+      <div>
         <h1>DRAIN-LID Design Performance Explorer</h1>
         <h2>Interactive design-space visualization from the DRAIN-LID database</h2>
       </div>
-      <div class="header-right">
-        <!-- Put your logo file (e.g., drainlid_logo.png) in the same folder -->
-        <img id="drainlid-logo" src="drainlid_logo.png" alt="DRAIN-LID logo" />
+      <div class="logo-container">
+        <!-- Put your DRAIN-LID logo file here (same folder) -->
+        <img src="drain_lid_logo.png" alt="DRAIN-LID logo" />
       </div>
-    </div>
+    </header>
 
-    <div id="soil-params">
-      <!-- Filled dynamically with van Genuchten parameters -->
+    <div id="soil-params" class="soil-params">
+      <!-- Filled by JS with LaTeX (MathJax) for the selected soil -->
     </div>
 
     <div class="controls">
@@ -224,130 +252,123 @@
     </div>
 
     <div class="plots-row">
-      <div id="plot-eta" class="plot3d"></div>
-      <div id="plot-det" class="plot3d"></div>
-      <div id="plot-dtp" class="plot3d"></div>
+      <div class="plot-panel">
+        <div class="plot-panel-title" id="title-eta">
+          Peak flow reduction
+        </div>
+        <div id="plot-eta" class="plot-div"></div>
+      </div>
+
+      <div class="plot-panel">
+        <div class="plot-panel-title" id="title-det">
+          Detention time
+        </div>
+        <div id="plot-det" class="plot-div"></div>
+      </div>
+
+      <div class="plot-panel">
+        <div class="plot-panel-title" id="title-dtp">
+          Time-to-peak delay
+        </div>
+        <div id="plot-dtp" class="plot-div"></div>
+      </div>
     </div>
 
-    <div id="hydro-plot"></div>
-    <button id="download-csv" disabled>Download hydrograph as CSV</button>
+    <div id="hydro-panel">
+      <div id="hydro-header">
+        Hydrographs
+        <button id="export-csv" class="export-btn" type="button">Export CSV</button>
+      </div>
+      <div id="hydro-plot"></div>
+    </div>
 
     <div id="status" class="status">
       Loading data…
     </div>
+
     <div class="legend-note">
-      Axes in 3D plots: area-ratio [%] (ratio between LID footprint and upstream catchment area),
-      media depth \(L_{d}\) [m], and time to peak \(t_{p}\) [min].  
-      Click any point in the 3D plots to visualize its inflow and outflow hydrographs
-      (stored only for scenarios with intermediate peak flow reduction).
+      Axes in the 3D panels: area-ratio [%] (dimensionless design ratio), media depth
+      \(L_d\) [m], and time-to-peak \(t_p\) [min]. Points with gray outlines correspond
+      to simulations where no performance metric is available (e.g., infeasible design).
     </div>
 
     <div class="method-note">
-      This interactive explorer was developed by <strong>Marcus N. Gomes Jr., PhD</strong>.
-      Scenario ensembles are generated by coupling a mixed-form Richards equation solver
-      (with van Genuchten–Mualem parameters from Carsel &amp; Parrish) to a Nash-type
-      inflow hydrograph. Designs span combinations of soil type, media depth, effective
-      precipitation, area-ratio ( \(A_{\mathrm{TC}}/A_{\mathrm{up}}\) ), and time to peak, allowing
-      systematic assessment of bioretention hydrologic performance.
+      This interactive viewer was developed by <strong>Marcus N. Gomes Jr., PhD</strong>.
+      Each point in the design space corresponds to a full mixed-form Richards equation
+      simulation of an infiltration LID system, varying media depth \(L_d\), area-ratio,
+      and hydrograph time-to-peak \(t_p\). The <em>area-ratio</em> is defined as the
+      ratio between the LID footprint area and the upstream contributing area, i.e.
+      \( \text{area-ratio} = A_{\mathrm{TC}} / A_{\mathrm{up}} \).
     </div>
   </div>
 
   <script>
-    // === CONFIG ==============================================================
+    // ========================================================================
+    // CONFIG
+    // ========================================================================
 
-    const DATA_URL = 'drain_lid_database.json';  // must be in the same folder as index.html
+    const DATA_URL = 'drain_lid_database.json';
 
-    // Metric metadata (plain-text labels; no LaTeX here to avoid issues in titles/colorbars)
-    const METRIC_INFO = {
+    // Soil hydraulic parameters for header (C&P 1988-style values)
+    // Units: alpha [1/m], Ks [m/s], dtheta = theta_s - theta_r [-]
+    const SOIL_PARAMS = {
+      'Sand':            { alpha: 14.5, n: 2.68, dtheta: 0.43 - 0.045, Ks: 8.25e-5 },
+      'Loamy Sand':      { alpha: 12.4, n: 2.28, dtheta: 0.41 - 0.057, Ks: 4.05e-5 },
+      'Sandy Loam':      { alpha:  7.5, n: 1.89, dtheta: 0.41 - 0.065, Ks: 1.23e-5 },
+      'Loam':            { alpha:  3.6, n: 1.56, dtheta: 0.43 - 0.078, Ks: 2.89e-6 },
+      'Silt':            { alpha:  1.6, n: 1.37, dtheta: 0.46 - 0.034, Ks: 6.94e-7 },
+      'Silty Loam':      { alpha:  2.0, n: 1.41, dtheta: 0.45 - 0.067, Ks: 1.25e-6 },
+      'Sandy Clay Loam': { alpha:  5.9, n: 1.48, dtheta: 0.39 - 0.100, Ks: 3.64e-6 },
+      'Clay Loam':       { alpha:  1.9, n: 1.31, dtheta: 0.41 - 0.095, Ks: 7.22e-7 },
+      'Silty Clay Loam': { alpha:  1.0, n: 1.23, dtheta: 0.43 - 0.089, Ks: 1.94e-7 },
+      'Sandy Clay':      { alpha:  2.7, n: 1.23, dtheta: 0.38 - 0.100, Ks: 3.33e-7 },
+      'Silty Clay':      { alpha:  0.5, n: 1.09, dtheta: 0.36 - 0.070, Ks: 5.56e-8 },
+      'Clay':            { alpha:  0.8, n: 1.09, dtheta: 0.38 - 0.068, Ks: 5.56e-7 }
+    };
+
+    // Metric configuration
+    const METRIC_CONFIG = {
       eta_p_pct: {
+        key: 'eta_p_pct',
         label: 'Peak flow reduction',
         colorbarTitle: 'Peak reduction [%]',
-        shortLabel: 'Peak red. [%]'
+        colorscale: 'Turbo'  // <-- as requested
       },
-      DetTime_min: {
+      DetTime_h: {
+        key: 'DetTime_h',
         label: 'Detention time',
         colorbarTitle: 'Detention [h]',
-        shortLabel: 'Detention [h]'
+        colorscale: 'Viridis'
       },
-      Delta_tp_min: {
+      Delta_tp_h: {
+        key: 'Delta_tp_h',
         label: 'Time-to-peak delay',
         colorbarTitle: 'Time-to-peak delay [h]',
-        shortLabel: 'Δt_p [h]'
+        colorscale: 'Cividis'
       }
     };
 
-    // Preferred soil order: sandy -> clayey
-    const SOIL_ORDER = [
-      'Sand',
-      'Loamy Sand',
-      'Sandy Loam',
-      'Loam',
-      'Silt',
-      'Silty Loam',
-      'Sandy Clay Loam',
-      'Clay Loam',
-      'Silty Clay Loam',
-      'Sandy Clay',
-      'Silty Clay',
-      'Clay'
-    ];
+    // ========================================================================
+    // GLOBAL STATE
+    // ========================================================================
 
-    // Van Genuchten parameter table (Carsel & Parrish style)
-    // Units:
-    //   theta_r, theta_s: [-]
-    //   alpha: [1/m]
-    //   n: [-]
-    //   Ks_mm_per_h: [mm/h]
-    const SOIL_VG = {
-      'Sand': {theta_r: 0.045, theta_s: 0.43, alpha: 14.5, n: 2.68, Ks_mm_per_h: 297.0},
-      'Loamy Sand': {theta_r: 0.057, theta_s: 0.41, alpha: 12.4, n: 2.28, Ks_mm_per_h: 145.8},
-      'Sandy Loam': {theta_r: 0.065, theta_s: 0.41, alpha: 7.5, n: 1.89, Ks_mm_per_h: 44.3},
-      'Loam': {theta_r: 0.078, theta_s: 0.43, alpha: 3.6, n: 1.56, Ks_mm_per_h: 10.4},
-      'Silt': {theta_r: 0.034, theta_s: 0.46, alpha: 1.6, n: 1.37, Ks_mm_per_h: 2.5},
-      'Silty Loam': {theta_r: 0.067, theta_s: 0.45, alpha: 2.0, n: 1.41, Ks_mm_per_h: 4.5},
-      'Sandy Clay Loam': {theta_r: 0.100, theta_s: 0.39, alpha: 5.9, n: 1.48, Ks_mm_per_h: 13.1},
-      'Clay Loam': {theta_r: 0.095, theta_s: 0.41, alpha: 1.9, n: 1.31, Ks_mm_per_h: 2.6},
-      'Silty Clay Loam': {theta_r: 0.089, theta_s: 0.43, alpha: 1.0, n: 1.23, Ks_mm_per_h: 0.70},
-      'Sandy Clay': {theta_r: 0.100, theta_s: 0.38, alpha: 2.7, n: 1.23, Ks_mm_per_h: 1.20},
-      'Silty Clay': {theta_r: 0.070, theta_s: 0.36, alpha: 0.5, n: 1.09, Ks_mm_per_h: 0.20},
-      'Clay': {theta_r: 0.068, theta_s: 0.38, alpha: 0.8, n: 1.09, Ks_mm_per_h: 2.00}
-    };
-
-    // === GLOBAL STATE ========================================================
-
-    let dbMetrics = [];   // full flat array of metric objects
-    let QinMatrix = [];   // [nSteps x nKeep] in m^3/s
-    let QoutMatrix = [];  // [nSteps x nKeep] in m^3/s
-    let tMinutes = [];    // [nSteps] in minutes
-
+    let dbMetrics = [];   // full array of metric objects from JSON
     let soilList = [];
     let peffList = [];
 
-    let lastHydrograph = null;   // store last plotted hydrograph for CSV export
+    // The subset used in the current view (for exporting / hydrograph)
+    let currentSubset = [];
+    let currentHydroScenario = null;
+    let currentHydroIndex = null;
 
-    // === HELPERS =============================================================
+    // ========================================================================
+    // HELPERS
+    // ========================================================================
 
     function uniqueSorted(arr) {
       return Array.from(new Set(arr)).sort((a, b) => {
         if (typeof a === 'string') return a.localeCompare(b);
         return a - b;
-      });
-    }
-
-    function sortSoilsPreferred(list) {
-      // Use SOIL_ORDER first, then any unknown soils alphabetically at the end
-      return list.slice().sort((a, b) => {
-        const ia = SOIL_ORDER.indexOf(a);
-        const ib = SOIL_ORDER.indexOf(b);
-        if (ia === -1 && ib === -1) {
-          return a.localeCompare(b);
-        } else if (ia === -1) {
-          return 1;
-        } else if (ib === -1) {
-          return -1;
-        } else {
-          return ia - ib;
-        }
       });
     }
 
@@ -366,45 +387,40 @@
       el.className = 'status' + (isError ? ' error' : '');
     }
 
-    function typesetMathJax() {
-      if (window.MathJax && window.MathJax.Hub) {
-        MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
-      }
-    }
+    function updateSoilHeader(soilName) {
+      const params = SOIL_PARAMS[soilName];
+      const el = document.getElementById('soil-params');
 
-    function updateSoilParamsDisplay() {
-      const soilSel = document.getElementById('soil-select');
-      const soil = soilSel.value;
-      const box = document.getElementById('soil-params');
-
-      const vg = SOIL_VG[soil];
-      if (!vg) {
-        box.innerHTML = `<strong>${soil}</strong> — van Genuchten parameters not available.`;
-        typesetMathJax();
+      if (!params) {
+        el.innerHTML = soilName
+          ? `Soil: <strong>${soilName}</strong>`
+          : '';
+        MathJax.typesetPromise();
         return;
       }
 
-      const dtheta = vg.theta_s - vg.theta_r;
-      const Ks_m_s = vg.Ks_mm_per_h / 3.6e6; // mm/h -> m/s
+      const { alpha, n, dtheta, Ks } = params;
 
-      box.innerHTML =
-        `<strong>${soil}</strong> &mdash; ` +
-        `\\(\\alpha = ${vg.alpha.toFixed(2)}\\,\\mathrm{m}^{-1}\\), ` +
-        `\\(n = ${vg.n.toFixed(2)}\\), ` +
-        `\\(\\Delta\\theta = ${dtheta.toFixed(3)}\\), ` +
-        `\\(K_{\\mathrm{s}} = ${Ks_m_s.toExponential(2)}\\,\\mathrm{m\\,s^{-1}}\\)`;
-      typesetMathJax();
+      el.innerHTML =
+        `${soilName} — ` +
+        `\\( \\alpha = ${alpha.toFixed(2)}\\,\\text{m}^{-1}, \\)` +
+        `\\( n = ${n.toFixed(2)}, \\)` +
+        `\\( \\Delta\\theta = ${dtheta.toFixed(3)}, \\)` +
+        `\\( K_s = ${Ks.toExponential(2)}\\,\\text{m s}^{-1} \\)`;
+
+      MathJax.typesetPromise();
     }
 
-    // === UI INIT =============================================================
+    // ========================================================================
+    // UI INIT
+    // ========================================================================
 
     function initUI() {
-      const soilSel  = document.getElementById('soil-select');
-      const peffSel  = document.getElementById('peff-select');
+      const soilSel = document.getElementById('soil-select');
+      const peffSel = document.getElementById('peff-select');
 
-      // 1. Populate soil list (sandy -> clayey)
+      // 1. Soil list from metrics
       soilList = uniqueSorted(dbMetrics.map(m => m.soilName));
-      soilList = sortSoilsPreferred(soilList);
 
       soilSel.innerHTML = '';
       soilList.forEach(name => {
@@ -414,33 +430,35 @@
         soilSel.appendChild(opt);
       });
 
-      // 2. Populate Peff list for the first soil
+      // Prefer Sand as default if present
+      if (soilList.includes('Sand')) {
+        soilSel.value = 'Sand';
+      } else if (soilList.length > 0) {
+        soilSel.selectedIndex = 0;
+      }
+
+      // 2. Populate Peff for the initial soil
       updatePeffOptions();
 
-      // Enable selects now that data is loaded
       soilSel.disabled = soilList.length === 0;
       peffSel.disabled = peffList.length === 0;
 
-      // Show VG parameters for initial soil
-      updateSoilParamsDisplay();
-
-      // Event listeners
       soilSel.addEventListener('change', () => {
         updatePeffOptions();
-        updateSoilParamsDisplay();
-        updateAllPlots();
+        updatePlots();
       });
 
       peffSel.addEventListener('change', () => {
-        updateAllPlots();
+        updatePlots();
       });
 
-      // CSV button
-      document.getElementById('download-csv')
-        .addEventListener('click', downloadHydrographCSV);
+      // Initial header for soil parameters
+      if (soilSel.value) {
+        updateSoilHeader(soilSel.value);
+      }
 
-      // First plot
-      updateAllPlots();
+      // First full plot + default hydrograph
+      updatePlots();
     }
 
     function updatePeffOptions() {
@@ -466,177 +484,122 @@
       } else {
         peffSel.disabled = true;
       }
-
-      typesetMathJax();
     }
 
-    // === PLOTTING: 3D DESIGN SPACE ==========================================
+    // ========================================================================
+    // PLOTTING — 3D DESIGN PLOTS
+    // ========================================================================
 
-    function updateAllPlots() {
-      if (!dbMetrics || dbMetrics.length === 0) {
-        setStatus('No data loaded.', true);
-        return;
-      }
+    function buildMetricPlot(containerId, subset, metricKey, cfg, soil, peff) {
+      const container = document.getElementById(containerId);
+      if (!container) return;
 
-      const soilSel = document.getElementById('soil-select');
-      const peffSel = document.getElementById('peff-select');
+      // Prepare arrays
+      const x = [];          // area-ratio [%]
+      const y = [];          // Ld [m]
+      const z = [];          // tp [min]
+      const c = [];          // metric (for color)
 
-      const soil  = soilSel.value;
-      const peff  = parseFloat(peffSel.value);
+      const xUnf = [];
+      const yUnf = [];
+      const zUnf = [];
 
-      if (!soil || isNaN(peff)) {
-        setStatus('Select a soil type and an effective precipitation.', true);
-        return;
-      }
+      const customdata = [];      // index in subset for feasible
+      const customdataUnf = [];   // index in subset for unfeasible
 
-      const peffLabel = formatPeffLabel(peff);
-
-      // Update three plots, one per metric
-      buildMetricPlot('eta_p_pct', 'plot-eta', soil, peff, peffLabel);
-      buildMetricPlot('DetTime_min', 'plot-det', soil, peff, peffLabel);
-      buildMetricPlot('Delta_tp_min', 'plot-dtp', soil, peff, peffLabel);
-
-      setStatus(
-        `Soil: ${soil} | P_eff: ${peffLabel}. Click a point to view its hydrograph (if stored).`
-      );
-    }
-
-    function buildMetricPlot(metricName, divId, soil, peff, peffLabel) {
-      const metricInfo = METRIC_INFO[metricName] || METRIC_INFO.eta_p_pct;
-
-      // Select colorscale by metric (Turbo, Viridis, Cividis)
-      let colorscale = 'Turbo';
-      if (metricName === 'DetTime_min') {
-        colorscale = 'Viridis';
-      } else if (metricName === 'Delta_tp_min') {
-        colorscale = 'Cividis';
-      }
-
-      const subset = dbMetrics.filter(m =>
-        m.soilName === soil &&
-        m.Peff_catch_mm === peff
-      );
-
-      const plotDiv = document.getElementById(divId);
-
-      if (subset.length === 0) {
-        Plotly.react(plotDiv, [], {
-          title: {
-            text: `${metricInfo.label} — ${soil}, P_eff = ${peffLabel} (no data)`,
-            font: { size: 14 }
-          },
-          margin: {l: 0, r: 0, t: 40, b: 0}
-        });
-        if (plotDiv.on) plotDiv.on('plotly_click', handlePointClick);
-        typesetMathJax();
-        return;
-      }
-
-      // x = area_ratio [%], y = Ld [m], z = tp [min]
-      const x = []; const y = []; const z = [];
-      const c = []; const customFeasible = [];
-      const x_unf = []; const y_unf = []; const z_unf = []; const customUnf = [];
-
-      subset.forEach(m => {
-        const ar_percent = m.area_ratio * 100.0;
+      subset.forEach((m, idx) => {
+        const arPercent = m.area_ratio * 100.0;
         const Ld = m.Ld_m;
         const tp = m.tp_min;
-        let val = m[metricName];
-
-        // Convert detention time and Δt_p to hours for color scaling
-        if ((metricName === 'DetTime_min' || metricName === 'Delta_tp_min') &&
-            val != null && !isNaN(val)) {
-          val = val / 60.0;
-        }
+        const val = m[metricKey];
 
         if (val == null || isNaN(val)) {
-          x_unf.push(ar_percent);
-          y_unf.push(Ld);
-          z_unf.push(tp);
-          customUnf.push(m.idx);
+          xUnf.push(arPercent);
+          yUnf.push(Ld);
+          zUnf.push(tp);
+          customdataUnf.push(idx);
         } else {
-          x.push(ar_percent);
+          x.push(arPercent);
           y.push(Ld);
           z.push(tp);
           c.push(val);
-          customFeasible.push(m.idx);
+          customdata.push(idx);
         }
       });
 
-      let cmin = 0, cmax = 1;
-      if (c.length > 0) {
-        cmin = Math.min(...c);
-        cmax = Math.max(...c);
-        if (cmin === cmax) cmax = cmin + 1e-6;
+      let zMin = c.length ? Math.min(...c) : 0;
+      let zMax = c.length ? Math.max(...c) : 1;
+      if (zMin === zMax) {
+        zMin -= 0.5;
+        zMax += 0.5;
       }
 
       const traceFeasible = {
-        x: x,
-        y: y,
-        z: z,
+        x,
+        y,
+        z,
+        customdata,
         mode: 'markers',
         type: 'scatter3d',
         name: 'Feasible',
-        customdata: customFeasible,
         marker: {
           size: 6,
           color: c,
-          colorscale: colorscale,
-          cmin: cmin,
-          cmax: cmax,
-          showscale: true,
+          colorscale: cfg.colorscale,   // Turbo / Viridis / Cividis
+          cmin: zMin,
+          cmax: zMax,
           colorbar: {
-            title: metricInfo.colorbarTitle,
+            title: cfg.colorbarTitle,
             titleside: 'right',
+            thickness: 10,
             ticks: 'inside',
-            ticklen: 6,
-            tickwidth: 1.5,
-            outlinewidth: 2,
-            thickness: 10,   // thinner colorbar
-            len: 0.75        // shorter colorbar
+            ticklen: 5,
+            tickwidth: 1.0,
+            outlinewidth: 2
           },
           line: {
-            width: 1.5,
+            width: 1.4,
             color: 'rgba(0,0,0,0.7)'
           }
         },
         hovertemplate:
-          'Area-ratio: %{x:.1f}%<br>' +
+          'Area-ratio: %{x:.1f} %<br>' +
           'L_d: %{y:.2f} m<br>' +
           't_p: %{z:.1f} min<br>' +
-          metricInfo.shortLabel + ': %{marker.color:.2f}<extra></extra>'
+          cfg.colorbarTitle + ': %{marker.color:.2f}<extra></extra>'
       };
 
       const traceUnfeasible = {
-        x: x_unf,
-        y: y_unf,
-        z: z_unf,
+        x: xUnf,
+        y: yUnf,
+        z: zUnf,
+        customdata: customdataUnf,
         mode: 'markers',
         type: 'scatter3d',
-        name: 'Unfeasible / No metric',
-        customdata: customUnf,
+        name: 'Unfeasible / no metric',
         marker: {
           size: 5,
-          color: 'rgba(200,200,200,0.25)',
-          showscale: false,
+          color: 'rgba(220,220,220,0.2)',
           line: {
-            width: 1.5,
-            color: 'rgba(80,80,80,0.7)'
+            width: 1.4,
+            color: 'rgba(90,90,90,0.8)'
           }
         },
         hovertemplate:
-          'Area-ratio: %{x:.1f}%<br>' +
+          'Area-ratio: %{x:.1f} %<br>' +
           'L_d: %{y:.2f} m<br>' +
           't_p: %{z:.1f} min<br>' +
-          '<b>No metric / unfeasible</b><extra></extra>'
+          '<b>No metric (infeasible / filtered)</b><extra></extra>'
       };
 
-      const metricTitle = metricInfo.label;
+      const data = [];
+      if (x.length > 0) data.push(traceFeasible);
+      if (xUnf.length > 0) data.push(traceUnfeasible);
+
+      const peffLabel = formatPeffLabel(peff);
+
       const layout = {
-        title: {
-          text: `${metricTitle} — ${soil}, P_eff = ${peffLabel}`,
-          font: { size: 15 }
-        },
+        margin: { l: 0, r: 0, t: 10, b: 0 },
         scene: {
           xaxis: {
             title: 'Area-ratio [%]',
@@ -645,266 +608,307 @@
             gridcolor: '#e0e0e0',
             ticks: 'outside',
             ticklen: 4,
-            tickwidth: 2,
-            linecolor: '#000',
-            linewidth: 2
+            tickwidth: 1.2
           },
           yaxis: {
-            title: 'Media depth, L_d [m]',
+            title: 'Media depth, L<sub>d</sub> [m]',
             zeroline: false,
             showgrid: true,
             gridcolor: '#e0e0e0',
             ticks: 'outside',
             ticklen: 4,
-            tickwidth: 2,
-            linecolor: '#000',
-            linewidth: 2
+            tickwidth: 1.2
           },
           zaxis: {
-            title: 'Time to peak, t_p [min]',
+            title: 'Time to peak, t<sub>p</sub> [min]',
             zeroline: false,
             showgrid: true,
             gridcolor: '#e0e0e0',
             ticks: 'outside',
             ticklen: 4,
-            tickwidth: 2,
-            linecolor: '#000',
-            linewidth: 2
+            tickwidth: 1.2
           },
-          aspectmode: 'cube',
           camera: {
-            eye: {x: 1.7, y: 1.7, z: 1.7},
-            center: {x: 0, y: 0, z: 0},
-            up: {x: 0, y: 0, z: 1}
+            eye: { x: 1.4, y: 1.4, z: 1.1 }
           }
         },
-        margin: {l: 0, r: 0, t: 50, b: 0},
-        legend: {
-          x: 0.02,
-          y: 0.98,
-          bgcolor: 'rgba(255,255,255,0.8)'
-        }
+        showlegend: false
       };
 
-      const data = [];
-      if (x.length > 0) data.push(traceFeasible);
-      if (x_unf.length > 0) data.push(traceUnfeasible);
+      const titleElId = {
+        'plot-eta': 'title-eta',
+        'plot-det': 'title-det',
+        'plot-dtp': 'title-dtp'
+      }[containerId];
 
-      Plotly.react(plotDiv, data, layout, {responsive: true}).then(() => {
-        if (plotDiv.on) {
-          plotDiv.on('plotly_click', handlePointClick);
+      if (titleElId) {
+        const titleEl = document.getElementById(titleElId);
+        if (titleEl) {
+          titleEl.textContent =
+            `${cfg.label} — ${soil}, P_eff = ${peffLabel}`;
         }
-        typesetMathJax();
-      });
-    }
-
-    // === HYDROGRAPH PLOTTING ================================================
-
-    function handlePointClick(event) {
-      if (!event || !event.points || event.points.length === 0) return;
-
-      const pt = event.points[0];
-      const idx = pt.customdata;
-
-      if (idx === undefined || idx === null) {
-        setStatus('Clicked point has no associated scenario index.', true);
-        return;
       }
 
-      const scen = dbMetrics.find(m => m.idx === idx);
-
-      if (!scen) {
-        setStatus(`No scenario found with idx = ${idx}.`, true);
-        return;
-      }
-
-      const hIndex = scen.hydroIndex;
-
-      if (hIndex === undefined || hIndex === null || hIndex < 0) {
-        setStatus('No hydrograph stored for this scenario (outside selected performance band).', true);
-        Plotly.react('hydro-plot', [], {
-          title: {
-            text: 'No hydrograph available for this scenario',
-            font: { size: 14 }
-          },
-          margin: {l: 50, r: 10, t: 40, b: 40}
+      Plotly.react(containerId, data, layout, { responsive: true })
+        .then(() => {
+          // Click -> hydrograph
+          container.on('plotly_click', ev => {
+            if (!ev.points || ev.points.length === 0) return;
+            const p = ev.points[0];
+            const idx = p.customdata;
+            if (idx == null) return;
+            const scen = subset[idx];
+            currentHydroScenario = scen;
+            currentHydroIndex = idx;
+            plotHydrograph(scen, idx);
+          });
         });
-        document.getElementById('download-csv').disabled = true;
-        lastHydrograph = null;
-        return;
-      }
-
-      plotHydrograph(scen, hIndex);
     }
 
-    function plotHydrograph(scen, hIndex) {
-      if (!Array.isArray(QinMatrix) || QinMatrix.length === 0 ||
-          !Array.isArray(QoutMatrix) || QoutMatrix.length === 0 ||
-          !Array.isArray(tMinutes) || tMinutes.length === 0) {
-        setStatus('Hydrograph time-series arrays are not available.', true);
+    // ========================================================================
+    // PLOTTING — HYDROGRAPH
+    // ========================================================================
+
+    function plotHydrograph(scen, indexInSubset) {
+      if (!scen) {
+        clearHydrograph();
         return;
       }
 
-      const nSteps = tMinutes.length;
-      const qInSeries = [];
-      const qOutSeries = [];
+      // These names must match the JSON fields you stored.
+      // Adjust here if your JSON uses slightly different keys.
+      const t = scen.t_hours_24 || scen.t_hours || null;
+      const Qin = scen.Qin_mmph || scen.Qin_mm_per_h || null;
+      const Qout = scen.Qout_mmph || scen.Qout_mm_per_h || null;
 
-      for (let i = 0; i < nSteps; i++) {
-        const rowIn  = QinMatrix[i];
-        const rowOut = QoutMatrix[i];
-        const qIn  = rowIn  ? rowIn[hIndex]  : 0;
-        const qOut = rowOut ? rowOut[hIndex] : 0;
-        qInSeries.push(qIn || 0);
-        qOutSeries.push(qOut || 0);
-      }
+      const hydroDiv = document.getElementById('hydro-plot');
+      const header = document.getElementById('hydro-header');
 
-      const tHours = tMinutes.map(v => v / 60.0);
-
-      const ATC = scen.ATC_m2;
-      if (!ATC || ATC <= 0) {
-        setStatus('Invalid LID area (ATC_m2) for this scenario.', true);
+      if (!t || !Qin || !Qout || t.length === 0) {
+        header.textContent =
+          'Hydrographs — no stored hydrograph data for this scenario';
+        Plotly.react(hydroDiv, [], {
+          margin: { l: 60, r: 10, t: 40, b: 50 },
+          xaxis: { title: 'Time [h]' },
+          yaxis: { title: 'Flux [mm/h]' }
+        });
         return;
       }
 
-      const factor = 1000.0 * 3600.0 / ATC;  // m^3/s → mm/h over ATC
+      const title =
+        'Hydrographs — ' + scen.soilName +
+        ', P_eff = ' + formatPeffLabel(scen.Peff_catch_mm) +
+        ', area-ratio = ' + (scen.area_ratio * 100).toFixed(1) + '% ' +
+        ', L_d = ' + scen.Ld_m.toFixed(2) + ' m, ' +
+        't_p = ' + scen.tp_min.toFixed(1) + ' min';
 
-      const qIn_mm_h  = qInSeries.map(v => v * factor);
-      const qOut_mm_h = qOutSeries.map(v => v * factor);
+      header.textContent = title;
 
       const traceIn = {
-        x: tHours,
-        y: qIn_mm_h,
+        x: t,
+        y: Qin,
         mode: 'lines',
         name: 'Inflow',
-        line: { width: 2, color: '#BC262D', dash: 'dash' }
+        line: {
+          width: 2.2,
+          dash: 'dash',
+          color: '#BC262D'
+        }
       };
 
       const traceOut = {
-        x: tHours,
-        y: qOut_mm_h,
+        x: t,
+        y: Qout,
         mode: 'lines',
         name: 'Outflow',
-        line: { width: 2, color: '#0000A3' }
+        line: {
+          width: 2.2,
+          color: '#0000A3'
+        }
       };
 
-    const title =
-      'Hydrographs — ' + scen.soilName +
-      ', P_eff = ' + formatPeffLabel(scen.Peff_catch_mm) +
-      ', area-ratio = ' + (scen.area_ratio * 100).toFixed(1) + '% ' +
-      ', L_d = ' + scen.Ld_m.toFixed(2) + ' m, ' +
-      't_p = ' + scen.tp_min.toFixed(1) + ' min';
-
       const layout = {
-        title: { text: title, font: { size: 14 } },
+        margin: { l: 60, r: 10, t: 20, b: 50 },
         xaxis: {
           title: 'Time [h]',
           zeroline: false,
           showgrid: false,
           ticks: 'outside',
-          ticklen: 6,
-          tickwidth: 2,
-          linecolor: '#000',
-          linewidth: 2
+          ticklen: 5,
+          tickwidth: 1.4
         },
         yaxis: {
           title: 'Flux [mm/h]',
           zeroline: false,
           showgrid: false,
           ticks: 'outside',
-          ticklen: 6,
-          tickwidth: 2,
-          linecolor: '#000',
-          linewidth: 2
+          ticklen: 5,
+          tickwidth: 1.4
         },
-        margin: {l: 60, r: 10, t: 60, b: 50},
         legend: {
-          x: 0.01,
-          y: 0.99,
-          bgcolor: 'rgba(255,255,255,0.8)'
+          x: 0.02,
+          y: 0.98
         }
       };
 
-      Plotly.react('hydro-plot', [traceIn, traceOut], layout, {responsive: true})
-        .then(() => {
-          typesetMathJax();
-        });
-
-      const eta = scen.eta_p_pct;
-      setStatus(
-        `Hydrograph for scenario idx=${scen.idx}, soil=${scen.soilName}, ` +
-        `P_eff=${formatPeffLabel(scen.Peff_catch_mm)}, ` +
-        `peak reduction = ${eta !== undefined ? eta.toFixed(1) : 'NA'}%.`
-      );
-
-      // Store for CSV export
-      lastHydrograph = {
-        tHours,
-        qIn_mm_h,
-        qOut_mm_h,
-        scen
-      };
-      document.getElementById('download-csv').disabled = false;
+      Plotly.react(hydroDiv, [traceIn, traceOut], layout, { responsive: true });
     }
 
-    function downloadHydrographCSV() {
-      if (!lastHydrograph) {
-        alert('No hydrograph has been plotted yet.');
+    function clearHydrograph() {
+      const hydroDiv = document.getElementById('hydro-plot');
+      const header = document.getElementById('hydro-header');
+      header.textContent = 'Hydrographs';
+      Plotly.react(hydroDiv, [], {
+        margin: { l: 60, r: 10, t: 40, b: 50 },
+        xaxis: { title: 'Time [h]' },
+        yaxis: { title: 'Flux [mm/h]' }
+      });
+    }
+
+    // ========================================================================
+    // CSV EXPORT
+    // ========================================================================
+
+    function exportCurrentHydrographCSV() {
+      if (!currentHydroScenario) {
+        alert('No hydrograph is currently selected.');
         return;
       }
 
-      const { tHours, qIn_mm_h, qOut_mm_h, scen } = lastHydrograph;
-      let csv = 'time_h,inflow_mm_h,outflow_mm_h\n';
+      const scen = currentHydroScenario;
+      const t = scen.t_hours_24 || scen.t_hours || null;
+      const Qin = scen.Qin_mmph || scen.Qin_mm_per_h || null;
+      const Qout = scen.Qout_mmph || scen.Qout_mm_per_h || null;
 
-      for (let i = 0; i < tHours.length; i++) {
-        csv += `${tHours[i].toFixed(4)},${qIn_mm_h[i].toFixed(6)},${qOut_mm_h[i].toFixed(6)}\n`;
+      if (!t || !Qin || !Qout || t.length === 0) {
+        alert('No hydrograph data stored for this scenario.');
+        return;
+      }
+
+      let csv = 'time_h,Qin_mm_per_h,Qout_mm_per_h\n';
+      for (let i = 0; i < t.length; i++) {
+        csv += `${t[i]},${Qin[i]},${Qout[i]}\n`;
       }
 
       const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
-
-      const soilSafe = (scen.soilName || 'soil').replace(/[^a-z0-9]+/gi, '_');
-      const fname = `hydrograph_${soilSafe}_Peff${scen.Peff_catch_mm.toFixed(1)}mm_ratio${(scen.area_ratio*100).toFixed(1)}.csv`;
-
       a.href = url;
-      a.download = fname;
+      a.download = 'drain_lid_hydrograph.csv';
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
     }
 
-    // === DATA LOADING ========================================================
+    document.getElementById('export-csv')
+      .addEventListener('click', exportCurrentHydrographCSV);
+
+    // ========================================================================
+    // MAIN UPDATE
+    // ========================================================================
+
+    function updatePlots() {
+      if (!dbMetrics || dbMetrics.length === 0) {
+        setStatus('No data loaded.', true);
+        return;
+      }
+
+      const soilSel = document.getElementById('soil-select');
+      const peffSel = document.getElementById('peff-select');
+
+      const soil = soilSel.value;
+      const peff = parseFloat(peffSel.value);
+
+      updateSoilHeader(soil);
+
+      // Subset for soil + Peff
+      currentSubset = dbMetrics.filter(m =>
+        m.soilName === soil && m.Peff_catch_mm === peff
+      );
+
+      // Add hour-based metrics for plotting colors
+      currentSubset.forEach(m => {
+        m.DetTime_h = (m.DetTime_min != null && !isNaN(m.DetTime_min))
+          ? m.DetTime_min / 60.0
+          : null;
+        m.Delta_tp_h = (m.Delta_tp_min != null && !isNaN(m.Delta_tp_min))
+          ? m.Delta_tp_min / 60.0
+          : null;
+      });
+
+      if (currentSubset.length === 0) {
+        setStatus('No scenarios found for this combination.', true);
+        clearHydrograph();
+        ['plot-eta', 'plot-det', 'plot-dtp'].forEach(id => {
+          Plotly.react(id, [], {});
+        });
+        return;
+      }
+
+      // Build the three 3D plots
+      buildMetricPlot('plot-eta', currentSubset, 'eta_p_pct',
+                      METRIC_CONFIG.eta_p_pct, soil, peff);
+      buildMetricPlot('plot-det', currentSubset, 'DetTime_h',
+                      METRIC_CONFIG.DetTime_h, soil, peff);
+      buildMetricPlot('plot-dtp', currentSubset, 'Delta_tp_h',
+                      METRIC_CONFIG.Delta_tp_h, soil, peff);
+
+      // Default hydrograph: first scenario in subset with hydro data, or first
+      let defaultScenario = null;
+      for (let i = 0; i < currentSubset.length; i++) {
+        const s = currentSubset[i];
+        const t = s.t_hours_24 || s.t_hours || null;
+        const Qin = s.Qin_mmph || s.Qin_mm_per_h || null;
+        const Qout = s.Qout_mmph || s.Qout_mm_per_h || null;
+        if (t && Qin && Qout && t.length > 0) {
+          defaultScenario = { scen: s, idx: i };
+          break;
+        }
+      }
+      if (!defaultScenario) {
+        defaultScenario = { scen: currentSubset[0], idx: 0 };
+      }
+
+      currentHydroScenario = defaultScenario.scen;
+      currentHydroIndex = defaultScenario.idx;
+      plotHydrograph(defaultScenario.scen, defaultScenario.idx);
+
+      const peffLabel = formatPeffLabel(peff);
+      setStatus(`Soil: ${soil} | P_eff: ${peffLabel} | Scenarios: ${currentSubset.length}`);
+    }
+
+    // ========================================================================
+    // DATA LOADING
+    // ========================================================================
 
     async function loadData() {
       try {
         setStatus('Loading data…');
 
-        const resp = await fetch(DATA_URL, {cache: 'no-cache'});
+        const resp = await fetch(DATA_URL, { cache: 'no-cache' });
         if (!resp.ok) {
           throw new Error(`HTTP ${resp.status} while fetching ${DATA_URL}`);
         }
         const raw = await resp.json();
 
-        dbMetrics  = raw.metrics || raw.Metrics || [];
-        QinMatrix  = raw.Qin_all || [];
-        QoutMatrix = raw.Qout_all || [];
-        tMinutes   = raw.t_minutes || raw.tMinutes || [];
+        dbMetrics = Array.isArray(raw)
+          ? raw
+          : (raw.metrics || raw.Metrics || []);
 
         if (!Array.isArray(dbMetrics) || dbMetrics.length === 0) {
-          throw new Error('No "metrics" array found in JSON or it is empty.');
+          throw new Error('No "metrics" array found in JSON.');
         }
 
-        setStatus('Data loaded. Use the controls above to explore the design space and click points for hydrographs.');
+        setStatus('Data loaded. Use the controls to explore the design space.');
         initUI();
       } catch (err) {
         console.error(err);
         setStatus(`Error loading data: ${err.message}`, true);
-        alert('Could not load drain_lid_database.json. Check the console for more details.');
+        alert('Could not load drain_lid_database.json. Check the console for details.');
       }
     }
 
-    // Kick things off
     loadData();
   </script>
 </body>

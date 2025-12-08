@@ -188,6 +188,32 @@
       cursor: not-allowed;
       opacity: 0.5;
     }
+    input[type="number"] {
+      padding: 0.35rem 0.5rem;
+      border-radius: 0.5rem;
+      border: 1px solid var(--border);
+      font-size: 0.9rem;
+      width: 100%;
+    }
+
+    input[type="number"]:disabled {
+      background: #f0f0f0;
+      cursor: not-allowed;
+      color: #aaaaaa;
+    }
+
+    .cost-panel {
+      margin-top: 0.75rem;
+      border-radius: 0.75rem;
+      border: 1px solid var(--border);
+      padding: 0.5rem 0.75rem 0.75rem 0.75rem;
+      background: #ffffff;
+    }
+
+    #cost-plot {
+      width: 100%;
+      height: 260px;
+    }
   </style>
 </head>
 <body>
@@ -221,6 +247,51 @@
     </div>
   </div>
 
+    <div class="control-group">
+      <label for="min-eta-input">Min peak flow reduction [%]</label>
+      <input type="number" id="min-eta-input" value="60" step="5" />
+    </div>
+
+    <div class="control-group">
+      <label for="min-det-h-input">Min detention time [h]</label>
+      <input type="number" id="min-det-h-input" value="4" step="0.5" />
+    </div>
+
+    <div class="control-group">
+      <label for="min-delay-h-input">Min time-to-peak delay [h]</label>
+      <input type="number" id="min-delay-h-input" value="0" step="0.25" />
+    </div>
+
+    <div class="control-group">
+      <label for="max-pond-m-input">Max ponding depth [m]</label>
+      <input type="number" id="max-pond-m-input" value="0.30" step="0.05" />
+    </div>
+
+    <div class="control-group">
+      <label for="c-vol-input">c<sub>vol</sub> — excavation + media [\$/m³]</label>
+      <input type="number" id="c-vol-input" value="210" step="10" />
+    </div>
+
+    <div class="control-group">
+      <label for="c-surf-input">c<sub>surf</sub> — surface works [\$/m²]</label>
+      <input type="number" id="c-surf-input" value="55" step="5" />
+    </div>
+
+    <div class="control-group">
+      <label for="c-om-input">c<sub>O&amp;M</sub> — annual O&amp;M [\$/m²/yr]</label>
+      <input type="number" id="c-om-input" value="6" step="1" />
+    </div>
+
+    <div class="control-group">
+      <label for="design-life-input">Design life T [years]</label>
+      <input type="number" id="design-life-input" value="30" step="1" />
+    </div>
+
+    <div class="control-group">
+      <label for="discount-rate-input">Discount rate i [-]</label>
+      <input type="number" id="discount-rate-input" value="0.03" step="0.005" />
+    </div>
+
   <div class="plots-row">
     <div class="plot-panel">
       <div id="plot-eta" class="plot-div"></div>
@@ -249,6 +320,16 @@
       normalized flux units (mm/h) over the LID surface. Due to size
       limitations, only solutions with peak flow reductions of 20–50% are
       stored for the first 24&nbsp;h, although the model is run for 48&nbsp;h.
+    </div>
+  </div>
+
+  <div class="cost-panel">
+    <div class="hydro-header">
+      <div id="cost-title">Lifecycle cost — no feasible set yet</div>
+    </div>
+    <div id="cost-plot"></div>
+    <div id="cost-status" class="status">
+      Set hydrologic filters and select a soil and P<sub>ef</sub> to see cost–performance results.
     </div>
   </div>
 
@@ -306,6 +387,45 @@
         colorscale: TURBO_SCALE,
         toColorValue: v => v
       },
+
+    const COST_DEFAULTS = {
+      cVol: 210,        // [$/m3]
+      cSurf: 55,        // [$/m2]
+      cOM: 6,           // [$/m2/yr]
+      lifeYears: 30,    // [yr]
+      discountRate: 0.03
+    };
+
+    function getHydroFilters() {
+      const minEta = parseFloat(document.getElementById('min-eta-input')?.value);
+      const minDetH = parseFloat(document.getElementById('min-det-h-input')?.value);
+      const minDelayH = parseFloat(document.getElementById('min-delay-h-input')?.value);
+      const maxPondM = parseFloat(document.getElementById('max-pond-m-input')?.value);
+
+      return {
+        minEta: isNaN(minEta) ? 0 : minEta,
+        minDetH: isNaN(minDetH) ? 0 : minDetH,
+        minDelayH: isNaN(minDelayH) ? 0 : minDelayH,
+        maxPondM: isNaN(maxPondM) ? Infinity : maxPondM
+      };
+    }
+
+    function getCostSettings() {
+      const cVol = parseFloat(document.getElementById('c-vol-input')?.value);
+      const cSurf = parseFloat(document.getElementById('c-surf-input')?.value);
+      const cOM = parseFloat(document.getElementById('c-om-input')?.value);
+      const lifeYears = parseFloat(document.getElementById('design-life-input')?.value);
+      const discountRate = parseFloat(document.getElementById('discount-rate-input')?.value);
+
+      return {
+        cVol: isNaN(cVol) ? COST_DEFAULTS.cVol : cVol,
+        cSurf: isNaN(cSurf) ? COST_DEFAULTS.cSurf : cSurf,
+        cOM: isNaN(cOM) ? COST_DEFAULTS.cOM : cOM,
+        lifeYears: isNaN(lifeYears) ? COST_DEFAULTS.lifeYears : lifeYears,
+        discountRate: isNaN(discountRate) ? COST_DEFAULTS.discountRate : discountRate
+      };
+    }
+
       DetTime_min: {
         label: 'Detention time [h]',
         shortTitle: 'Detention time',
@@ -337,6 +457,8 @@
     let currentPeff = null;
     let currentHydroScenario = null;
     let currentHydroData = null;
+    let currentFeasibleSubset = [];
+
 
     // ========= HELPERS ======================================================
 
@@ -628,6 +750,216 @@
         }
       });
 
+    function updateCostPlot() {
+      const div = document.getElementById('cost-plot');
+      const statusDiv = document.getElementById('cost-status');
+      const titleDiv = document.getElementById('cost-title');
+
+      if (!div || !statusDiv || !titleDiv) return;
+
+      if (!dbMetrics.length || currentSoil === null || currentPeff === null) {
+        Plotly.react(div, [], {title: ''}, {responsive: true});
+        statusDiv.textContent = 'Select a soil and Pef to view cost–performance results.';
+        titleDiv.textContent = 'Lifecycle cost — no feasible set yet';
+        return;
+      }
+
+      const filters = getHydroFilters();
+      const costSettings = getCostSettings();
+
+      // Present-value factor F(i,T)
+      const i = costSettings.discountRate;
+      const T = costSettings.lifeYears;
+      const F = i > 0 ? (1 - Math.pow(1 + i, -T)) / i : T;
+
+      // Filter currentSubset by hydrologic criteria
+      currentFeasibleSubset = currentSubset.filter(m => {
+        if (!m) return false;
+
+        const eta = m.eta_p_pct;
+        const detH = m.DetTime_min != null ? m.DetTime_min / 60.0 : NaN;
+        const delayH = m.Delta_tp_min != null ? m.Delta_tp_min / 60.0 : NaN;
+        const pond = m.max_ponding;
+
+        if (eta == null || isNaN(eta)) return false;
+        if (detH == null || isNaN(detH)) return false;
+        if (delayH == null || isNaN(delayH)) return false;
+        if (pond == null || isNaN(pond)) return false;
+
+        if (eta < filters.minEta) return false;
+        if (detH < filters.minDetH) return false;
+        if (delayH < filters.minDelayH) return false;
+        if (pond > filters.maxPondM) return false;
+
+        // Need geometry to compute cost
+        if (m.ATC_m2 == null || isNaN(m.ATC_m2) || m.ATC_m2 <= 0) return false;
+        if (m.Ld_m == null || isNaN(m.Ld_m) || m.Ld_m <= 0) return false;
+
+        return true;
+      });
+
+      if (!currentFeasibleSubset.length) {
+        Plotly.react(div, [], {
+          title: `Lifecycle cost — no design meets current filters`,
+          margin: {l: 60, r: 10, t: 50, b: 45}
+        }, {responsive: true});
+        statusDiv.textContent =
+          'No feasible design for this soil and Pef with the chosen hydrologic filters.';
+        titleDiv.textContent = 'Lifecycle cost — no feasible set';
+        return;
+      }
+
+      // Compute cost for each feasible design
+      const x = [];   // area ratio [%]
+      const y = [];   // LID depth [m]
+      const z = [];   // NPV cost [$]
+      const custom = [];
+
+      let minCost = Infinity;
+      let minIdx = -1;
+
+      currentFeasibleSubset.forEach((m, k) => {
+        const A = m.ATC_m2;      // [m2]
+        const Ld = m.Ld_m;       // [m]
+        const capex = costSettings.cVol * A * Ld + costSettings.cSurf * A;
+        const npv = capex + F * costSettings.cOM * A;
+
+        x.push(m.area_ratio * 100.0);
+        y.push(Ld);
+        z.push(npv);
+        custom.push(m.idx);
+
+        if (npv < minCost) {
+          minCost = npv;
+          minIdx = k;
+        }
+      });
+
+      // Trace for all feasible designs
+      const traceAll = {
+        x, y, z,
+        mode: 'markers',
+        type: 'scatter3d',
+        name: 'Feasible designs',
+        customdata: custom,
+        marker: {
+          size: 5,
+          color: z,
+          colorscale: 'Viridis',
+          showscale: true,
+          colorbar: {
+            title: { text: 'NPV cost [\$]', side: 'right' },
+            thickness: 12,
+            len: 0.9,
+            outlinewidth: 2,
+            ticks: 'inside'
+          },
+          line: {
+            width: 1.2,
+            color: 'rgba(0,0,0,0.6)'
+          }
+        },
+        hovertemplate:
+          'Area-ratio: %{x:.1f}%<br>' +
+          'LID depth: %{y:.2f} m<br>' +
+          'NPV cost: \$%{z:.0f}<extra></extra>'
+      };
+
+      // Highlight the minimum-cost design
+      let traceMin = null;
+      if (minIdx >= 0) {
+        traceMin = {
+          x: [x[minIdx]],
+          y: [y[minIdx]],
+          z: [z[minIdx]],
+          mode: 'markers',
+          type: 'scatter3d',
+          name: 'Min cost',
+          customdata: [custom[minIdx]],
+          marker: {
+            size: 7,
+            symbol: 'diamond',
+            color: 'red',
+            line: {width: 2, color: 'black'}
+          },
+          hovertemplate:
+            '<b>Minimum-cost design</b><br>' +
+            'Area-ratio: %{x:.1f}%<br>' +
+            'LID depth: %{y:.2f} m<br>' +
+            'NPV cost: \$%{z:.0f}<extra></extra>'
+        };
+      }
+
+      const peffLabel = formatPeffLabel(currentPeff);
+      const layout = {
+        title: `Lifecycle cost — ${currentSoil}, Pef = ${peffLabel}`,
+        margin: {l: 0, r: 0, t: 40, b: 0},
+        scene: {
+          xaxis: {
+            title: 'Area-ratio [%]',
+            zeroline: false,
+            showgrid: true,
+            gridcolor: '#e0e0e0',
+            ticks: 'outside',
+            ticklen: 4
+          },
+          yaxis: {
+            title: 'LID depth [m]',
+            zeroline: false,
+            showgrid: true,
+            gridcolor: '#e0e0e0',
+            ticks: 'outside',
+            ticklen: 4
+          },
+          zaxis: {
+            title: 'NPV cost [\$]',
+            zeroline: false,
+            showgrid: true,
+            gridcolor: '#e0e0e0',
+            ticks: 'outside',
+            ticklen: 4
+          },
+          aspectmode: 'cube',
+          camera: {
+            eye: {x: 1.7, y: 1.7, z: 1.5}
+          }
+        },
+        showlegend: true
+      };
+
+      const data = traceMin ? [traceAll, traceMin] : [traceAll];
+
+      Plotly.react(div, data, layout, {responsive: true});
+
+      // Clicking a cost point should also update the hydrograph
+      if (div && typeof div.on === 'function') {
+        div.on('plotly_click', ev => {
+          if (!ev.points || !ev.points.length) return;
+          const idx = ev.points[0].customdata;
+          if (idx === undefined || idx === null) return;
+          const scenario = metricsByIdx.get(idx);
+          if (!scenario) return;
+          renderHydrographForScenario(scenario);
+        });
+      }
+
+      // Update status text
+      const best = currentFeasibleSubset[minIdx];
+      if (best) {
+        statusDiv.textContent =
+          `Feasible designs: ${currentFeasibleSubset.length}. ` +
+          `Minimum NPV ≈ \$${minCost.toFixed(0)} at area-ratio ${(best.area_ratio * 100).toFixed(1)}%` +
+          ` and LID depth ${best.Ld_m.toFixed(2)} m.`;
+      } else {
+        statusDiv.textContent =
+          `Feasible designs: ${currentFeasibleSubset.length}.`;
+      }
+
+      titleDiv.textContent =
+        `Lifecycle cost — ${currentSoil}, Pef = ${peffLabel}`;
+    }
+
+
       const cmin = c.length ? Math.min(...c) : 0;
       const cmax = c.length ? Math.max(...c) : 1;
       const peffLabel = formatPeffLabel(peffVal);
@@ -801,6 +1133,8 @@
         ) || null;
       }
       renderHydrographForScenario(candidate);
+      renderHydrographForScenario(candidate);
+      updateCostPlot();
     }
 
     // ========= UI INIT ======================================================
@@ -809,6 +1143,16 @@
       const soilSel = document.getElementById('soil-select');
       const peffSel = document.getElementById('peff-select');
       const btnDownload = document.getElementById('btn-download');
+      const minEtaInput     = document.getElementById('min-eta-input');
+      const minDetHInput    = document.getElementById('min-det-h-input');
+      const minDelayHInput  = document.getElementById('min-delay-h-input');
+      const maxPondMInput   = document.getElementById('max-pond-m-input');
+      const cVolInput       = document.getElementById('c-vol-input');
+      const cSurfInput      = document.getElementById('c-surf-input');
+      const cOMInput        = document.getElementById('c-om-input');
+      const lifeInput       = document.getElementById('design-life-input');
+      const discRateInput   = document.getElementById('discount-rate-input');
+
 
       // Soils: start with sandy → clayey ordering
       const soilNames = Array.from(new Set(dbMetrics.map(m => m.soilName)));
@@ -828,6 +1172,25 @@
         opt.textContent = name;
         soilSel.appendChild(opt);
       });
+
+      btnDownload.addEventListener('click', downloadCurrentHydroCSV);
+
+      const replotCost = () => updateCostPlot();
+
+      minEtaInput?.addEventListener('change', replotCost);
+      minDetHInput?.addEventListener('change', replotCost);
+      minDelayHInput?.addEventListener('change', replotCost);
+      maxPondMInput?.addEventListener('change', replotCost);
+
+      cVolInput?.addEventListener('change', replotCost);
+      cSurfInput?.addEventListener('change', replotCost);
+      cOMInput?.addEventListener('change', replotCost);
+      lifeInput?.addEventListener('change', replotCost);
+      discRateInput?.addEventListener('change', replotCost);
+
+      // Initial cost plot
+      updateCostPlot();
+
 
       currentSoil = sandyFirst[0] || null;
       soilSel.value = currentSoil;

@@ -218,7 +218,7 @@
     </div>
 
     <div class="control-group">
-      <label for="peff-select">Effective precipitation, P_eff</label>
+      <label for="peff-select">Effective precipitation, P<sub>eff</sub></label>
       <select id="peff-select" disabled></select>
     </div>
   </div>
@@ -267,6 +267,23 @@
     const DATA_URL = 'drain_lid_database.json';
     const LOGO_URL = ''; // e.g. 'DRAIN_LID_logo.png' (leave '' if none)
 
+    // Hard-coded van Genuchten–Mualem parameters (Carsel & Parrish, 1988)
+    // alpha [1/m], Ks_mm_per_h [mm/h], theta_r, theta_s [-]
+    const SOIL_PROPS = {
+      "Sand":          { theta_r: 0.045, theta_s: 0.43, alpha: 14.5, n: 2.68, Ks_mm_per_h: 297.0 },
+      "Loamy Sand":    { theta_r: 0.057, theta_s: 0.41, alpha: 12.4, n: 2.28, Ks_mm_per_h: 145.8 },
+      "Sandy Loam":    { theta_r: 0.065, theta_s: 0.41, alpha: 7.5,  n: 1.89, Ks_mm_per_h: 44.3  },
+      "Loam":          { theta_r: 0.078, theta_s: 0.43, alpha: 3.6,  n: 1.56, Ks_mm_per_h: 10.4  },
+      "Silt":          { theta_r: 0.034, theta_s: 0.46, alpha: 1.6,  n: 1.37, Ks_mm_per_h: 2.5   },
+      "Silty Loam":    { theta_r: 0.067, theta_s: 0.45, alpha: 2.0,  n: 1.41, Ks_mm_per_h: 4.5   },
+      "Sandy Clay Loam": { theta_r: 0.100, theta_s: 0.39, alpha: 5.9, n: 1.48, Ks_mm_per_h: 13.1 },
+      "Clay Loam":     { theta_r: 0.095, theta_s: 0.41, alpha: 1.9,  n: 1.31, Ks_mm_per_h: 2.6   },
+      "Silty Clay Loam":{ theta_r: 0.089, theta_s: 0.43, alpha: 1.0, n: 1.23, Ks_mm_per_h: 0.7   },
+      "Sandy Clay":    { theta_r: 0.100, theta_s: 0.38, alpha: 2.7,  n: 1.23, Ks_mm_per_h: 1.2   },
+      "Silty Clay":    { theta_r: 0.070, theta_s: 0.36, alpha: 0.5,  n: 1.09, Ks_mm_per_h: 0.2   },
+      "Clay":          { theta_r: 0.068, theta_s: 0.38, alpha: 0.8,  n: 1.09, Ks_mm_per_h: 0.6   }
+    };
+
     // Custom Turbo-like colorscale for peak-flow reduction
     const TURBO_SCALE = [
       [0.00, '#30123b'],
@@ -306,7 +323,6 @@
     let QoutHydro = null;  // [nSteps][nKeep]
     let tMinutesHydro = null;
     let metricsByIdx = new Map();
-    let soilParamsTable = {}; // soilName -> {alpha,n,dtheta,Ks}
     let currentSubset = [];
     let currentSoil = null;
     let currentPeff = null;
@@ -330,33 +346,23 @@
       el.className = 'status' + (isError ? ' error' : '');
     }
 
-    function buildSoilParamsTable() {
-      // We assume allMetrics contains representative values for each soil
-      soilParamsTable = {};
-      dbMetrics.forEach(m => {
-        if (!soilParamsTable[m.soilName]) {
-          soilParamsTable[m.soilName] = {
-            alpha: m.alpha_1perm !== undefined ? m.alpha_1perm : null,
-            n: m.n !== undefined ? m.n : null,
-            dtheta: (m.theta_s !== undefined && m.theta_r !== undefined)
-              ? (m.theta_s - m.theta_r)
-              : null,
-            Ks: m.Ks_m_per_s !== undefined ? m.Ks_m_per_s : null
-          };
-        }
-      });
-    }
-
     function updateSoilParamsLine(soilName) {
       const el = document.getElementById('soil-params');
-      const p = soilParamsTable[soilName] || {};
+      const p = SOIL_PROPS[soilName];
 
-      const alpha = p.alpha !== null && p.alpha !== undefined ? p.alpha.toFixed(2) : '?';
-      const nVal  = p.n !== null && p.n !== undefined ? p.n.toFixed(2) : '?';
-      const dth   = p.dtheta !== null && p.dtheta !== undefined ? p.dtheta.toFixed(3) : '?';
-      const KsVal = p.Ks !== null && p.Ks !== undefined ? p.Ks.toExponential(2) : '?';
+      if (!p) {
+        el.textContent = soilName;
+        return;
+      }
 
-      const tex = `${soilName} \\(\\; -\\; \\alpha = ${alpha}\\,\\mathrm{m}^{-1},\\; n = ${nVal},\\; \\Delta\\theta = ${dth},\\; K_s = ${KsVal}\\,\\mathrm{m}\\,\\mathrm{s}^{-1}\\)`;
+      const dtheta = p.theta_s - p.theta_r;
+      const Ks_mps = p.Ks_mm_per_h / 1000 / 3600; // mm/h -> m/s
+
+      const tex =
+        `${soilName} \\(\\; -\\; \\alpha = ${p.alpha.toFixed(2)}\\,\\mathrm{m}^{-1},` +
+        `\\; n = ${p.n.toFixed(2)},` +
+        `\\; \\Delta\\theta = ${dtheta.toFixed(3)},` +
+        `\\; K_s = ${Ks_mps.toExponential(2)}\\,\\mathrm{m}\\,\\mathrm{s}^{-1}\\)`;
 
       el.innerHTML = tex;
       if (window.MathJax && window.MathJax.typesetPromise) {
@@ -552,8 +558,8 @@
       const blob = new Blob([csv], {type: 'text/csv'});
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
-      a.href = url;
       const soilSlug = m.soilName.replace(/\s+/g, '_');
+      a.href = url;
       a.download = `hydrograph_${soilSlug}_AR${(m.area_ratio*100).toFixed(1)}_Ld${m.Ld_m.toFixed(2)}.csv`;
       document.body.appendChild(a);
       a.click();
@@ -616,8 +622,11 @@
           cmax,
           showscale: true,
           colorbar: {
-            title: info.label,
-            thickness: 10,
+            title: {
+              text: info.label,
+              side: 'right'
+            },
+            thickness: 12,
             len: 0.9,
             outlinewidth: 2,
             ticks: 'inside'
@@ -701,9 +710,10 @@
     function attachClickHandlers() {
       ['plot-eta', 'plot-det', 'plot-dtp'].forEach(id => {
         const div = document.getElementById(id);
-        div.on('plotly_click', ev => {
-          if (!ev.points || !ev.points.length) return;
-          const idx = ev.points[0].customdata;
+        // Use DOM event listener for Plotly events
+        div.addEventListener('plotly_click', ev => {
+          if (!ev.detail || !ev.detail.points || !ev.detail.points.length) return;
+          const idx = ev.detail.points[0].customdata;
           if (idx === undefined || idx === null) return;
           const scenario = metricsByIdx.get(idx);
           if (!scenario) return;
@@ -733,7 +743,9 @@
           currentHydroScenario.hydroIndex >= 0) {
         candidate = currentHydroScenario;
       } else {
-        candidate = currentSubset.find(m => m.hydroIndex !== undefined && m.hydroIndex >= 0) || null;
+        candidate = currentSubset.find(
+          m => m.hydroIndex !== undefined && m.hydroIndex >= 0
+        ) || null;
       }
       renderHydrographForScenario(candidate);
     }
@@ -843,8 +855,6 @@
           metricsByIdx.set(m.idx, m);
         });
 
-        buildSoilParamsTable();
-
         setStatus('Data loaded. Use the controls to explore the design space.');
         initUI();
       } catch (err) {
@@ -870,3 +880,5 @@
   </script>
 </body>
 </html>
+
+    

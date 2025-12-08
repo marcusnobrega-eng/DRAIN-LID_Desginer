@@ -25,10 +25,8 @@
       --muted: #777777;
       --border: #dddddd;
       --panel-bg: #f8f8f8;
-      --font-main: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
-                   Roboto, Helvetica, Arial, sans-serif;
+      --font-main: "Palatino Linotype", "Book Antiqua", Palatino, "Times New Roman", serif;
     }
-
     * { box-sizing: border-box; }
 
     body {
@@ -511,7 +509,7 @@
       };
 
       const layout = {
-        title: `Hydrographs — ${m.soilName}, area-ratio = ${(m.area_ratio * 100).toFixed(1)}%, LID depth = ${m.Ld_m.toFixed(2)} m, t_p = ${m.tp_min.toFixed(1)} min`,
+        title: `Hydrographs — ${m.soilName}, area-ratio = ${(m.area_ratio * 100).toFixed(1)}%, LID depth = ${m.Ld_m.toFixed(2)} m, tp = ${m.tp_min.toFixed(1)} min`,
         margin: {l: 60, r: 10, t: 50, b: 45},
         xaxis: {
           title: 'Time [h]',

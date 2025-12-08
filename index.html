@@ -259,7 +259,7 @@
     <div>
       <h1>DRAIN-LID Design Performance Explorer</h1>
       <p class="subtitle">
-        Interactive design-space visualization from the DRAIN-LID database
+        Interactive design-space visualization from the DRAIN-LID database. If you are using a mobile phone, use it horizontally. 
       </p>
     </div>
     <div class="logo-box" id="logo-box">
@@ -623,7 +623,7 @@
   <div class="about-box">
     <p>
       <strong>About this explorer.</strong>
-      This interactive tool was developed by Marcus N. Gomes Jr., PhD, to
+      This interactive tool was developed by Marcus N. Gomes Jr., PhD. To
       visualize the design space of infiltration-based Low Impact Development
       systems simulated with the DRAIN-LID model. Each point represents a
       numerical solution of a mixed-form Richards equation coupled to a
@@ -972,7 +972,7 @@
           `Hydrographs — ${m.soilName}, ` +
           `area-ratio = ${(m.area_ratio * 100).toFixed(1)}%, ` +
           `LID depth = ${m.Ld_m.toFixed(2)} m, ` +
-          `t_p = ${m.tp_min.toFixed(1)} min, ` +
+          `tp = ${m.tp_min.toFixed(1)} min, ` +
           `max ponding = ${pond} m`,
         margin: { l: 60, r: 10, t: 50, b: 45 },
         xaxis: {
@@ -1280,7 +1280,20 @@
         return;
       }
 
-      // Compute cost PER UNIT CATCHMENT AREA for each feasible design
+      // ---- NEW: collapse feasible simulations to unique geometries ----
+      // A geometry is defined by (area_ratio, Ld_m) for the chosen soil + Pef.
+      const geometryMap = new Map();
+      currentFeasibleSubset.forEach(m => {
+        const key = `${m.area_ratio}-${m.Ld_m}`;
+        if (!geometryMap.has(key)) {
+          // keep the first simulation we see for this geometry
+          geometryMap.set(key, m);
+        }
+      });
+      const uniqueFeasible = Array.from(geometryMap.values());
+      const uniqueCount = uniqueFeasible.length;
+
+      // Compute cost PER UNIT CATCHMENT AREA for each unique feasible geometry
       const x = [];   // area ratio [%]
       const y = [];   // LID depth [m]
       const z = [];   // NPV cost [$ per m² catchment]
@@ -1289,7 +1302,7 @@
       let minCost = Infinity;
       let minIdx = -1;
 
-      currentFeasibleSubset.forEach((m, k) => {
+      uniqueFeasible.forEach((m, k) => {
         const ar = m.area_ratio; // [-]
         const Ld = m.Ld_m;       // [m]
 
@@ -1430,16 +1443,18 @@
       }
 
       // Update status text
-      const best = currentFeasibleSubset[minIdx];
+      const best = uniqueFeasible[minIdx];
       if (best) {
         statusDiv.textContent =
-          `Feasible designs: ${currentFeasibleSubset.length}. ` +
+          `Feasible designs (unique geometries): ${uniqueCount}. ` +
+          `Underlying feasible simulations: ${currentFeasibleSubset.length}. ` +
           `Minimum NPV ≈ $${minCost.toFixed(1)} per m² of catchment at ` +
           `area-ratio ${(best.area_ratio * 100).toFixed(1)}% and ` +
           `LID depth ${best.Ld_m.toFixed(2)} m.`;
       } else {
         statusDiv.textContent =
-          `Feasible designs: ${currentFeasibleSubset.length}.`;
+          `Feasible designs (unique geometries): ${uniqueCount}. ` +
+          `Underlying feasible simulations: ${currentFeasibleSubset.length}.`;
       }
 
       titleDiv.textContent =

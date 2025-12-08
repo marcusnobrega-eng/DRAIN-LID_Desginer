@@ -111,7 +111,7 @@
 
     .plots-row {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: repeat(4, 1fr);
       gap: 0.75rem;
       margin-bottom: 1rem;
     }
@@ -231,6 +231,9 @@
     <div class="plot-panel">
       <div id="plot-dtp" class="plot-div"></div>
     </div>
+    <div class="plot-panel">
+      <div id="plot-pond" class="plot-div"></div>
+    </div>
   </div>
 
   <div class="hydro-panel">
@@ -312,8 +315,15 @@
         shortTitle: 'Time-to-peak delay',
         colorscale: 'Cividis',
         toColorValue: v => v / 60.0 // min -> h
+      },
+      max_ponding: {
+        label: 'Maximum ponding depth [m]',
+        shortTitle: 'Maximum ponding depth',
+        colorscale: 'Magma',
+        toColorValue: v => v
       }
     };
+
 
     // ========= GLOBAL STATE =================================================
     let dbMetrics = [];
@@ -415,27 +425,38 @@
           showlegend: false
         }];
 
-        const layout = {
-          title: 'Hydrographs — no scenario selected',
-          margin: {l: 60, r: 10, t: 40, b: 45},
-          xaxis: {
-            title: 'Time [h]',
-            zeroline: false,
-            showgrid: false,
-            ticks: 'outside',
-            tickwidth: 2,
-            linewidth: 2,
-            linecolor: '#000000'
-          },
-          yaxis: {
-            title: 'Flux [mm/h]',
-            zeroline: false,
-            showgrid: false,
-            ticks: 'outside',
-            tickwidth: 2,
-            linewidth: 2,
-            linecolor: '#000000'
-          },
+          const pond =
+            (m.max_ponding !== undefined && m.max_ponding !== null)
+              ? m.max_ponding.toFixed(3)
+              : 'NA';
+          
+          const layout = {
+            title: `Hydrographs — ${m.soilName}, area-ratio = ${(m.area_ratio * 100).toFixed(1)}%, LID depth = ${m.Ld_m.toFixed(2)} m, t_p = ${m.tp_min.toFixed(1)} min, max ponding = ${pond} m`,
+            margin: {l: 60, r: 10, t: 50, b: 45},
+            xaxis: {
+              title: 'Time [h]',
+              zeroline: false,
+              showgrid: false,
+              ticks: 'outside',
+              tickwidth: 2,
+              linewidth: 2,
+              linecolor: '#000000'
+            },
+            yaxis: {
+              title: 'Flux [mm/h]',
+              zeroline: false,
+              showgrid: false,
+              ticks: 'outside',
+              tickwidth: 2,
+              linewidth: 2,
+              linecolor: '#000000'
+            },
+            legend: {
+              x: 0.02,
+              y: 0.98,
+              bgcolor: 'rgba(255,255,255,0.8)'
+            }
+          };
           showlegend: false
         };
         Plotly.react(div, emptyData, layout, {responsive: true});
@@ -750,17 +771,18 @@
     }
 
 
-    function updatePlotsAndHydro() {
-      if (!dbMetrics.length || currentSoil === null || currentPeff === null) return;
-
-      currentSubset = dbMetrics.filter(m =>
-        m.soilName === currentSoil &&
-        m.Peff_catch_mm === currentPeff
-      );
-
-      buildDesignPlot('eta_p_pct', 'plot-eta', currentSubset, currentPeff);
-      buildDesignPlot('DetTime_min', 'plot-det', currentSubset, currentPeff);
-      buildDesignPlot('Delta_tp_min', 'plot-dtp', currentSubset, currentPeff);
+  function updatePlotsAndHydro() {
+    if (!dbMetrics.length || currentSoil === null || currentPeff === null) return;
+  
+    currentSubset = dbMetrics.filter(m =>
+      m.soilName === currentSoil &&
+      m.Peff_catch_mm === currentPeff
+    );
+  
+    buildDesignPlot('eta_p_pct', 'plot-eta', currentSubset, currentPeff);
+    buildDesignPlot('DetTime_min', 'plot-det', currentSubset, currentPeff);
+    buildDesignPlot('Delta_tp_min', 'plot-dtp', currentSubset, currentPeff);
+    buildDesignPlot('max_ponding', 'plot-pond', currentSubset, currentPeff);
 
       // Pick default scenario with hydroIndex >= 0 for current view
       let candidate = null;

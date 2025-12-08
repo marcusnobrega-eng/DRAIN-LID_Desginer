@@ -524,6 +524,16 @@
     </div>
 
     <div class="control-group">
+      <label for="tp-min-input">Min inflow time to peak t<sub>p</sub> [min]</label>
+      <input type="number" id="tp-min-input" step="1" />
+    </div>
+
+    <div class="control-group">
+      <label for="tp-max-input">Max inflow time to peak t<sub>p</sub> [min]</label>
+      <input type="number" id="tp-max-input" step="1" />
+    </div>
+
+    <div class="control-group">
       <label for="min-eta-input">Min peak flow reduction [%]</label>
       <input type="number" id="min-eta-input" value="60" step="5" />
     </div>
@@ -724,6 +734,33 @@
       };
     }
 
+    function getTpRange() {
+      const tpMinEl = document.getElementById('tp-min-input');
+      const tpMaxEl = document.getElementById('tp-max-input');
+
+      let tpMin = parseFloat(tpMinEl?.value);
+      let tpMax = parseFloat(tpMaxEl?.value);
+
+      // Fallback to global range if inputs are empty/NaN
+      if (isNaN(tpMin)) tpMin = globalTpMin;
+      if (isNaN(tpMax)) tpMax = globalTpMax;
+
+      // If still null (e.g. no data), just return as-is
+      if (tpMin == null || tpMax == null) {
+        return { tpMin, tpMax };
+      }
+
+      // Ensure tpMin <= tpMax
+      if (tpMin > tpMax) {
+        const tmp = tpMin;
+        tpMin = tpMax;
+        tpMax = tmp;
+      }
+
+      return { tpMin, tpMax };
+    }
+
+
     // ========= GLOBAL STATE =================================================
     let dbMetrics = [];
     let QinHydro = null;   // [nSteps][nKeep]
@@ -736,6 +773,8 @@
     let currentHydroScenario = null;
     let currentHydroData = null;
     let currentFeasibleSubset = [];
+    let globalTpMin = null;
+    let globalTpMax = null;
 
     // ========= HELPERS ======================================================
 
@@ -1191,6 +1230,7 @@
 
       const filters = getHydroFilters();
       const costSettings = getCostSettings();
+      const { tpMin, tpMax } = getTpRange();
 
       // Present-value factor F(i,T)
       const i = costSettings.discountRate;
@@ -1206,7 +1246,8 @@
         const delayH = m.Delta_tp_min != null ? m.Delta_tp_min / 60.0 : NaN;
         const pond = m.max_ponding;
         const Ld   = m.Ld_m;
-        const ar   = m.area_ratio;  // dimensionless (0–1)
+        const ar   = m.area_ratio;   // dimensionless (0–1)
+        const tp   = m.tp_min;       // [min]
 
         if (eta == null || isNaN(eta)) return false;
         if (detH == null || isNaN(detH)) return false;
@@ -1214,11 +1255,16 @@
         if (pond == null || isNaN(pond)) return false;
         if (Ld == null || isNaN(Ld) || Ld <= 0) return false;
         if (ar == null || isNaN(ar) || ar <= 0) return false;
+        if (tp == null || isNaN(tp)) return false;
 
         if (eta < filters.minEta) return false;
         if (detH < filters.minDetH) return false;
         if (delayH < filters.minDelayH) return false;
         if (pond > filters.maxPondM) return false;
+
+        // NEW: enforce selected t_p range
+        if (tpMin != null && tp < tpMin) return false;
+        if (tpMax != null && tp > tpMax) return false;
 
         return true;
       });
@@ -1442,11 +1488,14 @@
       const minDetHInput    = document.getElementById('min-det-h-input');
       const minDelayHInput  = document.getElementById('min-delay-h-input');
       const maxPondMInput   = document.getElementById('max-pond-m-input');
+      const tpMinInput      = document.getElementById('tp-min-input');
+      const tpMaxInput      = document.getElementById('tp-max-input');
       const cVolInput       = document.getElementById('c-vol-input');
       const cSurfInput      = document.getElementById('c-surf-input');
       const cOMInput        = document.getElementById('c-om-input');
       const lifeInput       = document.getElementById('design-life-input');
       const discRateInput   = document.getElementById('discount-rate-input');
+
 
       if (!soilSel || !peffSel) return;
 
@@ -1477,6 +1526,16 @@
       minDetHInput?.addEventListener('change', replotCost);
       minDelayHInput?.addEventListener('change', replotCost);
       maxPondMInput?.addEventListener('change', replotCost);
+
+      // NEW: t_p range inputs
+      if (tpMinInput && tpMaxInput) {
+        if (globalTpMin != null && globalTpMax != null) {
+          tpMinInput.value = globalTpMin.toFixed(1);
+          tpMaxInput.value = globalTpMax.toFixed(1);
+        }
+        tpMinInput.addEventListener('change', replotCost);
+        tpMaxInput.addEventListener('change', replotCost);
+      }
 
       cVolInput?.addEventListener('change', replotCost);
       cSurfInput?.addEventListener('change', replotCost);
@@ -1568,9 +1627,19 @@
           throw new Error('No "metrics" array in JSON.');
         }
 
+        // Compute global tp_min range across all metrics
+        const tpVals = dbMetrics
+          .map(m => m.tp_min)
+          .filter(v => v !== null && v !== undefined && !isNaN(v));
+        if (tpVals.length) {
+          globalTpMin = Math.min(...tpVals);
+          globalTpMax = Math.max(...tpVals);
+        }
+
         QinHydro = raw.Qin_all || null;
         QoutHydro = raw.Qout_all || null;
         tMinutesHydro = raw.t_minutes || null;
+
 
         // Build idx map
         metricsByIdx.clear();

@@ -1005,11 +1005,14 @@
           colorscale: 'Viridis',
           showscale: true,
           colorbar: {
-            title: { text: 'NPV cost [$/m² catchment]', side: 'right' },
-            thickness: 12,
-            len: 0.9,
+            // shorter title → less clutter
+            title: { text: 'NPV [$/m²]', side: 'right' },
+            thickness: 14,
+            len: 0.8,
             outlinewidth: 2,
-            ticks: 'inside'
+            ticks: 'inside',
+            // nice round numbers on the bar
+            tickformat: '.0f'
           },
           line: {
             width: 1.2,
@@ -1082,6 +1085,12 @@
           }
         },
         showlegend: true
+        legend: {
+          x: 0.02,
+          y: 0.98,
+          bgcolor: 'rgba(255,255,255,0.8)',
+          borderwidth: 0
+        }
       };
 
       const data = traceMin ? [traceAll, traceMin] : [traceAll];

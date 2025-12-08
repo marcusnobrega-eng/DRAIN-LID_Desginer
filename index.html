@@ -27,7 +27,10 @@
       --panel-bg: #f8f8f8;
       --font-main: "Palatino Linotype", "Book Antiqua", Palatino, "Times New Roman", serif;
     }
-    * { box-sizing: border-box; }
+
+    * {
+      box-sizing: border-box;
+    }
 
     body {
       margin: 0;
@@ -223,32 +226,32 @@
       padding: 1.5rem 1.75rem;
       margin-bottom: 1.5rem;
     }
-    
+
     .method-panel h2 {
       margin-top: 0;
       margin-bottom: 0.75rem;
       font-size: 1.3rem;
     }
-    
+
     .method-panel h3 {
       margin-top: 1.1rem;
       margin-bottom: 0.35rem;
       font-size: 1.05rem;
     }
-    
+
     .method-panel p {
       margin: 0.3rem 0;
       line-height: 1.4;
     }
-    
+
     .method-panel ul {
       margin: 0.4rem 0 0.8rem 1.25rem;
       padding: 0;
     }
-    
+
     .method-panel .math {
       margin: 0.4rem 0 0.7rem;
-}
+    }
   </style>
 </head>
 <body>
@@ -280,7 +283,7 @@
       underlying equations and performance metrics so users can interpret the
       database and cost-performance plots.
     </p>
-  
+
     <h3>Richards-based Vertical Flow Model</h3>
     <p>
       Vertical flow through the engineered media is described by the
@@ -336,7 +339,7 @@
       each design configuration in the database corresponds to a full
       Richards-equation simulation.
     </p>
-  
+
     <h3>Design Hydrograph and Catchment Inputs</h3>
     <p>
       The inflow to the bioretention cell is represented by a synthetic
@@ -369,14 +372,14 @@
       media depth \(L_d\), and soil type, the model routes the design hydrograph
       through the bioretention profile.
     </p>
-  
+
     <h3>Hydrologic Performance Metrics</h3>
     <p>
       The database stores several hydrologic performance metrics for
       each realization, allowing users to screen designs without rerunning
       the numerical model. The main quantities used in the interface are:
     </p>
-  
+
     <h4>Peak Flow Reduction</h4>
     <p>
       Peak attenuation is defined as the percentage reduction in peak discharge
@@ -395,7 +398,7 @@
       and outflow peaks, respectively. Larger values of \(\eta_{\mathrm{p}}\)
       indicate stronger flood-peak mitigation.
     </p>
-  
+
     <h4>Time-to-Peak Delay</h4>
     <p>
       The shift in the hydrograph peak due to storage and infiltration is
@@ -412,7 +415,7 @@
       delayed outflow peak, which can help desynchronize flows in
       downstream networks.
     </p>
-  
+
     <h4>Detention Time</h4>
     <p>
       Detention time characterizes the drawdown period over which the
@@ -431,7 +434,7 @@
       \(\Delta t_{\mathrm{d}}\) represents the time needed for outflow
       to decay to nearly negligible levels.
     </p>
-  
+
     <h3>Lifecycle Cost Model</h3>
     <p>
       Example&nbsp;3 extends the hydrologic analysis by associating each
@@ -439,7 +442,7 @@
       The toolbox distinguishes between construction (capital expenditure)
       and recurring operation and maintenance (O&amp;M):
     </p>
-  
+
     <h4>Construction Cost (CapEx)</h4>
     <p>
       Construction cost is parameterized as a combination of
@@ -466,7 +469,7 @@
       toolbox, so they can be calibrated to local bid prices or cost
       worksheets.
     </p>
-  
+
     <h4>Operation and Maintenance (O&amp;M)</h4>
     <p>
       Annual O&amp;M costs are assumed proportional to the footprint area:
@@ -488,7 +491,7 @@
         \frac{1 - (1 + i)^{-T}}{i}.
       \]
     </div>
-  
+
     <h4>Net Present Value (NPV)</h4>
     <p>
       The total lifecycle cost for a design is then
@@ -508,7 +511,6 @@
       depths trade off between cost and hydrologic benefit.
     </p>
   </section>
-
 
   <div class="controls">
     <div class="control-group">
@@ -780,7 +782,7 @@
       return Array.from(new Set(arr)).sort((a, b) => a - b);
     }
 
-        // ========= HYDROGRAPH HANDLING =========================================
+    // ========= HYDROGRAPH HANDLING =========================================
 
     function getHydroDataFromScenario(m) {
       if (!m || m.hydroIndex === undefined || m.hydroIndex < 0) return null;
@@ -1279,13 +1281,11 @@
           colorscale: 'Viridis',
           showscale: true,
           colorbar: {
-            // shorter title → less clutter
             title: { text: 'NPV [$/m²]', side: 'right' },
             thickness: 14,
             len: 0.8,
             outlinewidth: 2,
             ticks: 'inside',
-            // nice round numbers on the bar
             tickformat: '.0f'
           },
           line: {
@@ -1448,6 +1448,8 @@
       const lifeInput       = document.getElementById('design-life-input');
       const discRateInput   = document.getElementById('discount-rate-input');
 
+      if (!soilSel || !peffSel) return;
+
       // Soils: start with sandy → clayey ordering
       const soilNames = Array.from(new Set(dbMetrics.map(m => m.soilName)));
       const sortedSoils = soilNames.slice().sort((a, b) => a.localeCompare(b));
@@ -1514,7 +1516,7 @@
             }
           }
           currentPeff = best;
-          peffSel.value = best;
+          peffSel.value = String(best);
         } else {
           currentPeff = null;
         }
@@ -1540,7 +1542,7 @@
           peffSel.appendChild(opt);
         });
         currentPeff = peffs[0] || null;
-        if (currentPeff !== null) peffSel.value = currentPeff;
+        if (currentPeff !== null) peffSel.value = String(currentPeff);
         updatePlotsAndHydro();
       });
 
@@ -1591,10 +1593,12 @@
       // Logo insertion
       if (LOGO_URL) {
         const box = document.getElementById('logo-box');
-        const img = document.createElement('img');
-        img.src = LOGO_URL;
-        img.alt = 'DRAIN-LID logo';
-        box.appendChild(img);
+        if (box) {
+          const img = document.createElement('img');
+          img.src = LOGO_URL;
+          img.alt = 'DRAIN-LID logo';
+          box.appendChild(img);
+        }
       }
 
       loadData();

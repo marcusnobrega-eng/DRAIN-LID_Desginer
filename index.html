@@ -510,84 +510,7 @@ criteria (e.g., a given peak reduction and detention time), enabling
 users to compare how different soil types, area ratios, and media
 depths trade off between cost and hydrologic benefit.
 </p>
-  <h3>Modeling Assumptions</h3>
-  <p>
-    The simulations underlying the DRAIN-LID design database rely on a set of 
-    simplifying but physically motivated assumptions intended to capture 
-    first-order hydrologic behavior while maintaining computational tractability 
-    for the full design space of soil types, rainfall inputs, and geometries. 
-    The principal assumptions are:
-  </p>
-  
-  <ul>
-    <li>
-      <strong>Initial soil conditions.</strong> 
-      All simulations begin from a hydrostatic pressure profile with the water 
-      table located well below the bioretention profile, producing an initially 
-      unsaturated soil column. No antecedent rainfall or pre-event surface water 
-      is imposed.
-    </li>
-  
-    <li>
-      <strong>Lined system.</strong> 
-      The bioretention cell is modeled as laterally lined, eliminating 
-      exfiltration to the native subgrade. All outflow occurs through the 
-      underdrain or surface overflow.
-    </li>
-  
-    <li>
-      <strong>Underdrain boundary condition.</strong>
-      The underdrain invert is treated as a free-drain (unit gradient) boundary,
-      justified because underdrain hydraulic capacity is assumed to far exceed 
-      the seepage-rate capacity of the media. As a result, the underdrain does 
-      not behave as a throttling control.
-    </li>
-  
-    <li>
-      <strong>Spatial discretization.</strong> 
-      The vertical soil column is discretized using ~20 finite-volume nodes, 
-      distributed non-uniformly with refinement near the soil surface and near 
-      the underdrain. The distribution follows the node-spacing strategy used in 
-      <em>Hydrus-1D</em> to improve stability during sharp wetting‐front movement.
-    </li>
-  
-    <li>
-      <strong>Homogeneous soil properties.</strong> 
-      Hydraulic parameters are spatially invariant; no layering or vertical 
-      heterogeneity is represented. Media are assumed to behave as homogeneous 
-      USDA textural classes following van Genuchten–Mualem relations. Engineered 
-      media mixes may therefore differ from the parameter sets used here.
-    </li>
-  
-    <li>
-      <strong>No evapotranspiration.</strong> 
-      ET is omitted because storm durations (≤ 48 h) are short relative to 
-      atmospheric‐demand timescales, and because the surface is assumed fully 
-      wetted during the event, suppressing root water uptake.
-    </li>
-  
-    <li>
-      <strong>1D approximation.</strong>  
-      Flow is vertical (1-D), neglecting lateral divergence and sidewall 
-      interactions. This is consistent with lined systems and large plan-form 
-      aspect ratios.
-    </li>
-  
-    <li>
-      <strong>Representative USDA soils.</strong>  
-      Simulations use Carsel–Parrish (1988) USDA hydraulic parameter sets.  
-      Fully engineered bioretention media may exhibit higher conductivity, 
-      altered retention curves, or different pore-size distributions, which 
-      could shift results outside this parameter envelope.
-    </li>
-  </ul>
-  
-  <p>
-    These assumptions ensure internal consistency across all ~10⁵ simulations 
-    while producing physically realistic inflow–outflow responses suitable for 
-    feasibility screening and cost-performance analysis.
-  </p>
-  
+ 
   </section>
 
     <h3>Modeling Assumptions</h3>
@@ -604,7 +527,7 @@ depths trade off between cost and hydrologic benefit.
         <strong>Initial soil conditions.</strong> 
         All simulations begin from a hydrostatic pressure profile with the water 
         table located well below the bioretention profile, producing an initially 
-        unsaturated soil column with 50% of effective saturation. No antecedent rainfall or pre-event surface water 
+        unsaturated soil column with 50% of effective saturation. No antecedent rainfall or pre-event surface water
         is imposed.
       </li>
     
@@ -740,15 +663,19 @@ depths trade off between cost and hydrologic benefit.
   <div class="plots-row">
     <div class="plot-panel">
       <div id="plot-eta" class="plot-div"></div>
+      <button id="btn-download-eta" disabled>Download CSV</button>
     </div>
     <div class="plot-panel">
       <div id="plot-det" class="plot-div"></div>
+      <button id="btn-download-det" disabled>Download CSV</button>
     </div>
     <div class="plot-panel">
       <div id="plot-dtp" class="plot-div"></div>
+      <button id="btn-download-dtp" disabled>Download CSV</button>
     </div>
     <div class="plot-panel">
       <div id="plot-pond" class="plot-div"></div>
+      <button id="btn-download-pond" disabled>Download CSV</button>
     </div>
   </div>
 
@@ -771,6 +698,7 @@ depths trade off between cost and hydrologic benefit.
   <div class="cost-panel">
     <div class="hydro-header">
       <div id="cost-title">Lifecycle cost — no feasible set yet</div>
+      <button id="btn-download-cost" disabled>Download CSV</button>
     </div>
     <div id="cost-plot"></div>
     <div id="cost-status" class="status">
@@ -933,6 +861,22 @@ depths trade off between cost and hydrologic benefit.
     let currentFeasibleSubset = [];
     let globalTpMin = null;
     let globalTpMax = null;
+
+    let designPlotData = {
+      eta_p_pct: null,
+      DetTime_min: null,
+      Delta_tp_min: null,
+      max_ponding: null
+    };
+
+    let costPlotData = null;
+
+    const METRIC_BUTTON_IDS = {
+      eta_p_pct: 'btn-download-eta',
+      DetTime_min: 'btn-download-det',
+      Delta_tp_min: 'btn-download-dtp',
+      max_ponding: 'btn-download-pond'
+    };
 
     // ========= HELPERS ======================================================
 
@@ -1163,6 +1107,19 @@ depths trade off between cost and hydrologic benefit.
         'Hydrographs — inflow and outflow (mm/h)';
     }
 
+    function downloadCSVFile(filename, csv) {
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+
     function downloadCurrentHydroCSV() {
       if (!currentHydroScenario || !currentHydroData) return;
 
@@ -1175,23 +1132,76 @@ depths trade off between cost and hydrologic benefit.
       }
       const csv = header + rows;
 
-      const blob = new Blob([csv], { type: 'text/csv' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
       const soilSlug = m.soilName.replace(/\s+/g, '_');
-      a.href = url;
-      a.download = `hydrograph_${soilSlug}_AR${(m.area_ratio * 100).toFixed(1)}_Ld${m.Ld_m.toFixed(2)}.csv`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
+      const fname =
+        `hydrograph_${soilSlug}_AR${(m.area_ratio * 100).toFixed(1)}_Ld${m.Ld_m.toFixed(2)}.csv`;
+
+      downloadCSVFile(fname, csv);
     }
+
+    function downloadDesignCSV(metricName) {
+      const info = METRIC_INFO[metricName];
+      const data = designPlotData[metricName];
+      if (!info || !data || !data.rows || !data.rows.length) return;
+
+      const rows = data.rows;
+      const metricLabel = info.label || metricName;
+
+      let csv = 'idx,soil,Peff_mm,area_ratio,area_ratio_pct,LID_depth_m,tp_min_min,' +
+                `${metricName}\n`;
+
+      rows.forEach(r => {
+        const arPct = r.area_ratio * 100.0;
+        csv += [
+          r.idx,
+          JSON.stringify(r.soilName),
+          r.Peff_mm,
+          r.area_ratio,
+          arPct.toFixed(3),
+          r.Ld_m,
+          r.tp_min,
+          r.metricValue
+        ].join(',') + '\n';
+      });
+
+      const soilSlug = (data.soil || 'soil').replace(/\s+/g, '_');
+      const fname = `design_${metricName}_${soilSlug}_P${data.peff}.csv`;
+      downloadCSVFile(fname, csv);
+    }
+
+    function downloadCostCSV() {
+      if (!costPlotData || !costPlotData.rows || !costPlotData.rows.length) return;
+
+      const rows = costPlotData.rows;
+      let csv = 'idx,soil,Peff_mm,area_ratio,area_ratio_pct,LID_depth_m,tp_min_min,NPV_per_m2_catch\n';
+
+      rows.forEach(r => {
+        const arPct = r.area_ratio * 100.0;
+        csv += [
+          r.idx,
+          JSON.stringify(r.soilName),
+          r.Peff_mm,
+          r.area_ratio,
+          arPct.toFixed(3),
+          r.Ld_m,
+          r.tp_min,
+          r.npv_per_m2_catch
+        ].join(',') + '\n';
+      });
+
+      const soilSlug = (costPlotData.soil || 'soil').replace(/\s+/g, '_');
+      const fname = `cost_${soilSlug}_P${costPlotData.peff}.csv`;
+      downloadCSVFile(fname, csv);
+    }
+
+
 
     // ========= DESIGN PLOTS =================================================
 
     function buildDesignPlot(metricName, divId, subset, peffVal) {
       const info = METRIC_INFO[metricName];
       const div = document.getElementById(divId);
+      const rowsForCSV = [];
 
       const x = [];
       const y = [];
@@ -1209,6 +1219,18 @@ depths trade off between cost and hydrologic benefit.
         const yVal = m.Ld_m;
         const zVal = m.tp_min;
         const raw = m[metricName];
+        
+        // Store a CSV row for this scenario
+        rowsForCSV.push({
+          idx: m.idx,
+          soilName: m.soilName,
+          Peff_mm: m.Peff_catch_mm,
+          area_ratio: m.area_ratio,
+          Ld_m: m.Ld_m,
+          tp_min: m.tp_min,
+          metricName,
+          metricValue: raw
+        });
 
         if (raw === null || raw === undefined || isNaN(raw)) {
           xUn.push(xVal);
@@ -1357,6 +1379,19 @@ depths trade off between cost and hydrologic benefit.
 
       Plotly.react(div, data, layout, { responsive: true });
 
+      // Store data for CSV download
+      designPlotData[metricName] = {
+        soil: currentSoil,
+        peff: peffVal,
+        rows: rowsForCSV
+      };
+
+      // Enable / disable corresponding download button
+      const btnId = METRIC_BUTTON_IDS[metricName];
+      const btn = btnId ? document.getElementById(btnId) : null;
+      if (btn) {
+        btn.disabled = !rowsForCSV.length;
+      }
       // Clicking on a point updates the hydrograph
       if (div && typeof div.on === 'function') {
         div.on('plotly_click', ev => {
@@ -1448,29 +1483,29 @@ depths trade off between cost and hydrologic benefit.
           geometryMap.set(key, m);
         }
       });
-      const uniqueFeasible = Array.from(geometryMap.values());
+     const uniqueFeasible = Array.from(geometryMap.values());
       const uniqueCount = uniqueFeasible.length;
 
       // Compute cost PER UNIT CATCHMENT AREA for each unique feasible geometry
-      const x = [];   // area ratio [%]
-      const y = [];   // LID depth [m]
-      const z = [];   // NPV cost [$ per m² catchment]
+      const x = [];
+      const y = [];
+      const z = [];
       const custom = [];
+      const rowsForCSV = [];
 
       let minCost = Infinity;
       let minIdx = -1;
 
       uniqueFeasible.forEach((m, k) => {
-        const ar = m.area_ratio; // [-]
-        const Ld = m.Ld_m;       // [m]
+        const ar = m.area_ratio;
+        const Ld = m.Ld_m;
 
-        // Assume A_catch = 1 m² -> A_LID = ar [m²]; cost is per m² catchment
         const capex_per_m2_catch =
-          costSettings.cVol * ar * Ld +    // excavation + media
-          costSettings.cSurf * ar;        // surface works
+          costSettings.cVol * ar * Ld +
+          costSettings.cSurf * ar;
 
         const om_per_m2_catch =
-          F * costSettings.cOM * ar;      // O&M NPV
+          F * costSettings.cOM * ar;
 
         const npv_per_m2_catch = capex_per_m2_catch + om_per_m2_catch;
 
@@ -1478,6 +1513,16 @@ depths trade off between cost and hydrologic benefit.
         y.push(Ld);
         z.push(npv_per_m2_catch);
         custom.push(m.idx);
+
+        rowsForCSV.push({
+          idx: m.idx,
+          soilName: m.soilName,
+          Peff_mm: m.Peff_catch_mm,
+          area_ratio: ar,
+          Ld_m: Ld,
+          tp_min: m.tp_min,
+          npv_per_m2_catch
+        });
 
         if (npv_per_m2_catch < minCost) {
           minCost = npv_per_m2_catch;
@@ -1588,6 +1633,17 @@ depths trade off between cost and hydrologic benefit.
 
       Plotly.react(div, data, layout, { responsive: true });
 
+      // Store data for CSV download
+      costPlotData = {
+        soil: currentSoil,
+        peff: currentPeff,
+        rows: rowsForCSV
+      };
+      const btnCost = document.getElementById('btn-download-cost');
+      if (btnCost) {
+        btnCost.disabled = !rowsForCSV.length;
+      }
+
       // Clicking a cost point should also update the hydrograph
       if (div && typeof div.on === 'function') {
         div.on('plotly_click', ev => {
@@ -1656,7 +1712,13 @@ depths trade off between cost and hydrologic benefit.
     function initUI() {
       const soilSel = document.getElementById('soil-select');
       const peffSel = document.getElementById('peff-select');
-      const btnDownload = document.getElementById('btn-download');
+      const btnDownload = document.getElementById('btn-download');        // hydro CSV
+      const btnEtaCSV   = document.getElementById('btn-download-eta');
+      const btnDetCSV   = document.getElementById('btn-download-det');
+      const btnDtpCSV   = document.getElementById('btn-download-dtp');
+      const btnPondCSV  = document.getElementById('btn-download-pond');
+      const btnCostCSV  = document.getElementById('btn-download-cost');
+
       const minEtaInput     = document.getElementById('min-eta-input');
       const minDetHInput    = document.getElementById('min-det-h-input');
       const minDelayHInput  = document.getElementById('min-delay-h-input');
@@ -1692,6 +1754,12 @@ depths trade off between cost and hydrologic benefit.
       });
 
       btnDownload.addEventListener('click', downloadCurrentHydroCSV);
+
+      btnEtaCSV?.addEventListener('click', () => downloadDesignCSV('eta_p_pct'));
+      btnDetCSV?.addEventListener('click', () => downloadDesignCSV('DetTime_min'));
+      btnDtpCSV?.addEventListener('click', () => downloadDesignCSV('Delta_tp_min'));
+      btnPondCSV?.addEventListener('click', () => downloadDesignCSV('max_ponding'));
+      btnCostCSV?.addEventListener('click', () => downloadCostCSV());
 
       const replotCost = () => updateCostPlot();
 

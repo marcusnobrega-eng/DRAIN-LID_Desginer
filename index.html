@@ -215,6 +215,40 @@
       width: 100%;
       height: 260px;
     }
+
+    .method-panel {
+      background: var(--panel-bg, #f8f8f8);
+      border: 1px solid var(--border, #dddddd);
+      border-radius: 8px;
+      padding: 1.5rem 1.75rem;
+      margin-bottom: 1.5rem;
+    }
+    
+    .method-panel h2 {
+      margin-top: 0;
+      margin-bottom: 0.75rem;
+      font-size: 1.3rem;
+    }
+    
+    .method-panel h3 {
+      margin-top: 1.1rem;
+      margin-bottom: 0.35rem;
+      font-size: 1.05rem;
+    }
+    
+    .method-panel p {
+      margin: 0.3rem 0;
+      line-height: 1.4;
+    }
+    
+    .method-panel ul {
+      margin: 0.4rem 0 0.8rem 1.25rem;
+      padding: 0;
+    }
+    
+    .method-panel .math {
+      margin: 0.4rem 0 0.7rem;
+}
   </style>
 </head>
 <body>
@@ -235,6 +269,246 @@
       <!-- Filled by JS, rendered with MathJax -->
     </span>
   </div>
+
+  <section id="methods-background" class="method-panel">
+    <h2>How the Model Works</h2>
+    <p>
+      The <strong>DRAIN-LID_Designer</strong> toolbox is built on a physics-based numerical
+      model that represents vertical water movement through the bioretention media,
+      the inflow hydrograph from the contributing catchment, and the lifecycle
+      costs of alternative designs. This section gives a compact overview of the
+      underlying equations and performance metrics so users can interpret the
+      database and cost-performance plots.
+    </p>
+  
+    <h3>Richards-based Vertical Flow Model</h3>
+    <p>
+      Vertical flow through the engineered media is described by the
+      one-dimensional mixed-form Richards equation, with pressure head
+      \(h(z,t)\) as the primary state variable:
+    </p>
+    <div class="math">
+      \[
+        \frac{\partial \theta(h)}{\partial t}
+        + S_s \frac{\partial h}{\partial t}
+        =
+        \frac{\partial}{\partial z}
+        \left[
+          K(h)\left(\frac{\partial h}{\partial z} + 1\right)
+        \right]
+        + S(z,t).
+      \]
+    </div>
+    <p>
+      Here \(z\) is depth, \(\theta(h)\) is volumetric water content,
+      \(K(h)\) is hydraulic conductivity, \(S_s\) is specific storage,
+      and \(S(z,t)\) represents sources and sinks associated with drainage
+      and lateral exchange. The soil hydraulic properties are obtained
+      from the van Genuchten–Mualem constitutive relationships:
+    </p>
+    <div class="math">
+      \[
+        \theta(h) =
+        \begin{cases}
+          \theta_r + (\theta_s - \theta_r)
+          \left[1 + (\alpha |h|)^n\right]^{-m}, & h &lt; 0,\\[4pt]
+          \theta_s, & h \ge 0,
+        \end{cases}
+      \]
+      \[
+        K(h) =
+        \begin{cases}
+          K_s
+          \left[1 + (\alpha |h|)^n\right]^{-m l}
+          \left\{
+            1 - (\alpha |h|)^{n-1}
+            \left[1 + (\alpha |h|)^n\right]^{-m}
+          \right\}^2, & h &lt; 0,\\[4pt]
+          K_s, & h \ge 0,
+        \end{cases}
+      \]
+    </div>
+    <p>
+      with \(\theta_r\), \(\theta_s\), \(\alpha\), \(n\), and \(K_s\)
+      taken from representative USDA soil textural classes (Hydrus soil
+      catalog). The model is solved with an implicit finite-volume scheme
+      and a Newton–Raphson iteration with adaptive time stepping, so that
+      each design configuration in the database corresponds to a full
+      Richards-equation simulation.
+    </p>
+  
+    <h3>Design Hydrograph and Catchment Inputs</h3>
+    <p>
+      The inflow to the bioretention cell is represented by a synthetic
+      design hydrograph that depends on three catchment-scale descriptors:
+    </p>
+    <ul>
+      <li>Effective rainfall depth \(P_{\mathrm{eff}}\) (runoff-producing depth)</li>
+      <li>Upstream contributing area \(A_{\mathrm{up}}\)</li>
+      <li>Time to peak \(t_{\mathrm{p}}\) of the runoff hydrograph</li>
+    </ul>
+    <p>
+      A Nash unit-hydrograph formulation is used:
+    </p>
+    <div class="math">
+      \[
+        Q_{\mathrm{in}}(t) =
+        Q_{\mathrm{p}}
+        \left(
+          \frac{t}{t_{\mathrm{p}}}
+          \exp\left[1 - \frac{t}{t_{\mathrm{p}}}\right]
+        \right)^{m-1},
+      \]
+    </div>
+    <p>
+      where \(m\) is a shape parameter and \(Q_{\mathrm{p}}\) is chosen so
+      that the total runoff volume equals
+      \(V_{\mathrm{r}} = P_{\mathrm{eff}} \, A_{\mathrm{up}}\).
+      For each combination of \((P_{\mathrm{eff}}, A_{\mathrm{up}}, t_{\mathrm{p}})\),
+      bioretention surface area \(A\) (via area ratio \(r = A / A_{\mathrm{up}}\)),
+      media depth \(L_d\), and soil type, the model routes the design hydrograph
+      through the bioretention profile.
+    </p>
+  
+    <h3>Hydrologic Performance Metrics</h3>
+    <p>
+      The database stores several hydrologic performance metrics for
+      each realization, allowing users to screen designs without rerunning
+      the numerical model. The main quantities used in the interface are:
+    </p>
+  
+    <h4>Peak Flow Reduction</h4>
+    <p>
+      Peak attenuation is defined as the percentage reduction in peak discharge
+      between inflow and outflow:
+    </p>
+    <div class="math">
+      \[
+        \eta_{\mathrm{p}} =
+        100 \,
+        \frac{Q_{\mathrm{p}}^{\,i} - Q_{\mathrm{p}}^{\,o}}
+             {Q_{\mathrm{p}}^{\,i}},
+      \]
+    </div>
+    <p>
+      where \(Q_{\mathrm{p}}^{\,i}\) and \(Q_{\mathrm{p}}^{\,o}\) are the inflow
+      and outflow peaks, respectively. Larger values of \(\eta_{\mathrm{p}}\)
+      indicate stronger flood-peak mitigation.
+    </p>
+  
+    <h4>Time-to-Peak Delay</h4>
+    <p>
+      The shift in the hydrograph peak due to storage and infiltration is
+      measured as
+    </p>
+    <div class="math">
+      \[
+        \Delta t_{\mathrm{p}} = t_{\mathrm{p}}^{\,o} - t_{\mathrm{p}}^{\,i},
+      \]
+    </div>
+    <p>
+      where \(t_{\mathrm{p}}^{\,i}\) and \(t_{\mathrm{p}}^{\,o}\) are the
+      times of the inflow and outflow peaks. Positive values indicate a
+      delayed outflow peak, which can help desynchronize flows in
+      downstream networks.
+    </p>
+  
+    <h4>Detention Time</h4>
+    <p>
+      Detention time characterizes the drawdown period over which the
+      bioretention system continues to release flow after the inflow peak:
+    </p>
+    <div class="math">
+      \[
+        \Delta t_{\mathrm{d}} =
+          t\bigl(Q_{\mathrm{out}}(t) \le \tau\bigr) - t_{\mathrm{p}}^{\,i},
+      \]
+    </div>
+    <p>
+      where \(\tau\) is a small threshold discharge. In the simulations,
+      \(\tau\) is set to a fraction of the inflow peak
+      (e.g., \(0.25\%\times Q_{\mathrm{p}}^{\,i}\)), so that
+      \(\Delta t_{\mathrm{d}}\) represents the time needed for outflow
+      to decay to nearly negligible levels.
+    </p>
+  
+    <h3>Lifecycle Cost Model</h3>
+    <p>
+      Example&nbsp;3 extends the hydrologic analysis by associating each
+      hydrologically feasible design with a simplified lifecycle cost.
+      The toolbox distinguishes between construction (capital expenditure)
+      and recurring operation and maintenance (O&amp;M):
+    </p>
+  
+    <h4>Construction Cost (CapEx)</h4>
+    <p>
+      Construction cost is parameterized as a combination of
+      volume-based and area-based components:
+    </p>
+    <div class="math">
+      \[
+        C_{\mathrm{CapEx}} =
+          c_{\mathrm{vol}} \, A \, L_{\mathrm d}
+          + c_{\mathrm{surf}} \, A,
+      \]
+    </div>
+    <p>
+      where:
+    </p>
+    <ul>
+      <li>\(A\): bioretention surface area,</li>
+      <li>\(L_{\mathrm d}\): media depth,</li>
+      <li>\(c_{\mathrm{vol}}\): unit cost of excavation and media installation [\$/m\(^3\)],</li>
+      <li>\(c_{\mathrm{surf}}\): unit cost of surface preparation and planting [\$/m\(^2\)].</li>
+    </ul>
+    <p>
+      These coefficients are exposed as user-editable parameters in the
+      toolbox, so they can be calibrated to local bid prices or cost
+      worksheets.
+    </p>
+  
+    <h4>Operation and Maintenance (O&amp;M)</h4>
+    <p>
+      Annual O&amp;M costs are assumed proportional to the footprint area:
+    </p>
+    <div class="math">
+      \[
+        C_{\mathrm{O\&M,annual}} = c_{\mathrm{O\&M}} \, A,
+      \]
+    </div>
+    <p>
+      where \(c_{\mathrm{O\&M}}\) is a per-area annual maintenance cost
+      [\$/m\(^2\)/year]. To express O&amp;M in present-value terms over a
+      design life \(T\) with discount rate \(i\), a standard annuity factor
+      is used:
+    </p>
+    <div class="math">
+      \[
+        F(i,T) =
+        \frac{1 - (1 + i)^{-T}}{i}.
+      \]
+    </div>
+  
+    <h4>Net Present Value (NPV)</h4>
+    <p>
+      The total lifecycle cost for a design is then
+    </p>
+    <div class="math">
+      \[
+        C_{\mathrm{NPV}} =
+          C_{\mathrm{CapEx}}
+          + F(i,T) \, c_{\mathrm{O\&M}} \, A.
+      \]
+    </div>
+    <p>
+      In the interface, these cost calculations are applied only to the
+      subset of simulations that satisfy minimum hydrologic performance
+      criteria (e.g., a given peak reduction and detention time), enabling
+      users to compare how different soil types, area ratios, and media
+      depths trade off between cost and hydrologic benefit.
+    </p>
+  </section>
+
 
   <div class="controls">
     <div class="control-group">

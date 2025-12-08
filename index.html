@@ -1173,7 +1173,14 @@ depths trade off between cost and hydrologic benefit.
       if (!costPlotData || !costPlotData.rows || !costPlotData.rows.length) return;
 
       const rows = costPlotData.rows;
-      let csv = 'idx,soil,Peff_mm,area_ratio,area_ratio_pct,LID_depth_m,tp_min_min,NPV_per_m2_catch\n';
+
+      // Header includes cost + all hydrologic metrics used in the cost plot
+      let csv =
+        'idx,soil,Peff_mm,' +
+        'area_ratio,area_ratio_pct,' +
+        'LID_depth_m,tp_min_min,' +
+        'eta_p_pct,DetTime_h,Delta_tp_h,max_ponding_m,' +
+        'NPV_per_m2_catch\n';
 
       rows.forEach(r => {
         const arPct = r.area_ratio * 100.0;
@@ -1185,6 +1192,10 @@ depths trade off between cost and hydrologic benefit.
           arPct.toFixed(3),
           r.Ld_m,
           r.tp_min,
+          r.eta_p_pct,
+          r.DetTime_h,
+          r.Delta_tp_h,
+          r.max_ponding_m,
           r.npv_per_m2_catch
         ].join(',') + '\n';
       });
@@ -1193,8 +1204,6 @@ depths trade off between cost and hydrologic benefit.
       const fname = `cost_${soilSlug}_P${costPlotData.peff}.csv`;
       downloadCSVFile(fname, csv);
     }
-
-
 
     // ========= DESIGN PLOTS =================================================
 
@@ -1528,9 +1537,14 @@ depths trade off between cost and hydrologic benefit.
           Peff_mm: m.Peff_catch_mm,
           area_ratio: ar,
           Ld_m: Ld,
-          tp_min: m.tp_min,
-          npv_per_m2_catch
+          tp_min: m.tp_min,           // [min]
+          eta_p_pct: eta,             // [%]
+          DetTime_h: detH,            // [h]
+          Delta_tp_h: dtpH,           // [h]
+          max_ponding_m: pond,        // [m]
+          npv_per_m2_catch            // [$/m² catchment]
         });
+
 
         if (npv_per_m2_catch < minCost) {
           minCost = npv_per_m2_catch;

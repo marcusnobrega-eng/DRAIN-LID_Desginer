@@ -504,13 +504,171 @@
       \]
     </div>
     <p>
-      In the interface, these cost calculations are applied only to the
-      subset of simulations that satisfy minimum hydrologic performance
-      criteria (e.g., a given peak reduction and detention time), enabling
-      users to compare how different soil types, area ratios, and media
-      depths trade off between cost and hydrologic benefit.
-    </p>
+In the interface, these cost calculations are applied only to the
+subset of simulations that satisfy minimum hydrologic performance
+criteria (e.g., a given peak reduction and detention time), enabling
+users to compare how different soil types, area ratios, and media
+depths trade off between cost and hydrologic benefit.
+</p>
+  <h3>Modeling Assumptions</h3>
+  <p>
+    The simulations underlying the DRAIN-LID design database rely on a set of 
+    simplifying but physically motivated assumptions intended to capture 
+    first-order hydrologic behavior while maintaining computational tractability 
+    for the full design space of soil types, rainfall inputs, and geometries. 
+    The principal assumptions are:
+  </p>
+  
+  <ul>
+    <li>
+      <strong>Initial soil conditions.</strong> 
+      All simulations begin from a hydrostatic pressure profile with the water 
+      table located well below the bioretention profile, producing an initially 
+      unsaturated soil column. No antecedent rainfall or pre-event surface water 
+      is imposed.
+    </li>
+  
+    <li>
+      <strong>Lined system.</strong> 
+      The bioretention cell is modeled as laterally lined, eliminating 
+      exfiltration to the native subgrade. All outflow occurs through the 
+      underdrain or surface overflow.
+    </li>
+  
+    <li>
+      <strong>Underdrain boundary condition.</strong>
+      The underdrain invert is treated as a free-drain (unit gradient) boundary,
+      justified because underdrain hydraulic capacity is assumed to far exceed 
+      the seepage-rate capacity of the media. As a result, the underdrain does 
+      not behave as a throttling control.
+    </li>
+  
+    <li>
+      <strong>Spatial discretization.</strong> 
+      The vertical soil column is discretized using ~20 finite-volume nodes, 
+      distributed non-uniformly with refinement near the soil surface and near 
+      the underdrain. The distribution follows the node-spacing strategy used in 
+      <em>Hydrus-1D</em> to improve stability during sharp wetting‐front movement.
+    </li>
+  
+    <li>
+      <strong>Homogeneous soil properties.</strong> 
+      Hydraulic parameters are spatially invariant; no layering or vertical 
+      heterogeneity is represented. Media are assumed to behave as homogeneous 
+      USDA textural classes following van Genuchten–Mualem relations. Engineered 
+      media mixes may therefore differ from the parameter sets used here.
+    </li>
+  
+    <li>
+      <strong>No evapotranspiration.</strong> 
+      ET is omitted because storm durations (≤ 48 h) are short relative to 
+      atmospheric‐demand timescales, and because the surface is assumed fully 
+      wetted during the event, suppressing root water uptake.
+    </li>
+  
+    <li>
+      <strong>1D approximation.</strong>  
+      Flow is vertical (1-D), neglecting lateral divergence and sidewall 
+      interactions. This is consistent with lined systems and large plan-form 
+      aspect ratios.
+    </li>
+  
+    <li>
+      <strong>Representative USDA soils.</strong>  
+      Simulations use Carsel–Parrish (1988) USDA hydraulic parameter sets.  
+      Fully engineered bioretention media may exhibit higher conductivity, 
+      altered retention curves, or different pore-size distributions, which 
+      could shift results outside this parameter envelope.
+    </li>
+  </ul>
+  
+  <p>
+    These assumptions ensure internal consistency across all ~10⁵ simulations 
+    while producing physically realistic inflow–outflow responses suitable for 
+    feasibility screening and cost-performance analysis.
+  </p>
+  
   </section>
+
+    <h3>Modeling Assumptions</h3>
+    <p>
+      The simulations underlying the DRAIN-LID design database rely on a set of 
+      simplifying but physically motivated assumptions intended to capture 
+      first-order hydrologic behavior while maintaining computational tractability 
+      for the full design space of soil types, rainfall inputs, and geometries. 
+      The principal assumptions are:
+    </p>
+    
+    <ul>
+      <li>
+        <strong>Initial soil conditions.</strong> 
+        All simulations begin from a hydrostatic pressure profile with the water 
+        table located well below the bioretention profile, producing an initially 
+        unsaturated soil column with 50% of effective saturation. No antecedent rainfall or pre-event surface water 
+        is imposed.
+      </li>
+    
+      <li>
+        <strong>Lined system.</strong> 
+        The bioretention cell is modeled as laterally lined, eliminating 
+        exfiltration to the native subgrade. All outflow occurs through the 
+        underdrain/bottom seepage or surface overflow.
+      </li>
+    
+      <li>
+        <strong>Underdrain boundary condition.</strong>
+        The underdrain invert is treated as a free-drain (unit gradient) boundary,
+        justified because underdrain hydraulic capacity is assumed to far exceed 
+        the seepage-rate capacity of the media. As a result, the underdrain does 
+        not behave as a throttling control.
+      </li>
+    
+      <li>
+        <strong>Spatial discretization.</strong> 
+        The vertical soil column is discretized using ~20 finite-volume nodes, 
+        distributed non-uniformly with refinement near the soil surface and near 
+        the underdrain. The distribution follows the node-spacing strategy used in 
+        <em>Hydrus-1D</em> to improve stability during sharp wetting‐front movement.
+      </li>
+    
+      <li>
+        <strong>Homogeneous soil properties.</strong> 
+        Hydraulic parameters are spatially invariant; no layering or vertical 
+        heterogeneity is represented. Media are assumed to behave as homogeneous 
+        USDA textural classes following van Genuchten–Mualem relations. Engineered 
+        media mixes may therefore differ from the parameter sets used here.
+      </li>
+    
+      <li>
+        <strong>No evapotranspiration.</strong> 
+        Evapotranspiration is omitted because storm durations (≤ 48 h) are short relative to 
+        atmospheric‐demand timescales, and because the surface is assumed fully 
+        wetted during the event, suppressing root water uptake.
+      </li>
+    
+      <li>
+        <strong>1D approximation.</strong>  
+        Flow is vertical (1-D), neglecting lateral divergence and sidewall 
+        interactions. This is consistent with lined systems and large plan-form 
+        aspect ratios.
+      </li>
+    
+      <li>
+        <strong>Representative USDA soils.</strong>  
+        Simulations use Carsel–Parrish (1988) USDA hydraulic parameter sets.  
+        Fully engineered bioretention media may exhibit higher conductivity, 
+        altered retention curves, or different pore-size distributions, which 
+        could shift results outside this parameter envelope.
+      </li>
+    </ul>
+    
+    <p>
+      These assumptions should be considered when interpreting design performance. 
+      They ensure internal consistency across all ~10⁵ simulations while producing 
+      physically realistic inflow–outflow responses for feasibility screening and 
+      cost-performance analysis.
+    </p>
+
 
   <div class="controls">
     <div class="control-group">

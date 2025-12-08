@@ -667,6 +667,31 @@
           '<b>Unfeasible / failed</b><extra></extra>'
       };
 
+      // Compute global min/max to set full ranges (include feasible + unfeasible)
+      const allX = x.concat(xUn);
+      const allY = y.concat(yUn);
+      const allZ = z.concat(zUn);
+      
+      let xRange = null, yRange = null, zRange = null;
+      if (allX.length > 0) {
+        const xMin = Math.min(...allX);
+        const xMax = Math.max(...allX);
+        const dx = (xMax - xMin) * 0.05 || 1;
+        xRange = [xMin - dx, xMax + dx];
+      }
+      if (allY.length > 0) {
+        const yMin = Math.min(...allY);
+        const yMax = Math.max(...allY);
+        const dy = (yMax - yMin) * 0.05 || 0.1;
+        yRange = [yMin - dy, yMax + dy];
+      }
+      if (allZ.length > 0) {
+        const zMin = Math.min(...allZ);
+        const zMax = Math.max(...allZ);
+        const dz = (zMax - zMin) * 0.05 || 1;
+        zRange = [zMin - dz, zMax + dz];
+      }
+
       const layout = {
         title: `${info.shortTitle} — ${currentSoil}, P_eff = ${peffLabel}`,
         margin: {l: 0, r: 0, t: 40, b: 0},
@@ -677,7 +702,8 @@
             showgrid: true,
             gridcolor: '#e0e0e0',
             ticks: 'outside',
-            ticklen: 4
+            ticklen: 4,
+            range: xRange || undefined
           },
           yaxis: {
             title: 'LID depth [m]',
@@ -685,42 +711,46 @@
             showgrid: true,
             gridcolor: '#e0e0e0',
             ticks: 'outside',
-            ticklen: 4
+            ticklen: 4,
+            range: yRange || undefined
           },
           zaxis: {
-            title: 'Time to peak t_p [min]',
+            title: 'Inflow time to peak [min]',
             zeroline: false,
             showgrid: true,
             gridcolor: '#e0e0e0',
             ticks: 'outside',
-            ticklen: 4
+            ticklen: 4,
+            range: zRange || undefined
           },
-          aspectmode: 'cube'
+          aspectmode: 'cube',
+          camera: {
+            eye: {x: 1.7, y: 1.7, z: 1.5}
+          }
         },
         showlegend: false
       };
+
 
       const data = [];
       if (x.length) data.push(traceFeasible);
       if (xUn.length) data.push(traceUnfeasible);
 
       Plotly.react(div, data, layout, {responsive: true});
-    }
 
-    function attachClickHandlers() {
-      ['plot-eta', 'plot-det', 'plot-dtp'].forEach(id => {
-        const div = document.getElementById(id);
-        // Use DOM event listener for Plotly events
-        div.addEventListener('plotly_click', ev => {
-          if (!ev.detail || !ev.detail.points || !ev.detail.points.length) return;
-          const idx = ev.detail.points[0].customdata;
+      // Attach click handler so that clicking on a point updates the hydrograph
+      if (div && typeof div.on === 'function') {
+        div.on('plotly_click', ev => {
+          if (!ev.points || !ev.points.length) return;
+          const idx = ev.points[0].customdata;
           if (idx === undefined || idx === null) return;
           const scenario = metricsByIdx.get(idx);
           if (!scenario) return;
           renderHydrographForScenario(scenario);
         });
-      });
+      }
     }
+
 
     function updatePlotsAndHydro() {
       if (!dbMetrics.length || currentSoil === null || currentPeff === null) return;
@@ -783,6 +813,7 @@
       function refreshPeffOptions() {
         const filtered = dbMetrics.filter(m => m.soilName === currentSoil);
         const peffs = uniqueSortedNumeric(filtered.map(m => m.Peff_catch_mm));
+      
         peffSel.innerHTML = '';
         peffs.forEach(v => {
           const opt = document.createElement('option');
@@ -790,9 +821,26 @@
           opt.textContent = formatPeffLabel(v);
           peffSel.appendChild(opt);
         });
-        currentPeff = peffs[0] || null;
-        if (currentPeff !== null) peffSel.value = currentPeff;
+      
+        // --- choose default Peff closest to 25.4 mm (≈ 1 inch) ---
+        const targetMm = 25.4;
+        if (peffs.length > 0) {
+          let best = peffs[0];
+          let bestDiff = Math.abs(peffs[0] - targetMm);
+          for (let i = 1; i < peffs.length; i++) {
+            const diff = Math.abs(peffs[i] - targetMm);
+            if (diff < bestDiff) {
+              bestDiff = diff;
+              best = peffs[i];
+            }
+          }
+          currentPeff = best;
+          peffSel.value = best;
+        } else {
+          currentPeff = null;
+        }
       }
+
 
       refreshPeffOptions();
       soilSel.disabled = false;
@@ -825,7 +873,6 @@
 
       btnDownload.addEventListener('click', downloadCurrentHydroCSV);
 
-      attachClickHandlers();
     }
 
     // ========= DATA LOADING =================================================

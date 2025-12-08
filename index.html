@@ -246,7 +246,9 @@
     <div class="legend-note">
       Markers with outline only correspond to designs for which the solver
       failed or violated ponding constraints. Hydrographs are shown in
-      normalized flux units (mm/h) over the LID surface. Due to size limitations, only solutions with peak flow reductions of 20-50% are shown for the first 24h, although the model is run for 48h.
+      normalized flux units (mm/h) over the LID surface. Due to size
+      limitations, only solutions with peak flow reductions of 20–50% are
+      stored for the first 24&nbsp;h, although the model is run for 48&nbsp;h.
     </div>
   </div>
 
@@ -266,23 +268,23 @@
   <script>
     // ========= CONFIG =======================================================
     const DATA_URL = 'drain_lid_database.json';
-    const LOGO_URL = 'drainlid_logo.png'; // e.g. 'drainlid_logo.png' (leave '' if none)
+    const LOGO_URL = 'drainlid_logo.png'; // leave '' if none
 
     // Hard-coded van Genuchten–Mualem parameters (Carsel & Parrish, 1988)
     // alpha [1/m], Ks_mm_per_h [mm/h], theta_r, theta_s [-]
     const SOIL_PROPS = {
-      "Sand":          { theta_r: 0.045, theta_s: 0.43, alpha: 14.5, n: 2.68, Ks_mm_per_h: 297.0 },
-      "Loamy Sand":    { theta_r: 0.057, theta_s: 0.41, alpha: 12.4, n: 2.28, Ks_mm_per_h: 145.8 },
-      "Sandy Loam":    { theta_r: 0.065, theta_s: 0.41, alpha: 7.5,  n: 1.89, Ks_mm_per_h: 44.3  },
-      "Loam":          { theta_r: 0.078, theta_s: 0.43, alpha: 3.6,  n: 1.56, Ks_mm_per_h: 10.4  },
-      "Silt":          { theta_r: 0.034, theta_s: 0.46, alpha: 1.6,  n: 1.37, Ks_mm_per_h: 2.5   },
-      "Silty Loam":    { theta_r: 0.067, theta_s: 0.45, alpha: 2.0,  n: 1.41, Ks_mm_per_h: 4.5   },
-      "Sandy Clay Loam": { theta_r: 0.100, theta_s: 0.39, alpha: 5.9, n: 1.48, Ks_mm_per_h: 13.1 },
-      "Clay Loam":     { theta_r: 0.095, theta_s: 0.41, alpha: 1.9,  n: 1.31, Ks_mm_per_h: 2.6   },
-      "Silty Clay Loam":{ theta_r: 0.089, theta_s: 0.43, alpha: 1.0, n: 1.23, Ks_mm_per_h: 0.7   },
-      "Sandy Clay":    { theta_r: 0.100, theta_s: 0.38, alpha: 2.7,  n: 1.23, Ks_mm_per_h: 1.2   },
-      "Silty Clay":    { theta_r: 0.070, theta_s: 0.36, alpha: 0.5,  n: 1.09, Ks_mm_per_h: 0.2   },
-      "Clay":          { theta_r: 0.068, theta_s: 0.38, alpha: 0.8,  n: 1.09, Ks_mm_per_h: 0.6   }
+      "Sand":             { theta_r: 0.045, theta_s: 0.43, alpha: 14.5, n: 2.68, Ks_mm_per_h: 297.0 },
+      "Loamy Sand":       { theta_r: 0.057, theta_s: 0.41, alpha: 12.4, n: 2.28, Ks_mm_per_h: 145.8 },
+      "Sandy Loam":       { theta_r: 0.065, theta_s: 0.41, alpha: 7.5,  n: 1.89, Ks_mm_per_h: 44.3  },
+      "Loam":             { theta_r: 0.078, theta_s: 0.43, alpha: 3.6,  n: 1.56, Ks_mm_per_h: 10.4  },
+      "Silt":             { theta_r: 0.034, theta_s: 0.46, alpha: 1.6,  n: 1.37, Ks_mm_per_h: 2.5   },
+      "Silty Loam":       { theta_r: 0.067, theta_s: 0.45, alpha: 2.0,  n: 1.41, Ks_mm_per_h: 4.5   },
+      "Sandy Clay Loam":  { theta_r: 0.100, theta_s: 0.39, alpha: 5.9,  n: 1.48, Ks_mm_per_h: 13.1 },
+      "Clay Loam":        { theta_r: 0.095, theta_s: 0.41, alpha: 1.9,  n: 1.31, Ks_mm_per_h: 2.6   },
+      "Silty Clay Loam":  { theta_r: 0.089, theta_s: 0.43, alpha: 1.0,  n: 1.23, Ks_mm_per_h: 0.7   },
+      "Sandy Clay":       { theta_r: 0.100, theta_s: 0.38, alpha: 2.7,  n: 1.23, Ks_mm_per_h: 1.2   },
+      "Silty Clay":       { theta_r: 0.070, theta_s: 0.36, alpha: 0.5,  n: 1.09, Ks_mm_per_h: 0.2   },
+      "Clay":             { theta_r: 0.068, theta_s: 0.38, alpha: 0.8,  n: 1.09, Ks_mm_per_h: 0.6   }
     };
 
     // Custom Turbo-like colorscale for peak-flow reduction
@@ -323,7 +325,6 @@
         toColorValue: v => v
       }
     };
-
 
     // ========= GLOBAL STATE =================================================
     let dbMetrics = [];
@@ -411,6 +412,7 @@
       const div = document.getElementById('hydro-plot');
       const btn = document.getElementById('btn-download');
 
+      // Case 1: no scenario at all (e.g. initial state)
       if (!m) {
         currentHydroScenario = null;
         currentHydroData = null;
@@ -420,69 +422,14 @@
           x: [0],
           y: [0],
           mode: 'lines',
-          line: {color: '#cccccc'},
-          hoverinfo: 'skip',
-          showlegend: false
-        }];
-
-          const pond =
-            (m.max_ponding !== undefined && m.max_ponding !== null)
-              ? m.max_ponding.toFixed(3)
-              : 'NA';
-          
-          const layout = {
-            title: `Hydrographs — ${m.soilName}, area-ratio = ${(m.area_ratio * 100).toFixed(1)}%, LID depth = ${m.Ld_m.toFixed(2)} m, t_p = ${m.tp_min.toFixed(1)} min, max ponding = ${pond} m`,
-            margin: {l: 60, r: 10, t: 50, b: 45},
-            xaxis: {
-              title: 'Time [h]',
-              zeroline: false,
-              showgrid: false,
-              ticks: 'outside',
-              tickwidth: 2,
-              linewidth: 2,
-              linecolor: '#000000'
-            },
-            yaxis: {
-              title: 'Flux [mm/h]',
-              zeroline: false,
-              showgrid: false,
-              ticks: 'outside',
-              tickwidth: 2,
-              linewidth: 2,
-              linecolor: '#000000'
-            },
-            legend: {
-              x: 0.02,
-              y: 0.98,
-              bgcolor: 'rgba(255,255,255,0.8)'
-            }
-          };
-          showlegend: false
-        };
-        Plotly.react(div, emptyData, layout, {responsive: true});
-        document.getElementById('hydro-title').textContent =
-          'Hydrographs — no stored hydrograph data for this scenario';
-        return;
-      }
-
-      const hData = getHydroDataFromScenario(m);
-      if (!hData) {
-        currentHydroScenario = m;
-        currentHydroData = null;
-        btn.disabled = true;
-
-        const emptyData = [{
-          x: [0],
-          y: [0],
-          mode: 'lines',
-          line: {color: '#cccccc'},
+          line: { color: '#cccccc' },
           hoverinfo: 'skip',
           showlegend: false
         }];
 
         const layout = {
-          title: 'Hydrographs — no stored hydrograph data for this scenario',
-          margin: {l: 60, r: 10, t: 40, b: 45},
+          title: 'Hydrographs — no scenario selected',
+          margin: { l: 60, r: 10, t: 40, b: 45 },
           xaxis: {
             title: 'Time [h]',
             zeroline: false,
@@ -503,12 +450,60 @@
           },
           showlegend: false
         };
-        Plotly.react(div, emptyData, layout, {responsive: true});
+
+        Plotly.react(div, emptyData, layout, { responsive: true });
+        document.getElementById('hydro-title').textContent =
+          'Hydrographs — no scenario selected';
+        return;
+      }
+
+      // Case 2: scenario exists but no stored hydrograph (hydroIndex < 0 or missing)
+      const hData = getHydroDataFromScenario(m);
+      if (!hData) {
+        currentHydroScenario = m;
+        currentHydroData = null;
+        btn.disabled = true;
+
+        const emptyData = [{
+          x: [0],
+          y: [0],
+          mode: 'lines',
+          line: { color: '#cccccc' },
+          hoverinfo: 'skip',
+          showlegend: false
+        }];
+
+        const layout = {
+          title: 'Hydrographs — no stored hydrograph data for this scenario',
+          margin: { l: 60, r: 10, t: 40, b: 45 },
+          xaxis: {
+            title: 'Time [h]',
+            zeroline: false,
+            showgrid: false,
+            ticks: 'outside',
+            tickwidth: 2,
+            linewidth: 2,
+            linecolor: '#000000'
+          },
+          yaxis: {
+            title: 'Flux [mm/h]',
+            zeroline: false,
+            showgrid: false,
+            ticks: 'outside',
+            tickwidth: 2,
+            linewidth: 2,
+            linecolor: '#000000'
+          },
+          showlegend: false
+        };
+
+        Plotly.react(div, emptyData, layout, { responsive: true });
         document.getElementById('hydro-title').textContent =
           'Hydrographs — no stored hydrograph data for this scenario';
         return;
       }
 
+      // Case 3: full hydrograph is available
       currentHydroScenario = m;
       currentHydroData = hData;
       btn.disabled = false;
@@ -518,7 +513,7 @@
         y: hData.inflow,
         mode: 'lines',
         name: 'Inflow',
-        line: {color: '#BC262D', width: 2.5, dash: 'dash'}
+        line: { color: '#BC262D', width: 2.5, dash: 'dash' }
       };
 
       const traceOut = {
@@ -526,12 +521,22 @@
         y: hData.outflow,
         mode: 'lines',
         name: 'Outflow',
-        line: {color: '#0000A3', width: 2.5}
+        line: { color: '#0000A3', width: 2.5 }
       };
 
+      const pond =
+        (m.max_ponding !== undefined && m.max_ponding !== null)
+          ? m.max_ponding.toFixed(3)
+          : 'NA';
+
       const layout = {
-        title: `Hydrographs — ${m.soilName}, area-ratio = ${(m.area_ratio * 100).toFixed(1)}%, LID depth = ${m.Ld_m.toFixed(2)} m, tp = ${m.tp_min.toFixed(1)} min`,
-        margin: {l: 60, r: 10, t: 50, b: 45},
+        title:
+          `Hydrographs — ${m.soilName}, ` +
+          `area-ratio = ${(m.area_ratio * 100).toFixed(1)}%, ` +
+          `LID depth = ${m.Ld_m.toFixed(2)} m, ` +
+          `t_p = ${m.tp_min.toFixed(1)} min, ` +
+          `max ponding = ${pond} m`,
+        margin: { l: 60, r: 10, t: 50, b: 45 },
         xaxis: {
           title: 'Time [h]',
           zeroline: false,
@@ -557,7 +562,7 @@
         }
       };
 
-      Plotly.react(div, [traceIn, traceOut], layout, {responsive: true});
+      Plotly.react(div, [traceIn, traceOut], layout, { responsive: true });
       document.getElementById('hydro-title').textContent =
         'Hydrographs — inflow and outflow (mm/h)';
     }
@@ -574,12 +579,12 @@
       }
       const csv = header + rows;
 
-      const blob = new Blob([csv], {type: 'text/csv'});
+      const blob = new Blob([csv], { type: 'text/csv' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       const soilSlug = m.soilName.replace(/\s+/g, '_');
       a.href = url;
-      a.download = `hydrograph_${soilSlug}_AR${(m.area_ratio*100).toFixed(1)}_Ld${m.Ld_m.toFixed(2)}.csv`;
+      a.download = `hydrograph_${soilSlug}_AR${(m.area_ratio * 100).toFixed(1)}_Ld${m.Ld_m.toFixed(2)}.csv`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -690,7 +695,7 @@
       const allX = x.concat(xUn);
       const allY = y.concat(yUn);
       const allZ = z.concat(zUn);
-      
+
       let xRange = null, yRange = null, zRange = null;
       if (allX.length > 0) {
         const xMin = Math.min(...allX);
@@ -712,8 +717,8 @@
       }
 
       const layout = {
-        title: `${info.shortTitle} — ${currentSoil}, Pef = ${peffLabel}`,
-        margin: {l: 0, r: 0, t: 40, b: 0},
+        title: `${info.shortTitle} — ${currentSoil}, P_eff = ${peffLabel}`,
+        margin: { l: 0, r: 0, t: 40, b: 0 },
         scene: {
           xaxis: {
             title: 'Area-ratio [%]',
@@ -744,18 +749,17 @@
           },
           aspectmode: 'cube',
           camera: {
-            eye: {x: 1.7, y: 1.7, z: 1.5}
+            eye: { x: 1.7, y: 1.7, z: 1.5 }
           }
         },
         showlegend: false
       };
 
-
       const data = [];
       if (x.length) data.push(traceFeasible);
       if (xUn.length) data.push(traceUnfeasible);
 
-      Plotly.react(div, data, layout, {responsive: true});
+      Plotly.react(div, data, layout, { responsive: true });
 
       // Attach click handler so that clicking on a point updates the hydrograph
       if (div && typeof div.on === 'function') {
@@ -770,19 +774,18 @@
       }
     }
 
+    function updatePlotsAndHydro() {
+      if (!dbMetrics.length || currentSoil === null || currentPeff === null) return;
 
-  function updatePlotsAndHydro() {
-    if (!dbMetrics.length || currentSoil === null || currentPeff === null) return;
-  
-    currentSubset = dbMetrics.filter(m =>
-      m.soilName === currentSoil &&
-      m.Peff_catch_mm === currentPeff
-    );
-  
-    buildDesignPlot('eta_p_pct', 'plot-eta', currentSubset, currentPeff);
-    buildDesignPlot('DetTime_min', 'plot-det', currentSubset, currentPeff);
-    buildDesignPlot('Delta_tp_min', 'plot-dtp', currentSubset, currentPeff);
-    buildDesignPlot('max_ponding', 'plot-pond', currentSubset, currentPeff);
+      currentSubset = dbMetrics.filter(m =>
+        m.soilName === currentSoil &&
+        m.Peff_catch_mm === currentPeff
+      );
+
+      buildDesignPlot('eta_p_pct',   'plot-eta',  currentSubset, currentPeff);
+      buildDesignPlot('DetTime_min', 'plot-det',  currentSubset, currentPeff);
+      buildDesignPlot('Delta_tp_min','plot-dtp',  currentSubset, currentPeff);
+      buildDesignPlot('max_ponding','plot-pond', currentSubset, currentPeff);
 
       // Pick default scenario with hydroIndex >= 0 for current view
       let candidate = null;
@@ -833,7 +836,7 @@
       function refreshPeffOptions() {
         const filtered = dbMetrics.filter(m => m.soilName === currentSoil);
         const peffs = uniqueSortedNumeric(filtered.map(m => m.Peff_catch_mm));
-      
+
         peffSel.innerHTML = '';
         peffs.forEach(v => {
           const opt = document.createElement('option');
@@ -841,8 +844,8 @@
           opt.textContent = formatPeffLabel(v);
           peffSel.appendChild(opt);
         });
-      
-        // --- choose default Peff closest to 25.4 mm (≈ 1 inch) ---
+
+        // choose default Peff closest to 25.4 mm (≈ 1 inch)
         const targetMm = 25.4;
         if (peffs.length > 0) {
           let best = peffs[0];
@@ -860,7 +863,6 @@
           currentPeff = null;
         }
       }
-
 
       refreshPeffOptions();
       soilSel.disabled = false;
@@ -892,7 +894,6 @@
       });
 
       btnDownload.addEventListener('click', downloadCurrentHydroCSV);
-
     }
 
     // ========= DATA LOADING =================================================
@@ -900,7 +901,7 @@
     async function loadData() {
       try {
         setStatus('Loading data…');
-        const resp = await fetch(DATA_URL, {cache: 'no-cache'});
+        const resp = await fetch(DATA_URL, { cache: 'no-cache' });
         if (!resp.ok) {
           throw new Error(`HTTP ${resp.status} while fetching ${DATA_URL}`);
         }
@@ -947,5 +948,3 @@
   </script>
 </body>
 </html>
-
-    

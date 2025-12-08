@@ -1174,7 +1174,7 @@ depths trade off between cost and hydrologic benefit.
 
       const rows = costPlotData.rows;
 
-      // Header includes cost + all hydrologic metrics used in the cost plot
+      // Header: geometry + all hydrologic metrics + cost
       let csv =
         'idx,soil,Peff_mm,' +
         'area_ratio,area_ratio_pct,' +
@@ -1443,15 +1443,15 @@ depths trade off between cost and hydrologic benefit.
       currentFeasibleSubset = currentSubset.filter(m => {
         if (!m) return false;
 
-        const eta = m.eta_p_pct;
-        const detH = m.DetTime_min != null ? m.DetTime_min / 60.0 : NaN;
+        const eta   = m.eta_p_pct;
+        const detH  = m.DetTime_min != null ? m.DetTime_min / 60.0 : NaN;
         const delayH = m.Delta_tp_min != null ? m.Delta_tp_min / 60.0 : NaN;
-        const pond = m.max_ponding;
-        const Ld   = m.Ld_m;
-        const ar   = m.area_ratio;   // dimensionless (0–1)
-        const tp   = m.tp_min;       // [min]
+        const pond  = m.max_ponding;
+        const Ld    = m.Ld_m;
+        const ar    = m.area_ratio;   // dimensionless (0–1)
+        const tp    = m.tp_min;       // [min]
 
-        if (eta == null || isNaN(eta)) return false;
+        if (eta == null || isNaN(eta))   return false;
         if (detH == null || isNaN(detH)) return false;
         if (delayH == null || isNaN(delayH)) return false;
         if (pond == null || isNaN(pond)) return false;
@@ -1459,12 +1459,12 @@ depths trade off between cost and hydrologic benefit.
         if (ar == null || isNaN(ar) || ar <= 0) return false;
         if (tp == null || isNaN(tp)) return false;
 
-        if (eta < filters.minEta) return false;
-        if (detH < filters.minDetH) return false;
-        if (delayH < filters.minDelayH) return false;
-        if (pond > filters.maxPondM) return false;
+        if (eta   < filters.minEta)      return false;
+        if (detH  < filters.minDetH)     return false;
+        if (delayH < filters.minDelayH)  return false;
+        if (pond  > filters.maxPondM)    return false;
 
-        // NEW: enforce selected t_p range
+        // Enforce selected t_p range
         if (tpMin != null && tp < tpMin) return false;
         if (tpMax != null && tp > tpMax) return false;
 
@@ -1482,17 +1482,13 @@ depths trade off between cost and hydrologic benefit.
         return;
       }
 
-      // ---- NEW: collapse feasible simulations to unique geometries ----
-      // A geometry is defined by (area_ratio, Ld_m) for the chosen soil + Pef.
+      // Collapse feasible simulations to unique geometries (area_ratio + Ld_m)
       const geometryMap = new Map();
       currentFeasibleSubset.forEach(m => {
         const key = `${m.area_ratio}-${m.Ld_m}`;
-        if (!geometryMap.has(key)) {
-          // keep the first simulation we see for this geometry
-          geometryMap.set(key, m);
-        }
+        if (!geometryMap.has(key)) geometryMap.set(key, m);
       });
-     const uniqueFeasible = Array.from(geometryMap.values());
+      const uniqueFeasible = Array.from(geometryMap.values());
       const uniqueCount = uniqueFeasible.length;
 
       // Compute cost PER UNIT CATCHMENT AREA for each unique feasible geometry
@@ -1531,20 +1527,20 @@ depths trade off between cost and hydrologic benefit.
         // customdata: [idx, eta, detH, dtpH, pond]
         custom.push([m.idx, eta, detH, dtpH, pond]);
 
+        // Row for CSV: geometry + all metrics + cost
         rowsForCSV.push({
           idx: m.idx,
           soilName: m.soilName,
           Peff_mm: m.Peff_catch_mm,
           area_ratio: ar,
           Ld_m: Ld,
-          tp_min: m.tp_min,           // [min]
-          eta_p_pct: eta,             // [%]
-          DetTime_h: detH,            // [h]
-          Delta_tp_h: dtpH,           // [h]
-          max_ponding_m: pond,        // [m]
-          npv_per_m2_catch            // [$/m² catchment]
+          tp_min: m.tp_min,          // [min]
+          eta_p_pct: eta,            // [%]
+          DetTime_h: detH,           // [h]
+          Delta_tp_h: dtpH,          // [h]
+          max_ponding_m: pond,       // [m]
+          npv_per_m2_catch           // [$/m² catchment]
         });
-
 
         if (npv_per_m2_catch < minCost) {
           minCost = npv_per_m2_catch;
@@ -1552,6 +1548,157 @@ depths trade off between cost and hydrologic benefit.
         }
       });
 
+      // Trace for all feasible designs
+      const traceAll = {
+        x, y, z,
+        mode: 'markers',
+        type: 'scatter3d',
+        name: 'Feasible designs',
+        customdata: custom,
+        marker: {
+          size: 5,
+          color: z,
+          colorscale: 'Viridis',
+          showscale: true,
+          colorbar: {
+            title: { text: 'NPV [$/m²]', side: 'right' },
+            thickness: 14,
+            len: 0.8,
+            outlinewidth: 2,
+            ticks: 'inside',
+            tickformat: '.0f'
+          },
+          line: {
+            width: 1.2,
+            color: 'rgba(0,0,0,0.6)'
+          }
+        },
+        hovertemplate:
+          'Area-ratio: %{x:.1f}%<br>' +
+          'LID depth: %{y:.2f} m<br>' +
+          'NPV cost: $%{z:.1f} per m² catchment<br>' +
+          'Peak reduction η_p: %{customdata[1]:.1f} %<br>' +
+          'Detention time: %{customdata[2]:.2f} h<br>' +
+          'Time-to-peak delay: %{customdata[3]:.2f} h<br>' +
+          'Max ponding depth: %{customdata[4]:.3f} m<extra></extra>'
+      };
+
+      // Highlight the minimum-cost design
+      let traceMin = null;
+      if (minIdx >= 0) {
+        traceMin = {
+          x: [x[minIdx]],
+          y: [y[minIdx]],
+          z: [z[minIdx]],
+          mode: 'markers',
+          type: 'scatter3d',
+          name: 'Min cost',
+          customdata: [custom[minIdx]],
+          marker: {
+            size: 7,
+            symbol: 'diamond',
+            color: 'red',
+            line: { width: 2, color: 'black' }
+          },
+          hovertemplate:
+            '<b>Minimum-cost design</b><br>' +
+            'Area-ratio: %{x:.1f}%<br>' +
+            'LID depth: %{y:.2f} m<br>' +
+            'NPV cost: $%{z:.1f} per m² catchment<br>' +
+            'Peak reduction η_p: %{customdata[1]:.1f} %<br>' +
+            'Detention time: %{customdata[2]:.2f} h<br>' +
+            'Time-to-peak delay: %{customdata[3]:.2f} h<br>' +
+            'Max ponding depth: %{customdata[4]:.3f} m<extra></extra>'
+        };
+      }
+
+      const peffLabel = formatPeffLabel(currentPeff);
+      const layout = {
+        title: `Lifecycle cost per catchment area — ${currentSoil}, Pef = ${peffLabel}`,
+        margin: { l: 0, r: 0, t: 40, b: 0 },
+        scene: {
+          xaxis: {
+            title: 'Area-ratio [%]',
+            zeroline: false,
+            showgrid: true,
+            gridcolor: '#e0e0e0',
+            ticks: 'outside',
+            ticklen: 4
+          },
+          yaxis: {
+            title: 'LID depth [m]',
+            zeroline: false,
+            showgrid: true,
+            gridcolor: '#e0e0e0',
+            ticks: 'outside',
+            ticklen: 4
+          },
+          zaxis: {
+            title: 'NPV cost [$/m² catchment]',
+            zeroline: false,
+            showgrid: true,
+            gridcolor: '#e0e0e0',
+            ticks: 'outside',
+            ticklen: 4
+          },
+          aspectmode: 'cube',
+          camera: {
+            eye: { x: 1.7, y: 1.7, z: 1.5 }
+          }
+        },
+        showlegend: true,
+        legend: {
+          x: 0.02,
+          y: 0.98,
+          bgcolor: 'rgba(255,255,255,0.8)',
+          borderwidth: 0
+        }
+      };
+
+      const data = traceMin ? [traceAll, traceMin] : [traceAll];
+
+      Plotly.react(div, data, layout, { responsive: true });
+
+      // Store data for CSV download
+      costPlotData = {
+        soil: currentSoil,
+        peff: currentPeff,
+        rows: rowsForCSV
+      };
+      const btnCost = document.getElementById('btn-download-cost');
+      if (btnCost) btnCost.disabled = !rowsForCSV.length;
+
+      // Clicking a cost point should also update the hydrograph
+      if (div && typeof div.on === 'function') {
+        div.on('plotly_click', ev => {
+          if (!ev.points || !ev.points.length) return;
+          const cd = ev.points[0].customdata;
+          const idx = Array.isArray(cd) ? cd[0] : cd;  // first element of [idx, eta, detH, ...]
+          if (idx === undefined || idx === null) return;
+          const scenario = metricsByIdx.get(idx);
+          if (!scenario) return;
+          renderHydrographForScenario(scenario);
+        });
+      }
+
+      // Update status text
+      const best = uniqueFeasible[minIdx];
+      if (best) {
+        statusDiv.textContent =
+          `Feasible designs (unique geometries): ${uniqueCount}. ` +
+          `Underlying feasible simulations: ${currentFeasibleSubset.length}. ` +
+          `Minimum NPV ≈ $${minCost.toFixed(1)} per m² of catchment at ` +
+          `area-ratio ${(best.area_ratio * 100).toFixed(1)}% and ` +
+          `LID depth ${best.Ld_m.toFixed(2)} m.`;
+      } else {
+        statusDiv.textContent =
+          `Feasible designs (unique geometries): ${uniqueCount}. ` +
+          `Underlying feasible simulations: ${currentFeasibleSubset.length}.`;
+      }
+
+      titleDiv.textContent =
+        `Lifecycle cost per catchment area — ${currentSoil}, Pef = ${peffLabel}`;
+    }
 
       // Trace for all feasible designs
       const traceAll = {

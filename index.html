@@ -1500,6 +1500,12 @@ depths trade off between cost and hydrologic benefit.
         const ar = m.area_ratio;
         const Ld = m.Ld_m;
 
+        // Hydrologic metrics for this design
+        const eta   = m.eta_p_pct;
+        const detH  = m.DetTime_min != null ? m.DetTime_min / 60.0 : null;   // h
+        const dtpH  = m.Delta_tp_min != null ? m.Delta_tp_min / 60.0 : null; // h
+        const pond  = m.max_ponding;
+
         const capex_per_m2_catch =
           costSettings.cVol * ar * Ld +
           costSettings.cSurf * ar;
@@ -1512,7 +1518,9 @@ depths trade off between cost and hydrologic benefit.
         x.push(ar * 100.0);
         y.push(Ld);
         z.push(npv_per_m2_catch);
-        custom.push(m.idx);
+
+        // customdata: [idx, eta, detH, dtpH, pond]
+        custom.push([m.idx, eta, detH, dtpH, pond]);
 
         rowsForCSV.push({
           idx: m.idx,
@@ -1529,6 +1537,7 @@ depths trade off between cost and hydrologic benefit.
           minIdx = k;
         }
       });
+
 
       // Trace for all feasible designs
       const traceAll = {
@@ -1558,7 +1567,11 @@ depths trade off between cost and hydrologic benefit.
         hovertemplate:
           'Area-ratio: %{x:.1f}%<br>' +
           'LID depth: %{y:.2f} m<br>' +
-          'NPV cost: $%{z:.1f} per m² catchment<extra></extra>'
+          'NPV cost: $%{z:.1f} per m² catchment<br>' +
+          'Peak reduction η_p: %{customdata[1]:.1f} %<br>' +
+          'Detention time: %{customdata[2]:.2f} h<br>' +
+          'Time-to-peak delay: %{customdata[3]:.2f} h<br>' +
+          'Max ponding depth: %{customdata[4]:.3f} m<extra></extra>'
       };
 
       // Highlight the minimum-cost design
@@ -1582,7 +1595,11 @@ depths trade off between cost and hydrologic benefit.
             '<b>Minimum-cost design</b><br>' +
             'Area-ratio: %{x:.1f}%<br>' +
             'LID depth: %{y:.2f} m<br>' +
-            'NPV cost: $%{z:.1f} per m² catchment<extra></extra>'
+            'NPV cost: $%{z:.1f} per m² catchment<br>' +
+            'Peak reduction η_p: %{customdata[1]:.1f} %<br>' +
+            'Detention time: %{customdata[2]:.2f} h<br>' +
+            'Time-to-peak delay: %{customdata[3]:.2f} h<br>' +
+            'Max ponding depth: %{customdata[4]:.3f} m<extra></extra>'
         };
       }
 

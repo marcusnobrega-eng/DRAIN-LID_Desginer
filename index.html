@@ -273,6 +273,132 @@
     </span>
   </div>
 
+  <div class="controls">
+    <div class="control-group">
+      <label for="soil-select">Soil type</label>
+      <select id="soil-select" disabled></select>
+    </div>
+
+    <div class="control-group">
+      <label for="peff-select">Effective precipitation, Pef</label>
+      <select id="peff-select" disabled></select>
+    </div>
+
+    <div class="control-group">
+      <label for="tp-min-input">Min inflow time to peak t<sub>p</sub> [min]</label>
+      <input type="number" id="tp-min-input" step="1" />
+    </div>
+
+    <div class="control-group">
+      <label for="tp-max-input">Max inflow time to peak t<sub>p</sub> [min]</label>
+      <input type="number" id="tp-max-input" step="1" />
+    </div>
+
+    <div class="control-group">
+      <label for="min-eta-input">Min peak flow reduction [%]</label>
+      <input type="number" id="min-eta-input" value="60" step="5" />
+    </div>
+
+    <div class="control-group">
+      <label for="min-det-h-input">Min detention time [h]</label>
+      <input type="number" id="min-det-h-input" value="4" step="0.5" />
+    </div>
+
+    <div class="control-group">
+      <label for="min-delay-h-input">Min time-to-peak delay [h]</label>
+      <input type="number" id="min-delay-h-input" value="0" step="0.25" />
+    </div>
+
+    <div class="control-group">
+      <label for="max-pond-m-input">Max ponding depth [m]</label>
+      <input type="number" id="max-pond-m-input" value="0.30" step="0.05" />
+    </div>
+
+    <div class="control-group">
+      <label for="c-vol-input">c<sub>vol</sub> — excavation + media [\$/m³]</label>
+      <input type="number" id="c-vol-input" value="210" step="10" />
+    </div>
+
+    <div class="control-group">
+      <label for="c-surf-input">c<sub>surf</sub> — surface works [\$/m²]</label>
+      <input type="number" id="c-surf-input" value="55" step="5" />
+    </div>
+
+    <div class="control-group">
+      <label for="c-om-input">c<sub>O&amp;M</sub> — annual O&amp;M [\$/m²/yr]</label>
+      <input type="number" id="c-om-input" value="6" step="1" />
+    </div>
+
+    <div class="control-group">
+      <label for="design-life-input">Design life T [years]</label>
+      <input type="number" id="design-life-input" value="30" step="1" />
+    </div>
+
+    <div class="control-group">
+      <label for="discount-rate-input">Discount rate i [-]</label>
+      <input type="number" id="discount-rate-input" value="0.03" step="0.005" />
+    </div>
+  </div>
+
+  <div class="plots-row">
+    <div class="plot-panel">
+      <div id="plot-eta" class="plot-div"></div>
+      <button id="btn-download-eta" disabled>Download CSV</button>
+    </div>
+    <div class="plot-panel">
+      <div id="plot-det" class="plot-div"></div>
+      <button id="btn-download-det" disabled>Download CSV</button>
+    </div>
+    <div class="plot-panel">
+      <div id="plot-dtp" class="plot-div"></div>
+      <button id="btn-download-dtp" disabled>Download CSV</button>
+    </div>
+    <div class="plot-panel">
+      <div id="plot-pond" class="plot-div"></div>
+      <button id="btn-download-pond" disabled>Download CSV</button>
+    </div>
+  </div>
+
+  <div class="hydro-panel">
+    <div class="hydro-header">
+      <div id="hydro-title">Hydrographs — no scenario selected yet</div>
+      <button id="btn-download" disabled>Download CSV</button>
+    </div>
+    <div id="hydro-plot"></div>
+    <div id="status" class="status">Loading data…</div>
+    <div class="legend-note">
+      Markers with outline only correspond to designs for which the solver
+      failed or violated ponding constraints. Hydrographs are shown in
+      normalized flux units (mm/h) over the LID surface. Due to size
+      limitations, only solutions with peak flow reductions of 20–50% are
+      stored for the first 24&nbsp;h, although the model is run for 48&nbsp;h.
+    </div>
+  </div>
+
+  <div class="cost-panel">
+    <div class="hydro-header">
+      <div id="cost-title">Lifecycle cost — no feasible set yet</div>
+      <button id="btn-download-cost" disabled>Download CSV</button>
+    </div>
+    <div id="cost-plot"></div>
+    <div id="cost-status" class="status">
+      Set hydrologic filters and select a soil and Pef to see cost–performance results.
+    </div>
+  </div>
+
+  <div class="about-box">
+    <p>
+      <strong>About this explorer.</strong>
+      This interactive tool was developed by Marcus N. Gomes Jr., PhD. To
+      visualize the design space of infiltration-based Low Impact Development
+      systems simulated with the DRAIN-LID model. Each point represents a
+      numerical solution of a mixed-form Richards equation coupled to a
+      structural drainage module under a specified inflow hydrograph and media
+      configuration. The area-ratio axis shows the ratio between the LID
+      surface and the contributing catchment area.
+    </p>
+  </div>
+
   <section id="methods-background" class="method-panel">
     <h2>How the Model Works</h2>
     <p>
@@ -592,132 +718,6 @@ depths trade off between cost and hydrologic benefit.
       cost-performance analysis.
     </p>
 
-
-  <div class="controls">
-    <div class="control-group">
-      <label for="soil-select">Soil type</label>
-      <select id="soil-select" disabled></select>
-    </div>
-
-    <div class="control-group">
-      <label for="peff-select">Effective precipitation, Pef</label>
-      <select id="peff-select" disabled></select>
-    </div>
-
-    <div class="control-group">
-      <label for="tp-min-input">Min inflow time to peak t<sub>p</sub> [min]</label>
-      <input type="number" id="tp-min-input" step="1" />
-    </div>
-
-    <div class="control-group">
-      <label for="tp-max-input">Max inflow time to peak t<sub>p</sub> [min]</label>
-      <input type="number" id="tp-max-input" step="1" />
-    </div>
-
-    <div class="control-group">
-      <label for="min-eta-input">Min peak flow reduction [%]</label>
-      <input type="number" id="min-eta-input" value="60" step="5" />
-    </div>
-
-    <div class="control-group">
-      <label for="min-det-h-input">Min detention time [h]</label>
-      <input type="number" id="min-det-h-input" value="4" step="0.5" />
-    </div>
-
-    <div class="control-group">
-      <label for="min-delay-h-input">Min time-to-peak delay [h]</label>
-      <input type="number" id="min-delay-h-input" value="0" step="0.25" />
-    </div>
-
-    <div class="control-group">
-      <label for="max-pond-m-input">Max ponding depth [m]</label>
-      <input type="number" id="max-pond-m-input" value="0.30" step="0.05" />
-    </div>
-
-    <div class="control-group">
-      <label for="c-vol-input">c<sub>vol</sub> — excavation + media [\$/m³]</label>
-      <input type="number" id="c-vol-input" value="210" step="10" />
-    </div>
-
-    <div class="control-group">
-      <label for="c-surf-input">c<sub>surf</sub> — surface works [\$/m²]</label>
-      <input type="number" id="c-surf-input" value="55" step="5" />
-    </div>
-
-    <div class="control-group">
-      <label for="c-om-input">c<sub>O&amp;M</sub> — annual O&amp;M [\$/m²/yr]</label>
-      <input type="number" id="c-om-input" value="6" step="1" />
-    </div>
-
-    <div class="control-group">
-      <label for="design-life-input">Design life T [years]</label>
-      <input type="number" id="design-life-input" value="30" step="1" />
-    </div>
-
-    <div class="control-group">
-      <label for="discount-rate-input">Discount rate i [-]</label>
-      <input type="number" id="discount-rate-input" value="0.03" step="0.005" />
-    </div>
-  </div>
-
-  <div class="plots-row">
-    <div class="plot-panel">
-      <div id="plot-eta" class="plot-div"></div>
-      <button id="btn-download-eta" disabled>Download CSV</button>
-    </div>
-    <div class="plot-panel">
-      <div id="plot-det" class="plot-div"></div>
-      <button id="btn-download-det" disabled>Download CSV</button>
-    </div>
-    <div class="plot-panel">
-      <div id="plot-dtp" class="plot-div"></div>
-      <button id="btn-download-dtp" disabled>Download CSV</button>
-    </div>
-    <div class="plot-panel">
-      <div id="plot-pond" class="plot-div"></div>
-      <button id="btn-download-pond" disabled>Download CSV</button>
-    </div>
-  </div>
-
-  <div class="hydro-panel">
-    <div class="hydro-header">
-      <div id="hydro-title">Hydrographs — no scenario selected yet</div>
-      <button id="btn-download" disabled>Download CSV</button>
-    </div>
-    <div id="hydro-plot"></div>
-    <div id="status" class="status">Loading data…</div>
-    <div class="legend-note">
-      Markers with outline only correspond to designs for which the solver
-      failed or violated ponding constraints. Hydrographs are shown in
-      normalized flux units (mm/h) over the LID surface. Due to size
-      limitations, only solutions with peak flow reductions of 20–50% are
-      stored for the first 24&nbsp;h, although the model is run for 48&nbsp;h.
-    </div>
-  </div>
-
-  <div class="cost-panel">
-    <div class="hydro-header">
-      <div id="cost-title">Lifecycle cost — no feasible set yet</div>
-      <button id="btn-download-cost" disabled>Download CSV</button>
-    </div>
-    <div id="cost-plot"></div>
-    <div id="cost-status" class="status">
-      Set hydrologic filters and select a soil and Pef to see cost–performance results.
-    </div>
-  </div>
-
-  <div class="about-box">
-    <p>
-      <strong>About this explorer.</strong>
-      This interactive tool was developed by Marcus N. Gomes Jr., PhD. To
-      visualize the design space of infiltration-based Low Impact Development
-      systems simulated with the DRAIN-LID model. Each point represents a
-      numerical solution of a mixed-form Richards equation coupled to a
-      structural drainage module under a specified inflow hydrograph and media
-      configuration. The area-ratio axis shows the ratio between the LID
-      surface and the contributing catchment area.
-    </p>
-  </div>
 
   <script>
     // ========= CONFIG =======================================================

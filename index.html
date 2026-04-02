@@ -5,10 +5,8 @@
   <title>DRAIN-LID Design Performance Explorer</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-  <!-- Plotly -->
   <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
 
-  <!-- MathJax JUST for the soil-parameter line -->
   <script>
     window.MathJax = {
       tex: { inlineMath: [['\\(','\\)'], ['$', '$']] },
@@ -17,190 +15,589 @@
   </script>
   <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
 
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=DM+Serif+Display:ital@0;1&family=JetBrains+Mono:wght@400;700&display=swap"
+    rel="stylesheet"
+  />
+
   <style>
     :root {
-      --bg: #ffffff;
-      --fg: #222222;
-      --accent: #1f77b4;
-      --muted: #777777;
-      --border: #dddddd;
-      --panel-bg: #f8f8f8;
-      --font-main: "Palatino Linotype", "Book Antiqua", Palatino, "Times New Roman", serif;
+      --navy: #1a3a5c;
+      --navy-dk: #0f2540;
+      --navy-lt: #2d5a8e;
+      --teal: #0d9488;
+      --teal-lt: #99f6e4;
+      --teal-bg: #f0fdfa;
+      --bg: #f0f4f8;
+      --surface: #ffffff;
+      --surface-2: #f8fafc;
+      --ink: #1e293b;
+      --muted: #64748b;
+      --border: #e2e8f0;
+      --shadow: 0 12px 32px rgba(15, 37, 64, 0.08);
+      --font-serif: "DM Serif Display", serif;
+      --font-sans: "DM Sans", sans-serif;
+      --font-mono: "JetBrains Mono", monospace;
+      --radius-lg: 18px;
+      --radius-md: 12px;
+      --radius-sm: 10px;
+      --maxw: 1380px;
     }
 
-    * {
-      box-sizing: border-box;
-    }
-
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
     body {
       margin: 0;
-      padding: 1.5rem;
-      font-family: var(--font-main);
+      font-family: var(--font-sans);
       background: var(--bg);
-      color: var(--fg);
+      color: var(--ink);
+      line-height: 1.6;
     }
 
-    .page-header {
+    a { color: inherit; }
+
+    #shared-nav {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      padding: 1rem 2rem;
+      background: rgba(26, 58, 92, 0.95);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .nav-brand {
+      font-family: var(--font-serif);
+      font-size: 1.85rem;
+      color: #fff;
+      text-decoration: none;
+      letter-spacing: 0.02em;
+    }
+
+    .accent-dot { color: var(--teal); }
+
+    .nav-links {
+      list-style: none;
+      display: flex;
+      gap: 1.4rem;
+      margin: 0;
+      padding: 0;
+      flex-wrap: wrap;
+    }
+
+    .nav-links a {
+      color: #fff;
+      text-decoration: none;
+      font-weight: 500;
+      border-bottom: 2px solid transparent;
+      padding-bottom: 0.15rem;
+      transition: color .2s ease, border-color .2s ease;
+    }
+
+    .nav-links a:hover,
+    .nav-links a.active {
+      color: var(--teal-lt);
+      border-bottom-color: var(--teal);
+    }
+
+    .hero {
+      background:
+        radial-gradient(circle at top right, rgba(13,148,136,0.18), transparent 28%),
+        linear-gradient(135deg, var(--navy-dk) 0%, var(--navy) 100%);
+      color: white;
+      padding: 3.25rem 2rem 3rem 2rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-inner {
+      max-width: var(--maxw);
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: minmax(0, 1.35fr) minmax(320px, 0.9fr);
+      gap: 2rem;
+      align-items: stretch;
+    }
+
+    .hero-copy {
+      padding-right: 0.5rem;
+    }
+
+    .hero-badge {
+      display: inline-block;
+      background: rgba(255,255,255,0.09);
+      border: 1px solid rgba(255,255,255,0.15);
+      color: var(--teal-lt);
+      padding: 0.35rem 1rem;
+      border-radius: 999px;
+      font-size: 0.86rem;
+      margin-bottom: 1.15rem;
+    }
+
+    .hero h1 {
+      margin: 0 0 0.5rem 0;
+      font-family: var(--font-serif);
+      font-size: clamp(2.35rem, 5vw, 4.2rem);
+      font-weight: 400;
+      line-height: 1.05;
+      letter-spacing: 0.01em;
+    }
+
+    .hero-subtitle {
+      margin: 0 0 1.15rem 0;
+      font-size: clamp(1rem, 1.6vw, 1.18rem);
+      color: #dbe5f0;
+      max-width: 820px;
+    }
+
+    .hero-note {
+      margin: 0;
+      color: #cbd5e1;
+      font-size: 0.95rem;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 0.9rem;
+      flex-wrap: wrap;
+      margin-top: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 0.9rem 1.3rem;
+      border-radius: 999px;
+      text-decoration: none;
+      font-weight: 700;
+      transition: all .2s ease;
+      cursor: pointer;
+    }
+
+    .btn-primary {
+      background: #fff;
+      color: var(--teal);
+      border: 2px solid #fff;
+    }
+    .btn-primary:hover {
+      background: transparent;
+      color: #fff;
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: #fff;
+      border: 2px solid rgba(255,255,255,0.75);
+    }
+    .btn-secondary:hover {
+      background: rgba(255,255,255,0.08);
+    }
+
+    .hero-stats {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(120px, 1fr));
+      gap: 0.8rem;
+      max-width: 820px;
+    }
+
+    .stat-pill {
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 16px;
+      padding: 0.85rem 1rem;
+      min-height: 88px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .stat-value {
+      font-family: var(--font-serif);
+      font-size: 1.45rem;
+      line-height: 1;
+      margin-bottom: 0.25rem;
+    }
+
+    .stat-label {
+      color: #d7e1eb;
+      font-size: 0.88rem;
+    }
+
+    .hero-card {
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 24px;
+      padding: 1.25rem;
+      backdrop-filter: blur(8px);
+      box-shadow: 0 18px 42px rgba(0,0,0,0.16);
+      align-self: stretch;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .hero-card h3 {
+      margin: 0;
+      font-family: var(--font-serif);
+      font-size: 1.4rem;
+      font-weight: 400;
+    }
+
+    .hero-card p {
+      margin: 0;
+      color: #dbe5f0;
+      font-size: 0.95rem;
+    }
+
+    .institution-logos {
+      display: flex;
+      gap: 0.9rem;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .inst-logo {
+      background: rgba(255,255,255,0.95);
+      border-radius: 14px;
+      padding: 0.55rem 0.8rem;
+      min-height: 72px;
+      min-width: 128px;
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      gap: 1rem;
-      margin-bottom: 0.75rem;
+      justify-content: center;
+      border: 1px solid rgba(255,255,255,0.25);
     }
 
-    h1 {
-      font-size: 1.6rem;
-      margin: 0;
+    .inst-logo img {
+      max-height: 42px;
+      width: auto;
+      display: block;
+      object-fit: contain;
     }
 
-    .subtitle {
-      margin: 0.15rem 0 0 0;
-      font-size: 0.9rem;
-      color: var(--muted);
+    .inst-logo.placeholder {
+      color: var(--navy);
+      font-size: 0.8rem;
+      text-align: center;
+      line-height: 1.35;
+      font-weight: 700;
+      font-family: var(--font-mono);
     }
 
-    .logo-box img {
-      max-height: 64px;
+    .hero-logo-main {
+      background: rgba(255,255,255,0.95);
+      border-radius: 16px;
+      padding: 0.85rem 1rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: fit-content;
+    }
+
+    .hero-logo-main img {
+      max-height: 76px;
       width: auto;
       display: block;
     }
 
-    .soil-params-wrapper {
-      margin: 0.25rem 0 0.75rem 0;
-      padding: 0.4rem 0.75rem;
-      border-radius: 0.5rem;
-      background: #fbfbfb;
-      border: 1px solid #eeeeee;
+    .container {
+      max-width: var(--maxw);
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    .quick-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 1.1rem;
+      margin-top: -2rem;
+      position: relative;
+      z-index: 5;
+    }
+
+    .info-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-top: 4px solid var(--teal);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow);
+      padding: 1.25rem 1.25rem 1.15rem 1.25rem;
+    }
+
+    .info-card h3 {
+      margin: 0 0 0.45rem 0;
+      color: var(--navy);
+      font-family: var(--font-serif);
+      font-size: 1.35rem;
+      font-weight: 400;
+    }
+
+    .info-card p {
+      margin: 0;
+      color: var(--muted);
       font-size: 0.95rem;
     }
 
+    .section-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      margin: 2.4rem 0 1.1rem 0;
+    }
+
+    .section-title h2 {
+      margin: 0;
+      font-family: var(--font-serif);
+      font-weight: 400;
+      font-size: clamp(1.8rem, 3vw, 2.5rem);
+      color: var(--navy);
+    }
+
+    .section-kicker {
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--teal);
+    }
+
+    .section-intro {
+      color: var(--muted);
+      margin: 0 0 1.4rem 0;
+      max-width: 980px;
+    }
+
+    .explorer-shell {
+      display: grid;
+      gap: 1rem;
+    }
+
+    .surface-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .panel-header {
+      padding: 1rem 1.2rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      background: linear-gradient(180deg, #ffffff 0%, #f8fbfd 100%);
+    }
+
+    .panel-header h3 {
+      margin: 0;
+      color: var(--navy);
+      font-family: var(--font-serif);
+      font-weight: 400;
+      font-size: 1.25rem;
+    }
+
+    .panel-body {
+      padding: 1.15rem 1.2rem 1.25rem 1.2rem;
+    }
+
+    .soil-params-wrapper {
+      margin: 0;
+      padding: 0.9rem 1.1rem;
+      border-radius: var(--radius-md);
+      background: var(--teal-bg);
+      border: 1px solid #ccfbf1;
+      font-size: 0.98rem;
+      color: var(--navy);
+    }
+
+    .figure-row {
+      display: grid;
+      grid-template-columns: minmax(280px, 1fr) minmax(0, 2fr);
+      gap: 1rem;
+      align-items: stretch;
+    }
+
     .concept-figure {
-      margin: 1rem 0 1.25rem 0;
+      margin: 0;
       text-align: center;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 1rem;
+      height: 100%;
     }
 
     .concept-figure img {
       max-width: 100%;
+      width: 100%;
       height: auto;
+      border-radius: 10px;
     }
 
     .concept-figure .caption {
-      font-size: 0.8rem;
+      font-size: 0.82rem;
       color: var(--muted);
-      margin-top: 0.35rem;
+      margin-top: 0.55rem;
+    }
+
+    .summary-stack {
+      display: grid;
+      gap: 1rem;
+    }
+
+    .mini-card {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 1rem 1.05rem;
+    }
+
+    .mini-card h4 {
+      margin: 0 0 0.35rem 0;
+      color: var(--navy);
+      font-size: 1rem;
+    }
+
+    .mini-card p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.92rem;
     }
 
     .controls {
-      display: flex;
-      flex-wrap: wrap;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
       gap: 1rem;
-      padding: 0.9rem;
-      margin-bottom: 1rem;
-      background: var(--panel-bg);
-      border-radius: 0.75rem;
-      border: 1px solid var(--border);
+      padding: 0;
+      margin: 0;
+      background: transparent;
+      border: 0;
     }
 
     .control-group {
       display: flex;
       flex-direction: column;
-      min-width: 200px;
+      min-width: 0;
     }
 
     .control-group label {
-      font-size: 0.85rem;
-      margin-bottom: 0.25rem;
+      font-size: 0.84rem;
+      margin-bottom: 0.35rem;
       color: var(--muted);
+      font-weight: 600;
     }
 
-    select {
-      padding: 0.35rem 0.5rem;
-      border-radius: 0.5rem;
+    select,
+    input[type="number"] {
+      width: 100%;
+      padding: 0.8rem 0.9rem;
+      border-radius: 12px;
       border: 1px solid var(--border);
-      font-size: 0.9rem;
+      font-size: 0.95rem;
       background: #fff;
-      cursor: pointer;
+      color: var(--ink);
+      transition: border-color .2s ease, box-shadow .2s ease;
     }
 
-    select:disabled {
-      background: #f0f0f0;
+    select:focus,
+    input[type="number"]:focus {
+      outline: none;
+      border-color: var(--teal);
+      box-shadow: 0 0 0 4px rgba(13,148,136,0.12);
+    }
+
+    select:disabled,
+    input[type="number"]:disabled {
+      background: #f1f5f9;
       cursor: not-allowed;
-      color: #aaaaaa;
+      color: #94a3b8;
     }
 
     .plots-row {
       display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 0.75rem;
-      margin-bottom: 1rem;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1rem;
+      margin-bottom: 0;
+    }
+
+    .plot-panel,
+    .hydro-panel,
+    .cost-panel {
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border);
+      padding: 0;
+      background: #ffffff;
+      box-shadow: var(--shadow);
+      overflow: hidden;
     }
 
     .plot-panel {
-      border-radius: 0.75rem;
-      border: 1px solid var(--border);
-      padding: 0.25rem;
-      background: #ffffff;
+      padding: 0.35rem 0.35rem 0.8rem 0.35rem;
     }
 
     .plot-div {
       width: 100%;
-      height: 360px;
+      height: 390px;
     }
 
-    .hydro-panel {
-      margin-top: 0.75rem;
-      border-radius: 0.75rem;
-      border: 1px solid var(--border);
-      padding: 0.5rem 0.75rem 0.75rem 0.75rem;
-      background: #ffffff;
-    }
-
-    #hydro-plot {
+    #hydro-plot,
+    #cost-plot {
       width: 100%;
-      height: 260px;
+      height: 310px;
+    }
+
+    .hydro-panel,
+    .cost-panel {
+      margin-top: 0;
     }
 
     .hydro-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
+      gap: 0.75rem;
       margin-bottom: 0.25rem;
+      padding: 1rem 1.15rem 0 1.15rem;
     }
 
-    .status {
-      margin-top: 0.35rem;
-      font-size: 0.8rem;
+    .status,
+    .legend-note {
+      margin-top: 0.45rem;
+      font-size: 0.84rem;
       color: var(--muted);
+      padding: 0 1.15rem 1rem 1.15rem;
     }
 
     .status.error {
       color: #b00020;
     }
 
-    .legend-note {
-      margin-top: 0.4rem;
-      font-size: 0.8rem;
-      color: var(--muted);
-    }
-
-    .about-box {
-      margin-top: 1.0rem;
-      font-size: 0.85rem;
-      color: var(--muted);
-      line-height: 1.4;
-    }
-
-    .about-box strong {
-      color: #444;
-    }
-
     button {
-      padding: 0.3rem 0.7rem;
-      font-size: 0.8rem;
-      border-radius: 0.4rem;
+      padding: 0.65rem 1rem;
+      font-size: 0.85rem;
+      border-radius: 999px;
       border: 1px solid var(--border);
-      background: #f4f4f4;
+      background: var(--surface-2);
+      color: var(--navy);
       cursor: pointer;
+      font-weight: 700;
+      transition: all .2s ease;
+    }
+
+    button:hover:not(:disabled) {
+      transform: translateY(-1px);
+      border-color: var(--teal);
+      color: var(--teal);
     }
 
     button:disabled {
@@ -208,225 +605,470 @@
       opacity: 0.5;
     }
 
-    input[type="number"] {
-      padding: 0.35rem 0.5rem;
-      border-radius: 0.5rem;
+    .about-box {
+      margin-top: 0;
+      font-size: 0.95rem;
+      color: var(--muted);
+      line-height: 1.7;
+      background: var(--surface);
       border: 1px solid var(--border);
-      font-size: 0.9rem;
-      width: 100%;
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow);
+      padding: 1.2rem 1.25rem;
     }
 
-    input[type="number"]:disabled {
-      background: #f0f0f0;
-      cursor: not-allowed;
-      color: #aaaaaa;
-    }
-
-    .cost-panel {
-      margin-top: 0.75rem;
-      border-radius: 0.75rem;
-      border: 1px solid var(--border);
-      padding: 0.5rem 0.75rem 0.75rem 0.75rem;
-      background: #ffffff;
-    }
-
-    #cost-plot {
-      width: 100%;
-      height: 260px;
+    .about-box strong {
+      color: var(--navy);
     }
 
     .method-panel {
-      background: var(--panel-bg, #f8f8f8);
-      border: 1px solid var(--border, #dddddd);
-      border-radius: 8px;
-      padding: 1.5rem 1.75rem;
-      margin-bottom: 1.5rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow);
+      padding: 1.75rem 1.8rem;
+      margin-bottom: 0;
     }
 
     .method-panel h2 {
       margin-top: 0;
-      margin-bottom: 0.75rem;
-      font-size: 1.3rem;
+      margin-bottom: 0.85rem;
+      font-family: var(--font-serif);
+      font-weight: 400;
+      font-size: 2rem;
+      color: var(--navy);
     }
 
     .method-panel h3 {
-      margin-top: 1.1rem;
+      margin-top: 1.35rem;
+      margin-bottom: 0.45rem;
+      font-family: var(--font-serif);
+      font-weight: 400;
+      font-size: 1.35rem;
+      color: var(--navy);
+    }
+
+    .method-panel h4 {
+      margin-top: 1rem;
       margin-bottom: 0.35rem;
-      font-size: 1.05rem;
+      font-size: 1rem;
+      color: var(--navy-lt);
     }
 
     .method-panel p {
-      margin: 0.3rem 0;
-      line-height: 1.4;
+      margin: 0.35rem 0;
+      line-height: 1.7;
+      color: #334155;
     }
 
     .method-panel ul {
-      margin: 0.4rem 0 0.8rem 1.25rem;
+      margin: 0.5rem 0 0.9rem 1.25rem;
       padding: 0;
+      color: #334155;
+    }
+
+    .method-panel li {
+      margin-bottom: 0.38rem;
     }
 
     .method-panel .math {
-      margin: 0.4rem 0 0.7rem;
+      margin: 0.6rem 0 0.85rem;
+      padding: 0.2rem 0;
+    }
+
+    .shared-footer {
+      background: var(--navy-dk);
+      color: #cbd5e1;
+      margin-top: 2.5rem;
+      padding: 1.6rem 2rem 1.9rem;
+      border-top: 4px solid var(--teal);
+    }
+
+    .footer-inner {
+      max-width: var(--maxw);
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+      align-items: center;
+      font-size: 0.9rem;
+    }
+
+    .footer-brand {
+      font-family: var(--font-serif);
+      font-size: 1.25rem;
+      color: #fff;
+    }
+
+    .footer-meta {
+      color: #94a3b8;
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+    }
+
+    @media (max-width: 1080px) {
+      .hero-inner,
+      .figure-row,
+      .quick-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-stats {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 820px) {
+      #shared-nav {
+        padding: 0.9rem 1rem;
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .container,
+      .hero {
+        padding-left: 1rem;
+        padding-right: 1rem;
+      }
+
+      .plots-row {
+        grid-template-columns: 1fr;
+      }
+
+      .hydro-header,
+      .section-title {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .hero-stats {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
 </head>
 <body>
-  <div class="page-header">
-    <div>
-      <h1>DRAIN-LID Design Performance Explorer</h1>
-      <p class="subtitle">
-        Interactive design-space visualization from the DRAIN-LID database.
-        For detailed parameter and model descriptions, please scroll to the bottom of this page.
-        <strong>If you are using a mobile phone, use it horizontally.</strong>
+  <nav id="shared-nav">
+    <a href="#" class="nav-brand">DRAIN-LID<span class="accent-dot">.</span></a>
+    <ul class="nav-links">
+      <li><a href="#explorer" class="active">Explorer</a></li>
+      <li><a href="#methods">Methods</a></li>
+      <li><a href="#about-project">About</a></li>
+    </ul>
+  </nav>
+
+  <section class="hero">
+    <div class="hero-inner">
+      <div class="hero-copy">
+        <div class="hero-badge">Physics-based LID design space explorer</div>
+        <h1>DRAIN-LID Design Performance Explorer</h1>
+        <p class="hero-subtitle">
+          Interactive visualization of infiltration-based Low Impact Development performance using
+          a Richards-equation-based simulation database, paired with lifecycle cost screening and
+          hydrograph diagnostics.
+        </p>
+        <p class="hero-note">
+          Explore how soil type, effective rainfall, area ratio, media depth, and inflow timing shape
+          attenuation, detention, ponding, and cost. On mobile, this page works best in landscape mode.
+        </p>
+
+        <div class="hero-actions">
+          <a class="btn btn-primary" href="#explorer">Open explorer</a>
+          <a class="btn btn-secondary" href="#methods">See model details</a>
+        </div>
+
+        <div class="hero-stats">
+          <div class="stat-pill">
+            <div class="stat-value">4</div>
+            <div class="stat-label">Interactive 3D performance views</div>
+          </div>
+          <div class="stat-pill">
+            <div class="stat-value">1D</div>
+            <div class="stat-label">Richards-based vertical flow core</div>
+          </div>
+          <div class="stat-pill">
+            <div class="stat-value">NPV</div>
+            <div class="stat-label">Lifecycle cost screening built in</div>
+          </div>
+          <div class="stat-pill">
+            <div class="stat-value">CSV</div>
+            <div class="stat-label">Direct export for each analysis panel</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="hero-card">
+        <div class="hero-logo-main" id="logo-box"></div>
+        <div>
+          <h3>Institutional context</h3>
+          <p>
+            This interface can display your project logo together with Stanford and University of Arizona
+            logos. Add the PNG files to your GitHub page directory and they will appear automatically.
+          </p>
+        </div>
+
+        <div class="institution-logos">
+          <div class="inst-logo" id="stanford-logo-box">
+            <div class="inst-logo placeholder">STANFORD<br>PNG</div>
+          </div>
+          <div class="inst-logo" id="uofa-logo-box">
+            <div class="inst-logo placeholder">UOFA<br>PNG</div>
+          </div>
+        </div>
+
+        <div class="mini-card">
+          <h4>Suggested filenames</h4>
+          <p>
+            <code>drainlid_logo.png</code>,
+            <code>stanford_logo.png</code>,
+            <code>uofa_logo.png</code>.
+            You can keep them in the same folder as this HTML file for the simplest GitHub Pages setup.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <main class="container">
+    <section class="quick-grid">
+      <div class="info-card">
+        <h3>Design-space navigation</h3>
+        <p>
+          Four coordinated 3D views let users inspect peak reduction, detention time, time-to-peak delay,
+          and maximum ponding across area ratio, media depth, and inflow timing.
+        </p>
+      </div>
+      <div class="info-card">
+        <h3>Hydrograph interrogation</h3>
+        <p>
+          Clicking any design point updates the inflow–outflow hydrograph panel, making it easy to move
+          from abstract performance metrics to physically interpretable event response.
+        </p>
+      </div>
+      <div class="info-card">
+        <h3>Cost-performance filtering</h3>
+        <p>
+          Hydrologic thresholds and lifecycle assumptions can be changed directly in the interface so
+          feasible designs can be screened with transparent, editable decision criteria.
+        </p>
+      </div>
+    </section>
+
+    <section id="explorer">
+      <div class="section-title">
+        <div>
+          <div class="section-kicker">Interactive dashboard</div>
+          <h2>Explore the simulated design landscape</h2>
+        </div>
+      </div>
+      <p class="section-intro">
+        The layout below was reworked to feel more like a polished scientific web application:
+        a strong hero, cleaner card hierarchy, consistent typography, clearer grouping of controls,
+        and a more deliberate visual rhythm inspired by your previous X-WHAT project.
       </p>
-    </div>
-    <div class="logo-box" id="logo-box">
-      <!-- Logo gets injected here if LOGO_URL is set in JS -->
-    </div>
-  </div>
 
-  <div class="soil-params-wrapper">
-    <span id="soil-params">
-      <!-- Filled by JS, rendered with MathJax -->
-    </span>
-  </div>
+      <div class="explorer-shell">
+        <div class="surface-card">
+          <div class="panel-header">
+            <h3>Project overview</h3>
+            <span class="section-kicker">DRAIN-LID database</span>
+          </div>
+          <div class="panel-body" style="display:grid; gap:1rem;">
+            <div class="soil-params-wrapper">
+              <span id="soil-params"></span>
+            </div>
 
-  <!-- Conceptual layout figure -->
-  <div class="concept-figure">
-    <img src="Problem_Layout.png"
-         alt="Conceptual cross-section of the bioretention cell showing inflow, infiltration, percolation, soil storage, and underdrain outflow.">
-    <div class="caption">
-      Conceptual layout of the bioretention cell and main modeled fluxes.
-    </div>
-  </div>
+            <div class="figure-row">
+              <div class="concept-figure">
+                <img src="Problem_Layout.png"
+                  alt="Conceptual cross-section of the bioretention cell showing inflow, infiltration, percolation, soil storage, and underdrain outflow.">
+                <div class="caption">
+                  Conceptual layout of the bioretention cell and principal modeled fluxes.
+                </div>
+              </div>
 
-  <div class="controls">
-    <div class="control-group">
-      <label for="soil-select">Soil type</label>
-      <select id="soil-select" disabled></select>
-    </div>
+              <div class="summary-stack">
+                <div class="mini-card">
+                  <h4>What this page shows</h4>
+                  <p>
+                    Each point corresponds to one numerical solution from the DRAIN-LID database.
+                    The axes represent area ratio, LID media depth, and inflow time to peak.
+                  </p>
+                </div>
+                <div class="mini-card">
+                  <h4>How to use it</h4>
+                  <p>
+                    First select a soil and effective precipitation depth. Then tighten the hydrologic
+                    and cost filters. Click any 3D point to reveal the corresponding hydrographs.
+                  </p>
+                </div>
+                <div class="mini-card">
+                  <h4>Why the layout changed</h4>
+                  <p>
+                    The page now separates overview, controls, plots, diagnostics, and documentation
+                    into distinct surfaces with stronger typography, spacing, and institutional branding.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
 
-    <div class="control-group">
-      <label for="peff-select">Effective precipitation, Pef</label>
-      <select id="peff-select" disabled></select>
-    </div>
+        <div class="surface-card">
+          <div class="panel-header">
+            <h3>Scenario filters and cost assumptions</h3>
+            <span class="section-kicker">Inputs</span>
+          </div>
+          <div class="panel-body">
+            <div class="controls">
+              <div class="control-group">
+                <label for="soil-select">Soil type</label>
+                <select id="soil-select" disabled></select>
+              </div>
 
-    <div class="control-group">
-      <label for="tp-min-input">Min inflow time to peak t<sub>p</sub> [min]</label>
-      <input type="number" id="tp-min-input" step="1" />
-    </div>
+              <div class="control-group">
+                <label for="peff-select">Effective precipitation, Pef</label>
+                <select id="peff-select" disabled></select>
+              </div>
 
-    <div class="control-group">
-      <label for="tp-max-input">Max inflow time to peak t<sub>p</sub> [min]</label>
-      <input type="number" id="tp-max-input" step="1" />
-    </div>
+              <div class="control-group">
+                <label for="tp-min-input">Min inflow time to peak t<sub>p</sub> [min]</label>
+                <input type="number" id="tp-min-input" step="1" />
+              </div>
 
-    <div class="control-group">
-      <label for="min-eta-input">Min peak flow reduction [%]</label>
-      <input type="number" id="min-eta-input" value="60" step="5" />
-    </div>
+              <div class="control-group">
+                <label for="tp-max-input">Max inflow time to peak t<sub>p</sub> [min]</label>
+                <input type="number" id="tp-max-input" step="1" />
+              </div>
 
-    <div class="control-group">
-      <label for="min-det-h-input">Min detention time [h]</label>
-      <input type="number" id="min-det-h-input" value="4" step="0.5" />
-    </div>
+              <div class="control-group">
+                <label for="min-eta-input">Min peak flow reduction [%]</label>
+                <input type="number" id="min-eta-input" value="60" step="5" />
+              </div>
 
-    <div class="control-group">
-      <label for="min-delay-h-input">Min time-to-peak delay [h]</label>
-      <input type="number" id="min-delay-h-input" value="0" step="0.25" />
-    </div>
+              <div class="control-group">
+                <label for="min-det-h-input">Min detention time [h]</label>
+                <input type="number" id="min-det-h-input" value="4" step="0.5" />
+              </div>
 
-    <div class="control-group">
-      <label for="max-pond-m-input">Max ponding depth [m]</label>
-      <input type="number" id="max-pond-m-input" value="0.30" step="0.05" />
-    </div>
+              <div class="control-group">
+                <label for="min-delay-h-input">Min time-to-peak delay [h]</label>
+                <input type="number" id="min-delay-h-input" value="0" step="0.25" />
+              </div>
 
-    <div class="control-group">
-      <label for="c-vol-input">c<sub>vol</sub> — excavation + media [\$/m³]</label>
-      <input type="number" id="c-vol-input" value="210" step="10" />
-    </div>
+              <div class="control-group">
+                <label for="max-pond-m-input">Max ponding depth [m]</label>
+                <input type="number" id="max-pond-m-input" value="0.30" step="0.05" />
+              </div>
 
-    <div class="control-group">
-      <label for="c-surf-input">c<sub>surf</sub> — surface works [\$/m²]</label>
-      <input type="number" id="c-surf-input" value="55" step="5" />
-    </div>
+              <div class="control-group">
+                <label for="c-vol-input">c<sub>vol</sub> — excavation + media [\$/m³]</label>
+                <input type="number" id="c-vol-input" value="210" step="10" />
+              </div>
 
-    <div class="control-group">
-      <label for="c-om-input">c<sub>O&amp;M</sub> — annual O&amp;M [\$/m²/yr]</label>
-      <input type="number" id="c-om-input" value="6" step="1" />
-    </div>
+              <div class="control-group">
+                <label for="c-surf-input">c<sub>surf</sub> — surface works [\$/m²]</label>
+                <input type="number" id="c-surf-input" value="55" step="5" />
+              </div>
 
-    <div class="control-group">
-      <label for="design-life-input">Design life T [years]</label>
-      <input type="number" id="design-life-input" value="30" step="1" />
-    </div>
+              <div class="control-group">
+                <label for="c-om-input">c<sub>O&amp;M</sub> — annual O&amp;M [\$/m²/yr]</label>
+                <input type="number" id="c-om-input" value="6" step="1" />
+              </div>
 
-    <div class="control-group">
-      <label for="discount-rate-input">Discount rate i [-]</label>
-      <input type="number" id="discount-rate-input" value="0.03" step="0.005" />
-    </div>
-  </div>
+              <div class="control-group">
+                <label for="design-life-input">Design life T [years]</label>
+                <input type="number" id="design-life-input" value="30" step="1" />
+              </div>
 
-  <div class="plots-row">
-    <div class="plot-panel">
-      <div id="plot-eta" class="plot-div"></div>
-      <button id="btn-download-eta" disabled>Download CSV</button>
-    </div>
-    <div class="plot-panel">
-      <div id="plot-det" class="plot-div"></div>
-      <button id="btn-download-det" disabled>Download CSV</button>
-    </div>
-    <div class="plot-panel">
-      <div id="plot-dtp" class="plot-div"></div>
-      <button id="btn-download-dtp" disabled>Download CSV</button>
-    </div>
-    <div class="plot-panel">
-      <div id="plot-pond" class="plot-div"></div>
-      <button id="btn-download-pond" disabled>Download CSV</button>
-    </div>
-  </div>
+              <div class="control-group">
+                <label for="discount-rate-input">Discount rate i [-]</label>
+                <input type="number" id="discount-rate-input" value="0.03" step="0.005" />
+              </div>
+            </div>
+          </div>
+        </div>
 
-  <div class="hydro-panel">
-    <div class="hydro-header">
-      <div id="hydro-title">Hydrographs — no scenario selected yet</div>
-      <button id="btn-download" disabled>Download CSV</button>
-    </div>
-    <div id="hydro-plot"></div>
-    <div id="status" class="status">Loading data…</div>
-    <div class="legend-note">
-      Markers with outline only correspond to designs for which the solver
-      failed or violated ponding constraints. Hydrographs are shown in
-      normalized flux units (mm/h) over the LID surface. Due to size
-      limitations, only solutions with peak flow reductions of 20–50% are
-      stored for the first 24&nbsp;h, although the model is run for 48&nbsp;h.
-    </div>
-  </div>
+        <div class="plots-row">
+          <div class="plot-panel">
+            <div id="plot-eta" class="plot-div"></div>
+            <button id="btn-download-eta" disabled>Download CSV</button>
+          </div>
+          <div class="plot-panel">
+            <div id="plot-det" class="plot-div"></div>
+            <button id="btn-download-det" disabled>Download CSV</button>
+          </div>
+          <div class="plot-panel">
+            <div id="plot-dtp" class="plot-div"></div>
+            <button id="btn-download-dtp" disabled>Download CSV</button>
+          </div>
+          <div class="plot-panel">
+            <div id="plot-pond" class="plot-div"></div>
+            <button id="btn-download-pond" disabled>Download CSV</button>
+          </div>
+        </div>
 
-  <div class="cost-panel">
-    <div class="hydro-header">
-      <div id="cost-title">Lifecycle cost — no feasible set yet</div>
-      <button id="btn-download-cost" disabled>Download CSV</button>
-    </div>
-    <div id="cost-plot"></div>
-    <div id="cost-status" class="status">
-      Set hydrologic filters and select a soil and Pef to see cost–performance results.
-    </div>
-  </div>
+        <div class="hydro-panel">
+          <div class="hydro-header">
+            <div id="hydro-title">Hydrographs — no scenario selected yet</div>
+            <button id="btn-download" disabled>Download CSV</button>
+          </div>
+          <div id="hydro-plot"></div>
+          <div id="status" class="status">Loading data…</div>
+          <div class="legend-note">
+            Markers with outline only correspond to designs for which the solver failed or violated
+            ponding constraints. Hydrographs are shown in normalized flux units (mm/h) over the LID
+            surface. Due to size limitations, only solutions with peak flow reductions of 20–50%
+            are stored for the first 24 h, although the model is run for 48 h.
+          </div>
+        </div>
 
-  <div class="about-box">
-    <p>
-      <strong>About this explorer.</strong>
-      This interactive tool was developed by Marcus N. Gomes Jr., PhD. To
-      visualize the design space of infiltration-based Low Impact Development
-      systems simulated with the DRAIN-LID model. Each point represents a
-      numerical solution of a mixed-form Richards equation coupled to a
-      structural drainage module under a specified inflow hydrograph and media
-      configuration. The area-ratio axis shows the ratio between the LID
-      surface and the contributing catchment area.
-    </p>
-  </div>
+        <div class="cost-panel">
+          <div class="hydro-header">
+            <div id="cost-title">Lifecycle cost — no feasible set yet</div>
+            <button id="btn-download-cost" disabled>Download CSV</button>
+          </div>
+          <div id="cost-plot"></div>
+          <div id="cost-status" class="status">
+            Set hydrologic filters and select a soil and Pef to see cost–performance results.
+          </div>
+        </div>
+      </div>
+    </section>
 
-  <section id="methods-background" class="method-panel">
+    <section id="about-project">
+      <div class="section-title">
+        <div>
+          <div class="section-kicker">Project context</div>
+          <h2>About this explorer</h2>
+        </div>
+      </div>
+
+      <div class="about-box">
+        <p>
+          <strong>DRAIN-LID Design Performance Explorer</strong> was developed to visualize the design
+          space of infiltration-based Low Impact Development systems simulated with the DRAIN-LID model.
+          Each point represents a numerical solution of a mixed-form Richards equation coupled to a structural
+          drainage module under a specified inflow hydrograph and media configuration. The area-ratio axis
+          shows the ratio between the LID surface and the contributing catchment area.
+        </p>
+        <p>
+          The revised interface emphasizes clearer visual hierarchy, more professional typography,
+          stronger dashboard grouping, and built-in placeholders for Stanford and University of Arizona
+          branding alongside the project logo.
+        </p>
+      </div>
+    </section>
+
+    <section id="methods">
+      <div class="section-title">
+        <div>
+          <div class="section-kicker">Scientific documentation</div>
+          <h2>Underlying model and assumptions</h2>
+        </div>
+      </div>
+      <section id="methods-background" class="method-panel">
     <h2>How the Model Works</h2>
     <p>
       The <strong>DRAIN-LID_Designer</strong> toolbox is built on a physics-based numerical
@@ -744,7 +1386,15 @@ depths trade off between cost and hydrologic benefit.
       physically realistic inflow–outflow responses for feasibility screening and 
       cost-performance analysis.
     </p>
+    </section>
+  </main>
 
+  <footer class="shared-footer">
+    <div class="footer-inner">
+      <div class="footer-brand">DRAIN-LID<span class="accent-dot">.</span></div>
+      <div class="footer-meta">Interactive explorer · GitHub Pages ready · Stanford + UArizona logo placeholders included</div>
+    </div>
+  </footer>
 
   <script>
     // ========= CONFIG =======================================================
@@ -1966,6 +2616,30 @@ depths trade off between cost and hydrologic benefit.
       loadData();
     });
   </script>
+
+  <script>
+    const STANFORD_LOGO_URL = 'stanford_logo.png';
+    const UOFA_LOGO_URL = 'uofa_logo.png';
+
+    function injectOptionalLogo(targetId, src, alt) {
+      if (!src) return;
+      const box = document.getElementById(targetId);
+      if (!box) return;
+
+      const img = document.createElement('img');
+      img.src = src;
+      img.alt = alt;
+      img.onload = () => {
+        box.innerHTML = '';
+        box.appendChild(img);
+      };
+      img.onerror = () => {};
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      injectOptionalLogo('stanford-logo-box', STANFORD_LOGO_URL, 'Stanford logo');
+      injectOptionalLogo('uofa-logo-box', UOFA_LOGO_URL, 'University of Arizona logo');
+    });
+  </script>
 </body>
 </html>
-

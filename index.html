@@ -5,8 +5,10 @@
   <title>DRAIN-LID Design Performance Explorer</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
+  <!-- Plotly -->
   <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
 
+  <!-- MathJax -->
   <script>
     window.MathJax = {
       tex: { inlineMath: [['\\(','\\)'], ['$', '$']] },
@@ -32,17 +34,13 @@
       --teal-2:#0ea3a9;
       --shadow:0 10px 24px rgba(18,44,74,0.08);
       --radius:18px;
-      --radius-sm:12px;
       --font-sans: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       --font-serif: "Georgia", "Times New Roman", serif;
       --maxw: 1440px;
     }
 
     * { box-sizing: border-box; }
-
-    html {
-      scroll-behavior: smooth;
-    }
+    html { scroll-behavior: smooth; }
 
     body{
       margin:0;
@@ -76,7 +74,6 @@
       position:sticky;
       top:0;
       z-index:50;
-      backdrop-filter:saturate(1.1) blur(6px);
     }
 
     .topnav-inner{
@@ -162,7 +159,6 @@
       max-height:52px;
       width:auto;
       object-fit:contain;
-      filter:none;
     }
 
     .institution-sep{
@@ -280,7 +276,7 @@
     }
 
     /* =========================
-       SURFACE / SECTION
+       SURFACES
        ========================= */
     .surface{
       background:var(--panel);
@@ -327,7 +323,7 @@
        ========================= */
     .overview-grid{
       display:grid;
-      grid-template-columns: minmax(420px, 1.15fr) minmax(420px, 1.85fr);
+      grid-template-columns: minmax(500px, 1.2fr) minmax(420px, 1.8fr);
       gap:16px;
       align-items:stretch;
     }
@@ -336,6 +332,17 @@
       background:var(--panel-soft);
       border:1px solid var(--line);
       border-radius:16px;
+    }
+
+    .soil-banner{
+      background:var(--panel-mint);
+      border:1px solid #bee9df;
+      color:var(--ink);
+      border-radius:16px;
+      padding:16px 18px;
+      margin:0 0 16px 0;
+      font-size:1rem;
+      overflow-x:auto;
     }
 
     .concept-card{
@@ -395,24 +402,14 @@
       font-size:0.97rem;
     }
 
-    .soil-banner{
-      background:var(--panel-mint);
-      border:1px solid #bee9df;
-      color:var(--ink);
-      border-radius:16px;
-      padding:16px 18px;
-      margin:0 0 16px 0;
-      font-size:1rem;
-      overflow-x:auto;
-    }
-
     /* =========================
        CONTROLS
        ========================= */
     .controls-grid{
       display:grid;
-      grid-template-columns: repeat(6, minmax(180px, 1fr));
+      grid-template-columns: repeat(5, minmax(220px, 1fr));
       gap:14px;
+      align-items:stretch;
     }
 
     .control-group{
@@ -423,13 +420,16 @@
       border:1px solid var(--line);
       border-radius:14px;
       padding:12px 12px 10px 12px;
+      min-height:112px;
+      justify-content:flex-start;
     }
 
     .control-group label{
       font-size:0.86rem;
       color:#5f728f;
       font-weight:700;
-      line-height:1.3;
+      line-height:1.32;
+      min-height:38px;
     }
 
     .control-group select,
@@ -490,6 +490,7 @@
     .section-stack{
       display:grid;
       gap:16px;
+      margin:22px 0;
     }
 
     .hydro-panel,
@@ -563,7 +564,7 @@
     }
 
     /* =========================
-       TEXT SECTIONS
+       RICH TEXT
        ========================= */
     .rich-text h2{
       margin:0 0 10px 0;
@@ -605,6 +606,23 @@
       overflow-x:auto;
     }
 
+    .var-list{
+      display:grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap:12px 24px;
+      margin:10px 0 14px 0;
+      padding:14px 16px;
+      background:#f7fafc;
+      border:1px solid #e1eaf4;
+      border-radius:14px;
+    }
+
+    .var-list div{
+      color:#5a6d87;
+      line-height:1.65;
+      font-size:0.96rem;
+    }
+
     .refs-list{
       display:grid;
       gap:12px;
@@ -624,9 +642,6 @@
       color:var(--ink);
     }
 
-    /* =========================
-       ABOUT / FOOTER
-       ========================= */
     .about-panel p{
       margin:0;
       line-height:1.8;
@@ -649,24 +664,15 @@
       letter-spacing:0.02em;
     }
 
-    /* =========================
-       RESPONSIVE
-       ========================= */
-    @media (max-width: 1220px){
+    @media (max-width: 1280px){
       .hero-grid{
         grid-template-columns:1fr;
       }
-
       .overview-grid{
         grid-template-columns:1fr;
       }
-
-      .overview-right{
-        grid-template-columns:repeat(3, minmax(0, 1fr));
-      }
-
       .controls-grid{
-        grid-template-columns: repeat(4, minmax(180px, 1fr));
+        grid-template-columns: repeat(4, minmax(200px, 1fr));
       }
     }
 
@@ -674,21 +680,14 @@
       .overview-right{
         grid-template-columns:1fr;
       }
-
       .plots-row{
         grid-template-columns:1fr;
       }
-
       .controls-grid{
-        grid-template-columns: repeat(2, minmax(170px, 1fr));
+        grid-template-columns: repeat(2, minmax(180px, 1fr));
       }
-
-      .institution-inner{
-        gap:22px;
-      }
-
-      .institution-logo{
-        min-width:120px;
+      .var-list{
+        grid-template-columns:1fr;
       }
     }
 
@@ -736,9 +735,6 @@
 </head>
 <body>
 
-  <!-- =========================
-       NAV
-       ========================= -->
   <header class="topnav">
     <div class="topnav-inner">
       <div class="brand">
@@ -752,9 +748,6 @@
     </div>
   </header>
 
-  <!-- =========================
-       INSTITUTION BAR
-       ========================= -->
   <section class="institution-bar">
     <div class="institution-inner">
       <div class="institution-logo">
@@ -769,9 +762,6 @@
 
   <main class="container" id="explorer">
 
-    <!-- =========================
-         HERO
-         ========================= -->
     <section class="hero">
       <div class="hero-grid">
         <div class="hero-main">
@@ -803,9 +793,6 @@
       </div>
     </section>
 
-    <!-- =========================
-         OVERVIEW
-         ========================= -->
     <section class="surface">
       <div class="surface-head">
         <h2 class="surface-title">Project overview</h2>
@@ -813,7 +800,7 @@
       </div>
       <div class="surface-body">
         <div class="soil-banner">
-          <span id="soil-params"><!-- Filled by JS, rendered with MathJax --></span>
+          <span id="soil-params"></span>
         </div>
 
         <div class="overview-grid">
@@ -842,8 +829,8 @@
             <div class="card info-card">
               <h3>How to use it</h3>
               <p>
-                First select a soil type and effective precipitation depth. Then adjust the
-                hydrologic and cost filters. Click any 3D point to display the corresponding
+                Select a soil type and effective precipitation depth, refine the hydrologic and
+                cost thresholds, and click a point in any 3D plot to inspect the corresponding
                 inflow and outflow hydrographs.
               </p>
             </div>
@@ -861,9 +848,6 @@
       </div>
     </section>
 
-    <!-- =========================
-         CONTROLS
-         ========================= -->
     <section class="surface">
       <div class="surface-head">
         <h2 class="surface-title">Design and cost filters</h2>
@@ -939,9 +923,6 @@
       </div>
     </section>
 
-    <!-- =========================
-         PLOTS
-         ========================= -->
     <section class="section-stack">
       <div class="plots-row">
         <div class="plot-panel">
@@ -975,7 +956,7 @@
 
       <div class="hydro-panel">
         <div class="hydro-header">
-          <div class="title" id="hydro-title">Hydrographs — no scenario selected yet</div>
+          <div class="title" id="hydro-title">Hydrographs — loading default scenario</div>
           <button id="btn-download" disabled>Download CSV</button>
         </div>
         <div id="hydro-plot"></div>
@@ -1000,17 +981,14 @@
       </div>
     </section>
 
-    <!-- =========================
-         METHODS
-         ========================= -->
     <section id="methods-background" class="method-panel rich-text">
       <h2>How the model works</h2>
       <p>
-        The <strong>DRAIN-LID Designer</strong> toolbox is built on a physics-based numerical
-        framework that represents vertical water movement through engineered bioretention media,
-        the inflow hydrograph from the contributing catchment, and the lifecycle costs of
-        alternative designs. This interface allows users to interpret the resulting database
-        through hydrologically meaningful metrics and cost-performance tradeoffs.
+        The <strong>DRAIN-LID Designer</strong> framework is built on a physics-based numerical
+        model that represents vertical water movement through engineered bioretention media, the
+        inflow hydrograph from the contributing catchment, and lifecycle costs for alternative
+        designs. This interface allows users to interpret the simulation database through
+        hydrologically meaningful metrics and cost-performance tradeoffs.
       </p>
 
       <h3>Richards-based vertical flow model</h3>
@@ -1031,11 +1009,20 @@
         \]
       </div>
 
+      <div class="var-list">
+        <div><strong>\(z\)</strong>: vertical coordinate [m]</div>
+        <div><strong>\(t\)</strong>: time [s]</div>
+        <div><strong>\(\theta(h)\)</strong>: volumetric water content [-]</div>
+        <div><strong>\(h\)</strong>: pressure head [m]</div>
+        <div><strong>\(S_s\)</strong>: specific storage [m\(^{-1}\)]</div>
+        <div><strong>\(K(h)\)</strong>: unsaturated hydraulic conductivity [m s\(^{-1}\)]</div>
+        <div><strong>\(S(z,t)\)</strong>: source/sink term [s\(^{-1}\)] or equivalent volumetric forcing term depending on formulation</div>
+        <div><strong>\(\partial h/\partial z\)</strong>: hydraulic head gradient [-]</div>
+      </div>
+
       <p>
-        Here \(z\) is depth, \(\theta(h)\) is volumetric water content, \(K(h)\) is hydraulic
-        conductivity, \(S_s\) is specific storage, and \(S(z,t)\) represents sources and sinks
-        linked to drainage and exchange processes. Soil hydraulic behavior is represented through
-        van Genuchten–Mualem constitutive relationships.
+        Soil hydraulic behavior is represented through van Genuchten–Mualem constitutive
+        relationships:
       </p>
 
       <div class="math">
@@ -1060,6 +1047,17 @@
         \]
       </div>
 
+      <div class="var-list">
+        <div><strong>\(\theta_r\)</strong>: residual water content [-]</div>
+        <div><strong>\(\theta_s\)</strong>: saturated water content [-]</div>
+        <div><strong>\(\alpha\)</strong>: inverse air-entry parameter [m\(^{-1}\)]</div>
+        <div><strong>\(n\)</strong>: pore-size distribution parameter [-]</div>
+        <div><strong>\(m\)</strong>: van Genuchten parameter, typically \(m = 1 - 1/n\) [-]</div>
+        <div><strong>\(l\)</strong>: pore-connectivity parameter [-]</div>
+        <div><strong>\(K_s\)</strong>: saturated hydraulic conductivity [m s\(^{-1}\)]</div>
+        <div><strong>\(|h|\)</strong>: absolute pressure head magnitude [m]</div>
+      </div>
+
       <p>
         The model is solved with an implicit finite-volume formulation and adaptive Newton–Raphson
         iteration, so each point in the database corresponds to a full Richards-equation simulation.
@@ -1067,15 +1065,10 @@
 
       <h3>Design hydrograph and catchment inputs</h3>
       <p>
-        Inflow to the LID cell is represented through a synthetic design hydrograph driven by:
+        Inflow to the LID cell is represented through a synthetic design hydrograph driven by
+        effective rainfall depth, contributing area, and hydrograph timing:
       </p>
-      <ul>
-        <li>effective rainfall depth \(P_{\mathrm{eff}}\),</li>
-        <li>upstream contributing area \(A_{\mathrm{up}}\), and</li>
-        <li>hydrograph time to peak \(t_{\mathrm{p}}\).</li>
-      </ul>
 
-      <p>A Nash-type formulation is used for the inflow hydrograph:</p>
       <div class="math">
         \[
           Q_{\mathrm{in}}(t) =
@@ -1087,10 +1080,19 @@
         \]
       </div>
 
+      <div class="var-list">
+        <div><strong>\(Q_{\mathrm{in}}(t)\)</strong>: inflow discharge at time \(t\) [m\(^3\) s\(^{-1}\)]</div>
+        <div><strong>\(Q_{\mathrm{p}}\)</strong>: inflow peak discharge [m\(^3\) s\(^{-1}\)]</div>
+        <div><strong>\(t_{\mathrm{p}}\)</strong>: time to peak [s or min, depending on implementation]</div>
+        <div><strong>\(m\)</strong>: Nash-type shape parameter [-]</div>
+        <div><strong>\(P_{\mathrm{eff}}\)</strong>: effective rainfall depth [mm]</div>
+        <div><strong>\(A_{\mathrm{up}}\)</strong>: upstream contributing area [m\(^2\)]</div>
+      </div>
+
       <p>
         For each combination of \((P_{\mathrm{eff}}, A_{\mathrm{up}}, t_{\mathrm{p}})\),
-        area ratio \(r = A/A_{\mathrm{up}}\), media depth \(L_d\), and soil type, the model
-        routes the hydrograph through the bioretention profile.
+        area ratio \(r=A/A_{\mathrm{up}}\), media depth \(L_d\), and soil type, the model routes
+        the hydrograph through the bioretention profile.
       </p>
 
       <h3>Hydrologic performance metrics</h3>
@@ -1105,11 +1107,25 @@
         \]
       </div>
 
+      <div class="var-list">
+        <div><strong>\(\eta_{\mathrm{p}}\)</strong>: peak flow reduction [%]</div>
+        <div><strong>\(Q_{\mathrm{p}}^{\,i}\)</strong>: inflow peak discharge [m\(^3\) s\(^{-1}\)]</div>
+        <div><strong>\(Q_{\mathrm{p}}^{\,o}\)</strong>: outflow peak discharge [m\(^3\) s\(^{-1}\)]</div>
+        <div><strong>100</strong>: factor to express the result in percent</div>
+      </div>
+
       <h4>Time-to-peak delay</h4>
       <div class="math">
         \[
           \Delta t_{\mathrm{p}} = t_{\mathrm{p}}^{\,o} - t_{\mathrm{p}}^{\,i}.
         \]
+      </div>
+
+      <div class="var-list">
+        <div><strong>\(\Delta t_{\mathrm{p}}\)</strong>: time-to-peak delay [min or h]</div>
+        <div><strong>\(t_{\mathrm{p}}^{\,o}\)</strong>: time of outflow peak [min or h]</div>
+        <div><strong>\(t_{\mathrm{p}}^{\,i}\)</strong>: time of inflow peak [min or h]</div>
+        <div><strong>Positive values</strong>: delayed outflow response</div>
       </div>
 
       <h4>Detention time</h4>
@@ -1120,15 +1136,21 @@
         \]
       </div>
 
+      <div class="var-list">
+        <div><strong>\(\Delta t_{\mathrm{d}}\)</strong>: detention or drawdown time [min or h]</div>
+        <div><strong>\(Q_{\mathrm{out}}(t)\)</strong>: outflow discharge [m\(^3\) s\(^{-1}\)]</div>
+        <div><strong>\(\tau\)</strong>: small discharge threshold [m\(^3\) s\(^{-1}\)]</div>
+        <div><strong>\(t_{\mathrm{p}}^{\,i}\)</strong>: inflow time to peak [min or h]</div>
+      </div>
+
       <p>
-        These metrics allow users to screen feasible solutions and compare designs without
-        rerunning the numerical model.
+        These metrics allow users to compare feasible solutions without rerunning the numerical
+        model and to screen tradeoffs between hydrologic benefit and design footprint.
       </p>
 
       <h3>Lifecycle cost model</h3>
       <p>
-        Construction and maintenance are represented using a simple but interpretable lifecycle
-        cost framework.
+        Construction and maintenance are represented using a simplified lifecycle cost framework.
       </p>
 
       <h4>Construction cost</h4>
@@ -1163,6 +1185,20 @@
         \]
       </div>
 
+      <div class="var-list">
+        <div><strong>\(C_{\mathrm{CapEx}}\)</strong>: capital cost [$]</div>
+        <div><strong>\(C_{\mathrm{O\&M,annual}}\)</strong>: annual operation and maintenance cost [$ yr\(^{-1}\)]</div>
+        <div><strong>\(C_{\mathrm{NPV}}\)</strong>: lifecycle net present value [$]</div>
+        <div><strong>\(A\)</strong>: LID surface area [m\(^2\)]</div>
+        <div><strong>\(L_d\)</strong>: media depth [m]</div>
+        <div><strong>\(c_{\mathrm{vol}}\)</strong>: excavation and media unit cost [$ m\(^{-3}\)]</div>
+        <div><strong>\(c_{\mathrm{surf}}\)</strong>: surface-work unit cost [$ m\(^{-2}\)]</div>
+        <div><strong>\(c_{\mathrm{O\&M}}\)</strong>: annual O&amp;M unit cost [$ m\(^{-2}\) yr\(^{-1}\)]</div>
+        <div><strong>\(F(i,T)\)</strong>: present-value factor [-]</div>
+        <div><strong>\(i\)</strong>: discount rate [-]</div>
+        <div><strong>\(T\)</strong>: design life [yr]</div>
+      </div>
+
       <h3>Modeling assumptions</h3>
       <ul>
         <li>Initial conditions correspond to an unsaturated hydrostatic profile.</li>
@@ -1175,9 +1211,6 @@
       </ul>
     </section>
 
-    <!-- =========================
-         REFERENCES
-         ========================= -->
     <section class="reference-panel rich-text">
       <h2>References</h2>
       <div class="refs-list">
@@ -1195,17 +1228,14 @@
       </div>
     </section>
 
-    <!-- =========================
-         ABOUT
-         ========================= -->
     <section id="about" class="about-panel">
       <p>
         <strong>About this explorer.</strong>
-        This interactive tool was developed by Marcus N. Gomes Jr., PhD, to visualize the
-        design space of infiltration-based low impact development systems simulated with the
-        DRAIN-LID model. Each point represents a numerical realization of a mixed-form
-        Richards equation coupled to a structural drainage representation under a specified
-        inflow hydrograph and media configuration.
+        This interactive tool was developed by Marcus N. Gomes Jr., PhD, to visualize the design
+        space of infiltration-based low impact development systems simulated with the DRAIN-LID
+        model. Each point represents a numerical realization of a mixed-form Richards equation
+        coupled to a structural drainage representation under a specified inflow hydrograph and
+        media configuration.
       </p>
     </section>
 
@@ -1358,7 +1388,6 @@
         `\\; \\Delta\\theta = ${dtheta.toFixed(3)},` +
         `\\; K_s = ${Ks_mps.toExponential(2)}\\,\\mathrm{m}\\,\\mathrm{s}^{-1}\\)`;
 
-
       el.innerHTML = tex;
 
       if (window.MathJax && window.MathJax.typesetPromise) {
@@ -1424,6 +1453,10 @@
       URL.revokeObjectURL(url);
     }
 
+    function safeNumber(v) {
+      return v !== null && v !== undefined && !isNaN(v);
+    }
+
     // ============================================================
     // HYDROGRAPH
     // ============================================================
@@ -1433,7 +1466,7 @@
 
       const col = m.hydroIndex;
       const area = m.ATC_m2;
-      if (!area || area <= 0) return null;
+      if (!safeNumber(area) || area <= 0) return null;
 
       const tHours = tMinutesHydro.map(v => v / 60.0);
       const inflow = QinHydro.map(row => ((row[col] || 0) / area) * 1000 * 3600);
@@ -1444,8 +1477,8 @@
 
     function renderEmptyHydro(titleText) {
       const div = document.getElementById('hydro-plot');
-
-      Plotly.react(div, [{
+      Plotly.purge(div);
+      Plotly.newPlot(div, [{
         x: [0],
         y: [0],
         mode: 'lines',
@@ -1486,7 +1519,7 @@
         currentHydroScenario = null;
         currentHydroData = null;
         btn.disabled = true;
-        document.getElementById('hydro-title').textContent = 'Hydrographs — no scenario selected yet';
+        document.getElementById('hydro-title').textContent = 'Hydrographs — no scenario selected';
         renderEmptyHydro('Hydrographs — no scenario selected');
         return;
       }
@@ -1496,7 +1529,8 @@
         currentHydroScenario = m;
         currentHydroData = null;
         btn.disabled = true;
-        document.getElementById('hydro-title').textContent = 'Hydrographs — no stored hydrograph for this scenario';
+        document.getElementById('hydro-title').textContent =
+          `Hydrographs — ${m.soilName}, area-ratio ${(m.area_ratio * 100).toFixed(1)}%, no stored hydrograph`;
         renderEmptyHydro('Hydrographs — no stored hydrograph data for this scenario');
         return;
       }
@@ -1559,7 +1593,8 @@
         }
       };
 
-      Plotly.react(document.getElementById('hydro-plot'), [traceIn, traceOut], layout, { responsive: true });
+      Plotly.purge(document.getElementById('hydro-plot'));
+      Plotly.newPlot(document.getElementById('hydro-plot'), [traceIn, traceOut], layout, { responsive: true });
       document.getElementById('hydro-title').textContent = 'Hydrographs — inflow and outflow (mm/h)';
     }
 
@@ -1574,6 +1609,65 @@
       const soilSlug = currentHydroScenario.soilName.replace(/\s+/g, '_');
       const fname = `hydrograph_${soilSlug}_AR${(currentHydroScenario.area_ratio * 100).toFixed(1)}_Ld${currentHydroScenario.Ld_m.toFixed(2)}.csv`;
       downloadCSVFile(fname, csv);
+    }
+
+    function findDefaultHydroScenario(subset) {
+      if (!subset || !subset.length) return null;
+
+      // Prefer scenarios with stored hydrograph data
+      const withHydro = subset.filter(m => getHydroDataFromScenario(m) !== null);
+
+      if (!withHydro.length) {
+        return subset[0];
+      }
+
+      // Prefer good/feasible metrics if possible
+      const feasible = withHydro.filter(m =>
+        safeNumber(m.eta_p_pct) &&
+        safeNumber(m.DetTime_min) &&
+        safeNumber(m.Delta_tp_min) &&
+        safeNumber(m.max_ponding)
+      );
+
+      if (feasible.length) {
+        feasible.sort((a, b) => {
+          const ar = a.area_ratio - b.area_ratio;
+          if (Math.abs(ar) > 1e-12) return ar;
+          const ld = a.Ld_m - b.Ld_m;
+          if (Math.abs(ld) > 1e-12) return ld;
+          return a.tp_min - b.tp_min;
+        });
+        return feasible[0];
+      }
+
+      withHydro.sort((a, b) => {
+        const ar = a.area_ratio - b.area_ratio;
+        if (Math.abs(ar) > 1e-12) return ar;
+        const ld = a.Ld_m - b.Ld_m;
+        if (Math.abs(ld) > 1e-12) return ld;
+        return a.tp_min - b.tp_min;
+      });
+
+      return withHydro[0];
+    }
+
+    // ============================================================
+    // PLOT CLICK BINDING
+    // ============================================================
+    function bindPlotClick(divId) {
+      const div = document.getElementById(divId);
+      if (!div) return;
+
+      div.on('plotly_click', function(ev) {
+        if (!ev || !ev.points || !ev.points.length) return;
+        const idx = ev.points[0].customdata;
+        if (idx === undefined || idx === null) return;
+
+        const scenario = metricsByIdx.get(idx);
+        if (!scenario) return;
+
+        renderHydrographForScenario(scenario);
+      });
     }
 
     // ============================================================
@@ -1603,7 +1697,7 @@
           metricValue: raw
         });
 
-        if (raw === null || raw === undefined || isNaN(raw)) {
+        if (!safeNumber(raw)) {
           xBad.push(xVal);
           yBad.push(yVal);
           zBad.push(zVal);
@@ -1668,7 +1762,8 @@
         });
       }
 
-      Plotly.react(div, traces, {
+      Plotly.purge(div);
+      Plotly.newPlot(div, traces, {
         title: {
           text: `${info.shortTitle} — ${currentSoil}, Pef = ${formatPeffLabel(peffVal)}`,
           font: { size: 16, color: '#16314f' }
@@ -1707,6 +1802,8 @@
         showlegend: false
       }, { responsive: true });
 
+      bindPlotClick(divId);
+
       designPlotData[metricName] = {
         soil: currentSoil,
         peff: peffVal,
@@ -1715,13 +1812,6 @@
 
       const btn = document.getElementById(METRIC_BUTTON_IDS[metricName]);
       if (btn) btn.disabled = !rowsForCSV.length;
-
-      div.on('plotly_click', ev => {
-        if (!ev.points || !ev.points.length) return;
-        const idx = ev.points[0].customdata;
-        const scenario = metricsByIdx.get(idx);
-        if (scenario) renderHydrographForScenario(scenario);
-      });
     }
 
     function downloadDesignCSV(metricName) {
@@ -1755,7 +1845,8 @@
       const titleDiv = document.getElementById('cost-title');
 
       if (!currentSubset.length) {
-        Plotly.react(div, [], { paper_bgcolor: '#ffffff' }, { responsive: true });
+        Plotly.purge(div);
+        Plotly.newPlot(div, [], { paper_bgcolor: '#ffffff' }, { responsive: true });
         titleDiv.textContent = 'Lifecycle cost — no feasible set yet';
         statusDiv.textContent = 'Select a soil and Pef to view cost–performance results.';
         document.getElementById('btn-download-cost').disabled = true;
@@ -1772,12 +1863,12 @@
 
       currentFeasibleSubset = currentSubset.filter(m => {
         const eta = m.eta_p_pct;
-        const detH = m.DetTime_min != null ? m.DetTime_min / 60.0 : NaN;
-        const delayH = m.Delta_tp_min != null ? m.Delta_tp_min / 60.0 : NaN;
+        const detH = safeNumber(m.DetTime_min) ? m.DetTime_min / 60.0 : NaN;
+        const delayH = safeNumber(m.Delta_tp_min) ? m.Delta_tp_min / 60.0 : NaN;
         const pond = m.max_ponding;
         const tp = m.tp_min;
 
-        if ([eta, detH, delayH, pond, tp, m.Ld_m, m.area_ratio].some(v => v === null || v === undefined || isNaN(v))) return false;
+        if ([eta, detH, delayH, pond, tp, m.Ld_m, m.area_ratio].some(v => !safeNumber(v))) return false;
         if (eta < filters.minEta) return false;
         if (detH < filters.minDetH) return false;
         if (delayH < filters.minDelayH) return false;
@@ -1788,7 +1879,8 @@
       });
 
       if (!currentFeasibleSubset.length) {
-        Plotly.react(div, [], {
+        Plotly.purge(div);
+        Plotly.newPlot(div, [], {
           title: { text: 'Lifecycle cost — no design meets current filters', font: { size: 16, color: '#16314f' } },
           paper_bgcolor: '#ffffff',
           margin: { l: 70, r: 20, t: 50, b: 60 }
@@ -1832,7 +1924,8 @@
         });
       });
 
-      Plotly.react(div, [{
+      Plotly.purge(div);
+      Plotly.newPlot(div, [{
         x,
         y,
         customdata: custom,
@@ -1885,16 +1978,16 @@
         }
       }, { responsive: true });
 
-      div.on('plotly_click', ev => {
-        if (!ev.points || !ev.points.length) return;
+      div.on('plotly_click', function(ev) {
+        if (!ev || !ev.points || !ev.points.length) return;
         const idx = ev.points[0].customdata;
+        if (idx === undefined || idx === null) return;
         const scenario = metricsByIdx.get(idx);
         if (scenario) renderHydrographForScenario(scenario);
       });
 
       titleDiv.textContent = 'Lifecycle cost — feasible hydrologic solutions';
       statusDiv.textContent = `${currentFeasibleSubset.length} solutions satisfy the current hydrologic filters.`;
-
       document.getElementById('btn-download-cost').disabled = false;
 
       costPlotData = {
@@ -1930,9 +2023,9 @@
     }
 
     // ============================================================
-    // UI / DATA FLOW
+    // UPDATE / INIT
     // ============================================================
-    function updatePlotsAndHydro() {
+    function updatePlotsAndHydro(preserveSelected = false) {
       if (currentSoil == null || currentPeff == null) return;
 
       const { tpMin, tpMax } = getTpRange();
@@ -1952,8 +2045,18 @@
       buildDesignPlot('Delta_tp_min', 'plot-dtp', currentSubset, currentPeff);
       buildDesignPlot('max_ponding', 'plot-pond', currentSubset, currentPeff);
 
-      renderHydrographForScenario(null);
       updateCostPlot();
+
+      if (preserveSelected && currentHydroScenario) {
+        const stillExists = currentSubset.find(m => m.idx === currentHydroScenario.idx);
+        if (stillExists) {
+          renderHydrographForScenario(stillExists);
+          return;
+        }
+      }
+
+      const defaultScenario = findDefaultHydroScenario(currentSubset);
+      renderHydrographForScenario(defaultScenario);
     }
 
     function initUI() {
@@ -1969,8 +2072,16 @@
       soilSel.disabled = soils.length === 0;
       peffSel.disabled = peffs.length === 0;
 
-      if (soils.length) currentSoil = soils[0];
-      if (peffs.length) currentPeff = peffs[0];
+      // Default initial soil: keep Sandy Loam as requested / original behavior
+      if (soils.includes('Sandy Loam')) {
+        currentSoil = 'Sandy Loam';
+      } else if (soils.length) {
+        currentSoil = soils[0];
+      }
+
+      if (peffs.length) {
+        currentPeff = peffs[0];
+      }
 
       soilSel.value = currentSoil;
       peffSel.value = String(currentPeff);
@@ -1980,12 +2091,12 @@
 
       soilSel.addEventListener('change', () => {
         currentSoil = soilSel.value;
-        updatePlotsAndHydro();
+        updatePlotsAndHydro(false);
       });
 
       peffSel.addEventListener('change', () => {
         currentPeff = parseFloat(peffSel.value);
-        updatePlotsAndHydro();
+        updatePlotsAndHydro(false);
       });
 
       [
@@ -2001,7 +2112,7 @@
         'design-life-input',
         'discount-rate-input'
       ].forEach(id => {
-        document.getElementById(id).addEventListener('input', () => updatePlotsAndHydro());
+        document.getElementById(id).addEventListener('input', () => updatePlotsAndHydro(false));
       });
 
       document.getElementById('btn-download').addEventListener('click', downloadCurrentHydroCSV);
@@ -2011,7 +2122,7 @@
       document.getElementById('btn-download-dtp').addEventListener('click', () => downloadDesignCSV('Delta_tp_min'));
       document.getElementById('btn-download-pond').addEventListener('click', () => downloadDesignCSV('max_ponding'));
 
-      updatePlotsAndHydro();
+      updatePlotsAndHydro(false);
     }
 
     async function loadData() {
@@ -2030,7 +2141,7 @@
 
         const tpVals = dbMetrics
           .map(m => m.tp_min)
-          .filter(v => v !== null && v !== undefined && !isNaN(v));
+          .filter(v => safeNumber(v));
 
         if (tpVals.length) {
           globalTpMin = Math.min(...tpVals);
@@ -2046,14 +2157,15 @@
           if (m.idx !== undefined) metricsByIdx.set(m.idx, m);
         });
 
-        setStatus('Data loaded. Use the controls to explore the design space.');
+        setStatus('Data loaded. Click any point in the 3D plots to inspect the corresponding hydrograph.');
         initUI();
       } catch (err) {
         console.error(err);
         setStatus(`Error loading data: ${err.message}`, true);
-
         renderEmptyHydro('Hydrographs — data could not be loaded');
-        Plotly.react('cost-plot', [], {
+
+        Plotly.purge(document.getElementById('cost-plot'));
+        Plotly.newPlot('cost-plot', [], {
           title: { text: 'Lifecycle cost — data could not be loaded' },
           paper_bgcolor: '#ffffff'
         }, { responsive: true });

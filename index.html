@@ -15,1448 +15,1214 @@
   </script>
   <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
 
-  <link
-    href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=DM+Serif+Display:ital@0;1&family=JetBrains+Mono:wght@400;700&display=swap"
-    rel="stylesheet"
-  />
-
   <style>
-    :root {
-      --navy: #1a3a5c;
-      --navy-dk: #0f2540;
-      --navy-lt: #2d5a8e;
-      --teal: #0d9488;
-      --teal-lt: #99f6e4;
-      --teal-bg: #f0fdfa;
-      --bg: #f0f4f8;
-      --surface: #ffffff;
-      --surface-2: #f8fafc;
-      --ink: #1e293b;
-      --muted: #64748b;
-      --border: #e2e8f0;
-      --shadow: 0 12px 32px rgba(15, 37, 64, 0.08);
-      --font-serif: "DM Serif Display", serif;
-      --font-sans: "DM Sans", sans-serif;
-      --font-mono: "JetBrains Mono", monospace;
-      --radius-lg: 18px;
-      --radius-md: 12px;
-      --radius-sm: 10px;
-      --maxw: 1380px;
+    :root{
+      --navy:#173a63;
+      --navy-2:#21476f;
+      --navy-3:#2d537d;
+      --ink:#16314f;
+      --text:#314761;
+      --muted:#66788f;
+      --line:#d7e0ea;
+      --panel:#ffffff;
+      --panel-soft:#f4f7fb;
+      --panel-mint:#edf8f6;
+      --bg:#edf2f7;
+      --teal:#16b0b6;
+      --teal-2:#0ea3a9;
+      --shadow:0 10px 24px rgba(18,44,74,0.08);
+      --radius:18px;
+      --radius-sm:12px;
+      --font-sans: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      --font-serif: "Georgia", "Times New Roman", serif;
+      --maxw: 1440px;
     }
 
     * { box-sizing: border-box; }
-    html { scroll-behavior: smooth; }
-    body {
-      margin: 0;
-      font-family: var(--font-sans);
-      background: var(--bg);
-      color: var(--ink);
-      line-height: 1.6;
+
+    html {
+      scroll-behavior: smooth;
     }
 
-    a { color: inherit; }
-
-    #shared-nav {
-      position: sticky;
-      top: 0;
-      z-index: 1000;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 1rem;
-      padding: 1rem 2rem;
-      background: rgba(26, 58, 92, 0.95);
-      backdrop-filter: blur(10px);
-      border-bottom: 1px solid rgba(255,255,255,0.08);
+    body{
+      margin:0;
+      background:var(--bg);
+      color:var(--text);
+      font-family:var(--font-sans);
     }
 
-    .nav-brand {
-      font-family: var(--font-serif);
-      font-size: 1.85rem;
-      color: #fff;
-      text-decoration: none;
-      letter-spacing: 0.02em;
+    a{
+      color:inherit;
+      text-decoration:none;
     }
 
-    .accent-dot { color: var(--teal); }
-
-    .nav-links {
-      list-style: none;
-      display: flex;
-      gap: 1.4rem;
-      margin: 0;
-      padding: 0;
-      flex-wrap: wrap;
+    img{
+      max-width:100%;
+      display:block;
     }
 
-    .nav-links a {
-      color: #fff;
-      text-decoration: none;
-      font-weight: 500;
-      border-bottom: 2px solid transparent;
-      padding-bottom: 0.15rem;
-      transition: color .2s ease, border-color .2s ease;
+    .container{
+      width:min(calc(100% - 40px), var(--maxw));
+      margin:0 auto;
+    }
+
+    /* =========================
+       TOP NAV
+       ========================= */
+    .topnav{
+      background:var(--navy-2);
+      color:#fff;
+      border-bottom:1px solid rgba(255,255,255,0.08);
+      position:sticky;
+      top:0;
+      z-index:50;
+      backdrop-filter:saturate(1.1) blur(6px);
+    }
+
+    .topnav-inner{
+      width:min(calc(100% - 40px), var(--maxw));
+      margin:0 auto;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      min-height:60px;
+      gap:20px;
+    }
+
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:14px;
+      color:#fff;
+      font-family:var(--font-serif);
+      font-weight:700;
+      letter-spacing:0.02em;
+      font-size:1.05rem;
+    }
+
+    .brand-mark{
+      font-size:1.7rem;
+      line-height:1;
+    }
+
+    .brand-mark .dot{
+      color:var(--teal);
+    }
+
+    .nav-links{
+      display:flex;
+      align-items:center;
+      gap:24px;
+      font-weight:700;
+      font-size:0.98rem;
+    }
+
+    .nav-links a{
+      opacity:0.95;
+      padding:18px 0 14px 0;
+      border-bottom:3px solid transparent;
+      transition:all 0.2s ease;
     }
 
     .nav-links a:hover,
-    .nav-links a.active {
-      color: var(--teal-lt);
-      border-bottom-color: var(--teal);
+    .nav-links a.active{
+      color:#aef2ef;
+      border-bottom-color:var(--teal);
     }
 
-    .hero {
-      background:
-        radial-gradient(circle at top right, rgba(13,148,136,0.18), transparent 28%),
-        linear-gradient(135deg, var(--navy-dk) 0%, var(--navy) 100%);
-      color: white;
-      padding: 3.25rem 2rem 3rem 2rem;
-      position: relative;
-      overflow: hidden;
+    /* =========================
+       INSTITUTION BAR
+       ========================= */
+    .institution-bar{
+      background:linear-gradient(90deg, #1d426e 0%, #1c456f 100%);
+      color:#fff;
+      border-bottom:6px solid rgba(10,160,170,0.28);
     }
 
-    .hero-inner {
-      max-width: var(--maxw);
-      margin: 0 auto;
-      display: grid;
-      grid-template-columns: minmax(0, 1.35fr) minmax(320px, 0.9fr);
-      gap: 2rem;
-      align-items: stretch;
+    .institution-inner{
+      width:min(calc(100% - 40px), var(--maxw));
+      margin:0 auto;
+      min-height:112px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:42px;
+      padding:18px 0;
     }
 
-    .hero-copy {
-      padding-right: 0.5rem;
+    .institution-logo{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      min-width:160px;
+      min-height:56px;
     }
 
-    .hero-badge {
-      display: inline-block;
-      background: rgba(255,255,255,0.09);
-      border: 1px solid rgba(255,255,255,0.15);
-      color: var(--teal-lt);
-      padding: 0.35rem 1rem;
-      border-radius: 999px;
-      font-size: 0.86rem;
-      margin-bottom: 1.15rem;
+    .institution-logo img{
+      max-height:52px;
+      width:auto;
+      object-fit:contain;
+      filter:none;
     }
 
-    .hero h1 {
-      margin: 0 0 0.5rem 0;
-      font-family: var(--font-serif);
-      font-size: clamp(2.35rem, 5vw, 4.2rem);
-      font-weight: 400;
-      line-height: 1.05;
-      letter-spacing: 0.01em;
+    .institution-sep{
+      width:1px;
+      align-self:stretch;
+      background:rgba(255,255,255,0.22);
     }
 
-    .hero-subtitle {
-      margin: 0 0 1.15rem 0;
-      font-size: clamp(1rem, 1.6vw, 1.18rem);
-      color: #dbe5f0;
-      max-width: 820px;
+    /* =========================
+       HERO
+       ========================= */
+    .hero{
+      padding:28px 0 8px 0;
     }
 
-    .hero-note {
-      margin: 0;
-      color: #cbd5e1;
-      font-size: 0.95rem;
+    .hero-grid{
+      display:grid;
+      grid-template-columns: 1.22fr 1fr;
+      gap:24px;
+      align-items:stretch;
     }
 
-    .hero-actions {
-      display: flex;
-      gap: 0.9rem;
-      flex-wrap: wrap;
-      margin-top: 1.5rem;
-      margin-bottom: 1.5rem;
+    .hero-main,
+    .hero-side{
+      background:linear-gradient(180deg, #274d77 0%, #203f65 100%);
+      color:#fff;
+      border-radius:28px;
+      box-shadow:var(--shadow);
+      border:1px solid rgba(255,255,255,0.1);
     }
 
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.5rem;
-      padding: 0.9rem 1.3rem;
-      border-radius: 999px;
-      text-decoration: none;
-      font-weight: 700;
-      transition: all .2s ease;
-      cursor: pointer;
+    .hero-main{
+      padding:34px 34px 30px 34px;
+      position:relative;
+      overflow:hidden;
+      min-height:260px;
     }
 
-    .btn-primary {
-      background: #fff;
-      color: var(--teal);
-      border: 2px solid #fff;
-    }
-    .btn-primary:hover {
-      background: transparent;
-      color: #fff;
-    }
-
-    .btn-secondary {
-      background: transparent;
-      color: #fff;
-      border: 2px solid rgba(255,255,255,0.75);
-    }
-    .btn-secondary:hover {
-      background: rgba(255,255,255,0.08);
+    .hero-main::before{
+      content:"";
+      position:absolute;
+      inset:auto -120px -120px auto;
+      width:340px;
+      height:340px;
+      background:radial-gradient(circle, rgba(22,176,182,0.22) 0%, rgba(22,176,182,0.03) 60%, transparent 72%);
+      pointer-events:none;
     }
 
-    .hero-stats {
-      display: grid;
-      grid-template-columns: repeat(4, minmax(120px, 1fr));
-      gap: 0.8rem;
-      max-width: 820px;
+    .eyebrow{
+      display:inline-block;
+      margin-bottom:16px;
+      color:#9aeae6;
+      font-size:0.86rem;
+      font-weight:800;
+      letter-spacing:0.18em;
+      text-transform:uppercase;
     }
 
-    .stat-pill {
-      background: rgba(255,255,255,0.08);
-      border: 1px solid rgba(255,255,255,0.12);
-      border-radius: 16px;
-      padding: 0.85rem 1rem;
-      min-height: 88px;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
+    .hero-title{
+      margin:0 0 14px 0;
+      font-family:var(--font-serif);
+      font-size:2.35rem;
+      line-height:1.08;
+      font-weight:700;
+      letter-spacing:-0.01em;
     }
 
-    .stat-value {
-      font-family: var(--font-serif);
-      font-size: 1.45rem;
-      line-height: 1;
-      margin-bottom: 0.25rem;
+    .hero-desc{
+      margin:0;
+      max-width:860px;
+      font-size:1.05rem;
+      line-height:1.72;
+      color:rgba(255,255,255,0.9);
     }
 
-    .stat-label {
-      color: #d7e1eb;
-      font-size: 0.88rem;
+    .hero-meta{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      margin-top:22px;
     }
 
-    .hero-card {
-      background: rgba(255,255,255,0.08);
-      border: 1px solid rgba(255,255,255,0.12);
-      border-radius: 24px;
-      padding: 1.25rem;
-      backdrop-filter: blur(8px);
-      box-shadow: 0 18px 42px rgba(0,0,0,0.16);
-      align-self: stretch;
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
+    .chip{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:10px 14px;
+      border-radius:999px;
+      background:rgba(255,255,255,0.08);
+      border:1px solid rgba(255,255,255,0.12);
+      color:#eef8fb;
+      font-size:0.9rem;
+      font-weight:700;
     }
 
-    .hero-card h3 {
-      margin: 0;
-      font-family: var(--font-serif);
-      font-size: 1.4rem;
-      font-weight: 400;
+    .hero-side{
+      padding:26px;
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+      gap:16px;
     }
 
-    .hero-card p {
-      margin: 0;
-      color: #dbe5f0;
-      font-size: 0.95rem;
+    .hero-side h3{
+      margin:0;
+      font-family:var(--font-serif);
+      font-size:1.4rem;
+      font-weight:700;
     }
 
-    .institutional-strip {
-      background: var(--navy);
-      border-bottom: 1px solid rgba(255,255,255,0.08);
-      padding: 1.05rem 0;
+    .hero-side p{
+      margin:0;
+      line-height:1.7;
+      color:rgba(255,255,255,0.9);
     }
 
-    .institutional-strip-inner {
-      width: min(1400px, calc(100% - 2rem));
-      margin: 0 auto;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 3.5rem;
-      flex-wrap: wrap;
+    /* =========================
+       SURFACE / SECTION
+       ========================= */
+    .surface{
+      background:var(--panel);
+      border:1px solid var(--line);
+      border-radius:26px;
+      box-shadow:var(--shadow);
+      overflow:hidden;
+      margin:22px 0;
     }
 
-    .inst-strip-logo {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 60px;
-      padding: 0.25rem 0;
+    .surface-head{
+      padding:20px 26px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:18px;
+      border-bottom:1px solid var(--line);
+      background:#fbfdff;
     }
 
-    .inst-strip-logo img {
-      max-height: 46px;
-      width: auto;
-      display: block;
-      object-fit: contain;
-      filter: brightness(0) invert(1);
+    .surface-title{
+      margin:0;
+      font-family:var(--font-serif);
+      font-size:1.28rem;
+      font-weight:700;
+      color:var(--ink);
     }
 
-    .inst-strip-logo.placeholder {
-      color: rgba(255,255,255,0.9);
-      font-size: 0.8rem;
-      text-align: center;
-      line-height: 1.35;
-      font-weight: 700;
-      font-family: var(--font-mono);
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
+    .surface-kicker{
+      font-size:0.9rem;
+      letter-spacing:0.2em;
+      text-transform:uppercase;
+      font-weight:800;
+      color:var(--teal-2);
+      white-space:nowrap;
     }
 
-    .hero-logo-main {
-      background: rgba(255,255,255,0.95);
-      border-radius: 16px;
-      padding: 0.85rem 1rem;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: fit-content;
+    .surface-body{
+      padding:18px 18px 20px 18px;
     }
 
-    .hero-logo-main img {
-      max-height: 76px;
-      width: auto;
-      display: block;
+    /* =========================
+       OVERVIEW
+       ========================= */
+    .overview-grid{
+      display:grid;
+      grid-template-columns: minmax(420px, 1.15fr) minmax(420px, 1.85fr);
+      gap:16px;
+      align-items:stretch;
     }
 
-    .container {
-      max-width: var(--maxw);
-      margin: 0 auto;
-      padding: 2rem;
+    .card{
+      background:var(--panel-soft);
+      border:1px solid var(--line);
+      border-radius:16px;
     }
 
-    .quick-grid {
-      display: grid;
+    .concept-card{
+      padding:16px 16px 14px 16px;
+    }
+
+    .concept-image-frame{
+      width:100%;
+      background:#fff;
+      border-radius:14px;
+      border:1px solid #e1e8f0;
+      padding:10px;
+      box-shadow:inset 0 0 0 1px rgba(0,0,0,0.015);
+    }
+
+    .concept-image-frame img{
+      width:100%;
+      height:auto;
+      object-fit:contain;
+      border-radius:10px;
+    }
+
+    .concept-caption{
+      margin:12px 4px 0 4px;
+      text-align:center;
+      color:#5e7190;
+      line-height:1.5;
+      font-size:0.95rem;
+    }
+
+    .overview-right{
+      display:grid;
       grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 1.1rem;
-      margin-top: -2rem;
-      position: relative;
-      z-index: 5;
+      gap:16px;
+      align-items:stretch;
     }
 
-    .info-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-top: 4px solid var(--teal);
-      border-radius: var(--radius-lg);
-      box-shadow: var(--shadow);
-      padding: 1.25rem 1.25rem 1.15rem 1.25rem;
+    .info-card{
+      padding:18px 18px 16px 18px;
+      display:flex;
+      flex-direction:column;
+      justify-content:flex-start;
+      min-height:100%;
     }
 
-    .info-card h3 {
-      margin: 0 0 0.45rem 0;
-      color: var(--navy);
-      font-family: var(--font-serif);
-      font-size: 1.35rem;
-      font-weight: 400;
+    .info-card h3{
+      margin:0 0 10px 0;
+      color:var(--ink);
+      font-size:1.02rem;
+      line-height:1.35;
     }
 
-    .info-card p {
-      margin: 0;
-      color: var(--muted);
-      font-size: 0.95rem;
+    .info-card p{
+      margin:0;
+      color:#5e6f88;
+      line-height:1.7;
+      font-size:0.97rem;
     }
 
-    .section-title {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 1rem;
-      margin: 2.4rem 0 1.1rem 0;
+    .soil-banner{
+      background:var(--panel-mint);
+      border:1px solid #bee9df;
+      color:var(--ink);
+      border-radius:16px;
+      padding:16px 18px;
+      margin:0 0 16px 0;
+      font-size:1rem;
+      overflow-x:auto;
     }
 
-    .section-title h2 {
-      margin: 0;
-      font-family: var(--font-serif);
-      font-weight: 400;
-      font-size: clamp(1.8rem, 3vw, 2.5rem);
-      color: var(--navy);
+    /* =========================
+       CONTROLS
+       ========================= */
+    .controls-grid{
+      display:grid;
+      grid-template-columns: repeat(6, minmax(180px, 1fr));
+      gap:14px;
     }
 
-    .section-kicker {
-      font-family: var(--font-mono);
-      font-size: 0.82rem;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: var(--teal);
+    .control-group{
+      display:flex;
+      flex-direction:column;
+      gap:7px;
+      background:var(--panel-soft);
+      border:1px solid var(--line);
+      border-radius:14px;
+      padding:12px 12px 10px 12px;
     }
 
-    .section-intro {
-      color: var(--muted);
-      margin: 0 0 1.4rem 0;
-      max-width: 980px;
+    .control-group label{
+      font-size:0.86rem;
+      color:#5f728f;
+      font-weight:700;
+      line-height:1.3;
     }
 
-    .explorer-shell {
-      display: grid;
-      gap: 1rem;
+    .control-group select,
+    .control-group input{
+      width:100%;
+      border:1px solid #cfd9e5;
+      background:#fff;
+      color:var(--ink);
+      border-radius:12px;
+      padding:11px 12px;
+      font-size:0.95rem;
+      min-height:44px;
+      outline:none;
+      transition:border-color 0.2s ease, box-shadow 0.2s ease;
     }
 
-    .surface-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      box-shadow: var(--shadow);
-      overflow: hidden;
+    .control-group select:focus,
+    .control-group input:focus{
+      border-color:var(--teal);
+      box-shadow:0 0 0 3px rgba(22,176,182,0.12);
     }
 
-    .panel-header {
-      padding: 1rem 1.2rem;
-      border-bottom: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 1rem;
-      background: linear-gradient(180deg, #ffffff 0%, #f8fbfd 100%);
+    .control-group select:disabled,
+    .control-group input:disabled{
+      background:#eff3f7;
+      color:#9aa9bc;
+      cursor:not-allowed;
     }
 
-    .panel-header h3 {
-      margin: 0;
-      color: var(--navy);
-      font-family: var(--font-serif);
-      font-weight: 400;
-      font-size: 1.25rem;
-    }
-
-    .panel-body {
-      padding: 1.15rem 1.2rem 1.25rem 1.2rem;
-    }
-
-    .soil-params-wrapper {
-      margin: 0;
-      padding: 0.9rem 1.1rem;
-      border-radius: var(--radius-md);
-      background: var(--teal-bg);
-      border: 1px solid #ccfbf1;
-      font-size: 0.98rem;
-      color: var(--navy);
-    }
-
-    .figure-row {
-      display: grid;
-      grid-template-columns: minmax(440px, 1.18fr) minmax(0, 1.82fr);
-      gap: 1rem;
-      align-items: stretch;
-    }
-
-    .concept-figure {
-      margin: 0;
-      text-align: center;
-      background: var(--surface-2);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-md);
-      padding: 1rem;
-      height: 100%;
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-start;
-    }
-
-    .concept-figure img {
-      max-width: 100%;
-      width: 100%;
-      height: auto;
-      border-radius: 10px;
-    }
-
-    .concept-figure .caption {
-      font-size: 0.82rem;
-      color: var(--muted);
-      margin-top: 0.55rem;
-    }
-
-    .summary-stack {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 1rem;
-      align-items: stretch;
-    }
-
-    .mini-card {
-      background: var(--surface-2);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-md);
-      padding: 1rem 1.05rem;
-    }
-
-    .mini-card h4 {
-      margin: 0 0 0.35rem 0;
-      color: var(--navy);
-      font-size: 1rem;
-    }
-
-    .mini-card p {
-      margin: 0;
-      color: var(--muted);
-      font-size: 0.92rem;
-    }
-
-    .controls {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
-      gap: 1rem;
-      padding: 0;
-      margin: 0;
-      background: transparent;
-      border: 0;
-    }
-
-    .control-group {
-      display: flex;
-      flex-direction: column;
-      min-width: 0;
-    }
-
-    .control-group label {
-      font-size: 0.84rem;
-      margin-bottom: 0.35rem;
-      color: var(--muted);
-      font-weight: 600;
-    }
-
-    select,
-    input[type="number"] {
-      width: 100%;
-      padding: 0.8rem 0.9rem;
-      border-radius: 12px;
-      border: 1px solid var(--border);
-      font-size: 0.95rem;
-      background: #fff;
-      color: var(--ink);
-      transition: border-color .2s ease, box-shadow .2s ease;
-    }
-
-    select:focus,
-    input[type="number"]:focus {
-      outline: none;
-      border-color: var(--teal);
-      box-shadow: 0 0 0 4px rgba(13,148,136,0.12);
-    }
-
-    select:disabled,
-    input[type="number"]:disabled {
-      background: #f1f5f9;
-      cursor: not-allowed;
-      color: #94a3b8;
-    }
-
-    .plots-row {
-      display: grid;
+    /* =========================
+       PLOTS
+       ========================= */
+    .plots-row{
+      display:grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 1rem;
-      margin-bottom: 0;
+      gap:16px;
     }
 
-    .plot-panel,
+    .plot-panel{
+      background:var(--panel);
+      border:1px solid var(--line);
+      border-radius:18px;
+      padding:12px;
+      box-shadow:var(--shadow);
+    }
+
+    .plot-div{
+      width:100%;
+      height:390px;
+    }
+
+    .panel-actions{
+      display:flex;
+      justify-content:flex-end;
+      margin-top:8px;
+    }
+
+    .section-stack{
+      display:grid;
+      gap:16px;
+    }
+
     .hydro-panel,
-    .cost-panel {
-      border-radius: var(--radius-lg);
-      border: 1px solid var(--border);
-      padding: 0;
-      background: #ffffff;
-      box-shadow: var(--shadow);
-      overflow: hidden;
+    .cost-panel,
+    .method-panel,
+    .about-panel,
+    .reference-panel{
+      background:var(--panel);
+      border:1px solid var(--line);
+      border-radius:20px;
+      box-shadow:var(--shadow);
+      padding:16px 16px 18px 16px;
     }
 
-    .plot-panel {
-      padding: 0.35rem 0.35rem 0.8rem 0.35rem;
+    .hydro-header{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      margin-bottom:10px;
+      flex-wrap:wrap;
     }
 
-    .plot-div {
-      width: 100%;
-      height: 390px;
+    .hydro-header .title{
+      font-weight:800;
+      color:var(--ink);
+      font-size:1rem;
     }
 
     #hydro-plot,
-    #cost-plot {
-      width: 100%;
-      height: 310px;
-    }
-
-    .hydro-panel,
-    .cost-panel {
-      margin-top: 0;
-    }
-
-    .hydro-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 0.75rem;
-      margin-bottom: 0.25rem;
-      padding: 1rem 1.15rem 0 1.15rem;
+    #cost-plot{
+      width:100%;
+      height:310px;
     }
 
     .status,
-    .legend-note {
-      margin-top: 0.45rem;
-      font-size: 0.84rem;
-      color: var(--muted);
-      padding: 0 1.15rem 1rem 1.15rem;
+    .legend-note{
+      margin-top:10px;
+      color:#60718b;
+      line-height:1.55;
+      font-size:0.92rem;
     }
 
-    .status.error {
-      color: #b00020;
+    .status.error{
+      color:#ab1f33;
+      font-weight:700;
     }
 
-    button {
-      padding: 0.65rem 1rem;
-      font-size: 0.85rem;
-      border-radius: 999px;
-      border: 1px solid var(--border);
-      background: var(--surface-2);
-      color: var(--navy);
-      cursor: pointer;
-      font-weight: 700;
-      transition: all .2s ease;
+    button{
+      appearance:none;
+      border:none;
+      border-radius:12px;
+      background:var(--navy-2);
+      color:#fff;
+      padding:10px 14px;
+      font-size:0.9rem;
+      font-weight:800;
+      cursor:pointer;
+      transition:transform 0.12s ease, opacity 0.2s ease, background 0.2s ease;
     }
 
-    button:hover:not(:disabled) {
-      transform: translateY(-1px);
-      border-color: var(--teal);
-      color: var(--teal);
+    button:hover{
+      background:#1b4e82;
+      transform:translateY(-1px);
     }
 
-    button:disabled {
-      cursor: not-allowed;
-      opacity: 0.5;
+    button:disabled{
+      opacity:0.48;
+      cursor:not-allowed;
+      transform:none;
     }
 
-    .about-box {
-      margin-top: 0;
-      font-size: 0.95rem;
-      color: var(--muted);
-      line-height: 1.7;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      box-shadow: var(--shadow);
-      padding: 1.2rem 1.25rem;
+    /* =========================
+       TEXT SECTIONS
+       ========================= */
+    .rich-text h2{
+      margin:0 0 10px 0;
+      font-family:var(--font-serif);
+      color:var(--ink);
+      font-size:1.42rem;
     }
 
-    .about-box strong {
-      color: var(--navy);
+    .rich-text h3{
+      margin:22px 0 8px 0;
+      font-size:1.08rem;
+      color:var(--ink);
     }
 
-    .method-panel {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      box-shadow: var(--shadow);
-      padding: 1.75rem 1.8rem;
-      margin-bottom: 0;
+    .rich-text h4{
+      margin:18px 0 8px 0;
+      font-size:1rem;
+      color:var(--ink);
     }
 
-    .method-panel h2 {
-      margin-top: 0;
-      margin-bottom: 0.85rem;
-      font-family: var(--font-serif);
-      font-weight: 400;
-      font-size: 2rem;
-      color: var(--navy);
+    .rich-text p,
+    .rich-text li{
+      color:#566984;
+      line-height:1.78;
+      font-size:0.98rem;
     }
 
-    .method-panel h3 {
-      margin-top: 1.35rem;
-      margin-bottom: 0.45rem;
-      font-family: var(--font-serif);
-      font-weight: 400;
-      font-size: 1.35rem;
-      color: var(--navy);
+    .rich-text ul{
+      margin:10px 0 12px 20px;
+      padding:0;
     }
 
-    .method-panel h4 {
-      margin-top: 1rem;
-      margin-bottom: 0.35rem;
-      font-size: 1rem;
-      color: var(--navy-lt);
+    .math{
+      margin:10px 0 12px 0;
+      padding:10px 14px;
+      background:#f8fbff;
+      border:1px solid #e1eaf4;
+      border-radius:14px;
+      overflow-x:auto;
     }
 
-    .method-panel p {
-      margin: 0.35rem 0;
-      line-height: 1.7;
-      color: #334155;
+    .refs-list{
+      display:grid;
+      gap:12px;
+      margin-top:8px;
     }
 
-    .method-panel ul {
-      margin: 0.5rem 0 0.9rem 1.25rem;
-      padding: 0;
-      color: #334155;
+    .ref-item{
+      background:var(--panel-soft);
+      border:1px solid var(--line);
+      border-radius:14px;
+      padding:14px 16px;
+      line-height:1.7;
+      color:#556883;
     }
 
-    .method-panel li {
-      margin-bottom: 0.38rem;
+    .ref-item strong{
+      color:var(--ink);
     }
 
-    .method-panel .math {
-      margin: 0.6rem 0 0.85rem;
-      padding: 0.2rem 0;
+    /* =========================
+       ABOUT / FOOTER
+       ========================= */
+    .about-panel p{
+      margin:0;
+      line-height:1.8;
+      color:#586b86;
+      font-size:0.98rem;
     }
 
-    .shared-footer {
-      background: var(--navy-dk);
-      color: #cbd5e1;
-      margin-top: 2.5rem;
-      padding: 1.6rem 2rem 1.9rem;
-      border-top: 4px solid var(--teal);
+    footer{
+      margin-top:26px;
+      background:#0e2949;
+      color:#c8d6e6;
+      border-top:1px solid rgba(255,255,255,0.08);
     }
 
-    .footer-inner {
-      max-width: var(--maxw);
-      margin: 0 auto;
-      display: flex;
-      justify-content: space-between;
-      gap: 1rem;
-      flex-wrap: wrap;
-      align-items: center;
-      font-size: 0.9rem;
+    .footer-inner{
+      width:min(calc(100% - 40px), var(--maxw));
+      margin:0 auto;
+      padding:22px 0 28px 0;
+      font-size:0.98rem;
+      letter-spacing:0.02em;
     }
 
-    .footer-brand {
-      font-family: var(--font-serif);
-      font-size: 1.25rem;
-      color: #fff;
-    }
-
-    .footer-meta {
-      color: #94a3b8;
-      font-family: var(--font-mono);
-      font-size: 0.82rem;
-    }
-
-    @media (max-width: 1080px) {
-      .hero-inner,
-      .figure-row,
-      .quick-grid {
-        grid-template-columns: 1fr;
+    /* =========================
+       RESPONSIVE
+       ========================= */
+    @media (max-width: 1220px){
+      .hero-grid{
+        grid-template-columns:1fr;
       }
 
-      .hero-stats {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
+      .overview-grid{
+        grid-template-columns:1fr;
+      }
+
+      .overview-right{
+        grid-template-columns:repeat(3, minmax(0, 1fr));
+      }
+
+      .controls-grid{
+        grid-template-columns: repeat(4, minmax(180px, 1fr));
       }
     }
 
-    @media (max-width: 820px) {
-      #shared-nav {
-        padding: 0.9rem 1rem;
-        flex-direction: column;
-        align-items: flex-start;
+    @media (max-width: 980px){
+      .overview-right{
+        grid-template-columns:1fr;
+      }
+
+      .plots-row{
+        grid-template-columns:1fr;
+      }
+
+      .controls-grid{
+        grid-template-columns: repeat(2, minmax(170px, 1fr));
+      }
+
+      .institution-inner{
+        gap:22px;
+      }
+
+      .institution-logo{
+        min-width:120px;
+      }
+    }
+
+    @media (max-width: 640px){
+      .topnav-inner{
+        flex-direction:column;
+        justify-content:center;
+        padding:10px 0;
+      }
+
+      .nav-links{
+        gap:16px;
       }
 
       .container,
-      .hero {
-        padding-left: 1rem;
-        padding-right: 1rem;
+      .topnav-inner,
+      .institution-inner,
+      .footer-inner{
+        width:min(calc(100% - 20px), var(--maxw));
       }
 
-      .plots-row {
-        grid-template-columns: 1fr;
+      .hero-main,
+      .hero-side{
+        padding:22px;
       }
 
-      .hydro-header,
-      .section-title {
-        flex-direction: column;
-        align-items: flex-start;
+      .hero-title{
+        font-size:1.85rem;
       }
 
-      .hero-stats {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    .project-note {
-      display: none;
-    }
-
-    .references-card p {
-      margin: 0 0 0.7rem 0;
-      color: var(--muted);
-      line-height: 1.7;
-    }
-
-    .references-card p:last-child {
-      margin-bottom: 0;
-    }
-
-    @media (max-width: 1180px) {
-      .summary-stack {
-        grid-template-columns: 1fr;
+      .controls-grid{
+        grid-template-columns:1fr;
       }
 
-      .figure-row {
-        grid-template-columns: 1fr;
+      .institution-inner{
+        min-height:auto;
+        flex-wrap:wrap;
+      }
+
+      .institution-sep{
+        display:none;
       }
     }
   </style>
 </head>
 <body>
-  <nav id="shared-nav">
-    <a href="#" class="nav-brand">DRAIN-LID<span class="accent-dot">.</span></a>
-    <ul class="nav-links">
-      <li><a href="#explorer" class="active">Explorer</a></li>
-      <li><a href="#methods">Methods</a></li>
-      <li><a href="#about-project">About</a></li>
-    </ul>
-  </nav>
 
-  <div class="institutional-strip">
-    <div class="institutional-strip-inner">
-      <div class="inst-strip-logo" id="uofa-logo-box">
-        <div class="inst-strip-logo placeholder">UOFA</div>
+  <!-- =========================
+       NAV
+       ========================= -->
+  <header class="topnav">
+    <div class="topnav-inner">
+      <div class="brand">
+        <div class="brand-mark">DRAIN-LID<span class="dot">.</span></div>
       </div>
-      <div class="inst-strip-logo" id="stanford-logo-box">
-        <div class="inst-strip-logo placeholder">STANFORD</div>
-      </div>
+      <nav class="nav-links">
+        <a class="active" href="#explorer">Explorer</a>
+        <a href="#methods-background">Methods</a>
+        <a href="#about">About</a>
+      </nav>
     </div>
-  </div>
+  </header>
 
-  <section class="hero">
-    <div class="hero-inner">
-      <div class="hero-copy">
-        <div class="hero-badge">Physics-based LID design space explorer</div>
-        <h1>DRAIN-LID Design Performance Explorer</h1>
-        <p class="hero-subtitle">
-          Interactive visualization of infiltration-based Low Impact Development performance using
-          a Richards-equation-based simulation database, paired with lifecycle cost screening and
-          hydrograph diagnostics.
-        </p>
-        <p class="hero-note">
-          Explore how soil type, effective rainfall, area ratio, media depth, and inflow timing shape
-          attenuation, detention, ponding, and cost. On mobile, this page works best in landscape mode.
-        </p>
-
-        <div class="hero-actions">
-          <a class="btn btn-primary" href="#explorer">Open explorer</a>
-          <a class="btn btn-secondary" href="#methods">See model details</a>
-        </div>
-
-        <div class="hero-stats">
-          <div class="stat-pill">
-            <div class="stat-value">4</div>
-            <div class="stat-label">Interactive 3D performance views</div>
-          </div>
-          <div class="stat-pill">
-            <div class="stat-value">1D</div>
-            <div class="stat-label">Richards-based vertical flow core</div>
-          </div>
-          <div class="stat-pill">
-            <div class="stat-value">NPV</div>
-            <div class="stat-label">Lifecycle cost screening built in</div>
-          </div>
-          <div class="stat-pill">
-            <div class="stat-value">CSV</div>
-            <div class="stat-label">Direct export for each analysis panel</div>
-          </div>
-        </div>
+  <!-- =========================
+       INSTITUTION BAR
+       ========================= -->
+  <section class="institution-bar">
+    <div class="institution-inner">
+      <div class="institution-logo">
+        <img src="uofa_logo.svg" alt="University of Arizona logo" />
       </div>
-
-      <div class="hero-card">
-        <div class="hero-logo-main" id="logo-box"></div>
-        <div>
-          <h3>Project identity</h3>
-          <p>
-            Add your project logo to the same folder as this HTML file and it will appear here automatically.
-            The institutional logos are displayed in the top blue strip.
-          </p>
-        </div>
-
-        <div class="mini-card">
-          <h4>Recommended logo format</h4>
-          <p>
-            SVG is preferred for Stanford and UofA because it stays crisp at any size. PNG also works well if it has a transparent background and high resolution.
-          </p>
-        </div>
-
-        <div class="mini-card">
-          <h4>Suggested filenames</h4>
-          <p>
-            <code>drainlid_logo.png</code> or <code>drainlid_logo.svg</code>,
-            <code>stanford_logo.svg</code>,
-            <code>uofa_logo.svg</code>.
-          </p>
-        </div>
+      <div class="institution-sep"></div>
+      <div class="institution-logo">
+        <img src="stanford_logo.svg" alt="Stanford University logo" />
       </div>
     </div>
   </section>
 
-  <main class="container">
-    <section class="quick-grid">
-      <div class="info-card">
-        <h3>Design-space navigation</h3>
-        <p>
-          Four coordinated 3D views let users inspect peak reduction, detention time, time-to-peak delay,
-          and maximum ponding across area ratio, media depth, and inflow timing.
-        </p>
-      </div>
-      <div class="info-card">
-        <h3>Hydrograph interrogation</h3>
-        <p>
-          Clicking any design point updates the inflow–outflow hydrograph panel, making it easy to move
-          from abstract performance metrics to physically interpretable event response.
-        </p>
-      </div>
-      <div class="info-card">
-        <h3>Cost-performance filtering</h3>
-        <p>
-          Hydrologic thresholds and lifecycle assumptions can be changed directly in the interface so
-          feasible designs can be screened with transparent, editable decision criteria.
-        </p>
+  <main class="container" id="explorer">
+
+    <!-- =========================
+         HERO
+         ========================= -->
+    <section class="hero">
+      <div class="hero-grid">
+        <div class="hero-main">
+          <div class="eyebrow">Interactive design atlas</div>
+          <h1 class="hero-title">DRAIN-LID Design Performance Explorer</h1>
+          <p class="hero-desc">
+            This interactive platform maps hydrologic performance and lifecycle cost tradeoffs in
+            infiltration-based low impact development systems. Users can explore how soil type,
+            effective precipitation, area ratio, media depth, and inflow timing shape peak-flow
+            attenuation, detention behavior, ponding response, and cost efficiency across the
+            DRAIN-LID simulation database.
+          </p>
+          <div class="hero-meta">
+            <span class="chip">Physics-based database</span>
+            <span class="chip">3D design-space visualization</span>
+            <span class="chip">Hydrograph inspection</span>
+            <span class="chip">Cost-performance screening</span>
+          </div>
+        </div>
+        <aside class="hero-side">
+          <div class="eyebrow">Purpose</div>
+          <h3>Decision support for infiltration-based LID design</h3>
+          <p>
+            The explorer was designed to support rapid interpretation of a large numerical
+            simulation database and to help compare alternative bioretention configurations
+            using physically meaningful hydrologic metrics and transparent cost assumptions.
+          </p>
+        </aside>
       </div>
     </section>
 
-    <section id="explorer">
-      <div class="section-title">
-        <div>
-          <div class="section-kicker">Interactive dashboard</div>
-          <h2>Explore the simulated design landscape</h2>
+    <!-- =========================
+         OVERVIEW
+         ========================= -->
+    <section class="surface">
+      <div class="surface-head">
+        <h2 class="surface-title">Project overview</h2>
+        <div class="surface-kicker">DRAIN-LID Database</div>
+      </div>
+      <div class="surface-body">
+        <div class="soil-banner">
+          <span id="soil-params"><!-- Filled by JS, rendered with MathJax --></span>
+        </div>
+
+        <div class="overview-grid">
+          <div class="card concept-card">
+            <div class="concept-image-frame">
+              <img
+                src="Problem_Layout.png"
+                alt="Conceptual layout of the bioretention system showing inflow, storage, percolation, and drainage."
+              />
+            </div>
+            <div class="concept-caption">
+              Conceptual layout of the bioretention cell and principal modeled fluxes.
+            </div>
+          </div>
+
+          <div class="overview-right">
+            <div class="card info-card">
+              <h3>What this page shows</h3>
+              <p>
+                Each point in the 3D plots corresponds to one numerical realization from the
+                DRAIN-LID database. The axes represent area ratio, LID media depth, and inflow
+                time to peak.
+              </p>
+            </div>
+
+            <div class="card info-card">
+              <h3>How to use it</h3>
+              <p>
+                First select a soil type and effective precipitation depth. Then adjust the
+                hydrologic and cost filters. Click any 3D point to display the corresponding
+                inflow and outflow hydrographs.
+              </p>
+            </div>
+
+            <div class="card info-card">
+              <h3>What can be evaluated</h3>
+              <p>
+                The explorer supports screening based on peak-flow reduction, detention time,
+                time-to-peak delay, maximum ponding depth, and net present value per unit
+                contributing area.
+              </p>
+            </div>
+          </div>
         </div>
       </div>
+    </section>
 
-      <div class="explorer-shell">
-        <div class="surface-card">
-          <div class="panel-header">
-            <h3>Project overview</h3>
-            <span class="section-kicker">DRAIN-LID database</span>
+    <!-- =========================
+         CONTROLS
+         ========================= -->
+    <section class="surface">
+      <div class="surface-head">
+        <h2 class="surface-title">Design and cost filters</h2>
+        <div class="surface-kicker">Interactive controls</div>
+      </div>
+      <div class="surface-body">
+        <div class="controls-grid">
+          <div class="control-group">
+            <label for="soil-select">Soil type</label>
+            <select id="soil-select" disabled></select>
           </div>
-          <div class="panel-body" style="display:grid; gap:1rem;">
-            <div class="soil-params-wrapper">
-              <span id="soil-params"></span>
-            </div>
 
-            <div class="figure-row">
-              <div class="concept-figure">
-                <img src="Problem_Layout.png"
-                  alt="Conceptual cross-section of the bioretention cell showing inflow, infiltration, percolation, soil storage, and underdrain outflow.">
-                <div class="caption">
-                  Conceptual layout of the bioretention cell and principal modeled fluxes.
-                </div>
-              </div>
-
-              <div class="summary-stack">
-                <div class="mini-card">
-                  <h4>What this page shows</h4>
-                  <p>
-                    Each point corresponds to one numerical solution from the DRAIN-LID database.
-                    The axes represent area ratio, LID media depth, and inflow time to peak.
-                  </p>
-                </div>
-                <div class="mini-card">
-                  <h4>How to use it</h4>
-                  <p>
-                    First select a soil and effective precipitation depth. Then tighten the hydrologic
-                    and cost filters. Click any 3D point to reveal the corresponding hydrographs.
-                  </p>
-                </div>
-                <div class="mini-card">
-                  <h4>What you can export</h4>
-                  <p>
-                    Each performance panel, the selected hydrograph, and the cost-screening view can be
-                    downloaded directly as CSV for reporting, comparison, and further analysis.
-                  </p>
-                </div>
-              </div>
-            </div>
+          <div class="control-group">
+            <label for="peff-select">Effective precipitation, Pef</label>
+            <select id="peff-select" disabled></select>
           </div>
-        </div>
 
-        <div class="surface-card">
-          <div class="panel-header">
-            <h3>Scenario filters and cost assumptions</h3>
-            <span class="section-kicker">Inputs</span>
+          <div class="control-group">
+            <label for="tp-min-input">Min inflow time to peak, t<sub>p</sub> [min]</label>
+            <input type="number" id="tp-min-input" step="1" />
           </div>
-          <div class="panel-body">
-            <div class="controls">
-              <div class="control-group">
-                <label for="soil-select">Soil type</label>
-                <select id="soil-select" disabled></select>
-              </div>
 
-              <div class="control-group">
-                <label for="peff-select">Effective precipitation, Pef</label>
-                <select id="peff-select" disabled></select>
-              </div>
+          <div class="control-group">
+            <label for="tp-max-input">Max inflow time to peak, t<sub>p</sub> [min]</label>
+            <input type="number" id="tp-max-input" step="1" />
+          </div>
 
-              <div class="control-group">
-                <label for="tp-min-input">Min inflow time to peak t<sub>p</sub> [min]</label>
-                <input type="number" id="tp-min-input" step="1" />
-              </div>
+          <div class="control-group">
+            <label for="min-eta-input">Min peak flow reduction [%]</label>
+            <input type="number" id="min-eta-input" value="60" step="5" />
+          </div>
 
-              <div class="control-group">
-                <label for="tp-max-input">Max inflow time to peak t<sub>p</sub> [min]</label>
-                <input type="number" id="tp-max-input" step="1" />
-              </div>
+          <div class="control-group">
+            <label for="min-det-h-input">Min detention time [h]</label>
+            <input type="number" id="min-det-h-input" value="4" step="0.5" />
+          </div>
 
-              <div class="control-group">
-                <label for="min-eta-input">Min peak flow reduction [%]</label>
-                <input type="number" id="min-eta-input" value="60" step="5" />
-              </div>
+          <div class="control-group">
+            <label for="min-delay-h-input">Min time-to-peak delay [h]</label>
+            <input type="number" id="min-delay-h-input" value="0" step="0.25" />
+          </div>
 
-              <div class="control-group">
-                <label for="min-det-h-input">Min detention time [h]</label>
-                <input type="number" id="min-det-h-input" value="4" step="0.5" />
-              </div>
+          <div class="control-group">
+            <label for="max-pond-m-input">Max ponding depth [m]</label>
+            <input type="number" id="max-pond-m-input" value="0.30" step="0.05" />
+          </div>
 
-              <div class="control-group">
-                <label for="min-delay-h-input">Min time-to-peak delay [h]</label>
-                <input type="number" id="min-delay-h-input" value="0" step="0.25" />
-              </div>
+          <div class="control-group">
+            <label for="c-vol-input">c<sub>vol</sub> — excavation + media [$/m³]</label>
+            <input type="number" id="c-vol-input" value="210" step="10" />
+          </div>
 
-              <div class="control-group">
-                <label for="max-pond-m-input">Max ponding depth [m]</label>
-                <input type="number" id="max-pond-m-input" value="0.30" step="0.05" />
-              </div>
+          <div class="control-group">
+            <label for="c-surf-input">c<sub>surf</sub> — surface works [$/m²]</label>
+            <input type="number" id="c-surf-input" value="55" step="5" />
+          </div>
 
-              <div class="control-group">
-                <label for="c-vol-input">c<sub>vol</sub> — excavation + media [\$/m³]</label>
-                <input type="number" id="c-vol-input" value="210" step="10" />
-              </div>
+          <div class="control-group">
+            <label for="c-om-input">c<sub>O&amp;M</sub> — annual O&amp;M [$/m²/yr]</label>
+            <input type="number" id="c-om-input" value="6" step="1" />
+          </div>
 
-              <div class="control-group">
-                <label for="c-surf-input">c<sub>surf</sub> — surface works [\$/m²]</label>
-                <input type="number" id="c-surf-input" value="55" step="5" />
-              </div>
+          <div class="control-group">
+            <label for="design-life-input">Design life, T [years]</label>
+            <input type="number" id="design-life-input" value="30" step="1" />
+          </div>
 
-              <div class="control-group">
-                <label for="c-om-input">c<sub>O&amp;M</sub> — annual O&amp;M [\$/m²/yr]</label>
-                <input type="number" id="c-om-input" value="6" step="1" />
-              </div>
-
-              <div class="control-group">
-                <label for="design-life-input">Design life T [years]</label>
-                <input type="number" id="design-life-input" value="30" step="1" />
-              </div>
-
-              <div class="control-group">
-                <label for="discount-rate-input">Discount rate i [-]</label>
-                <input type="number" id="discount-rate-input" value="0.03" step="0.005" />
-              </div>
-            </div>
+          <div class="control-group">
+            <label for="discount-rate-input">Discount rate, i [-]</label>
+            <input type="number" id="discount-rate-input" value="0.03" step="0.005" />
           </div>
         </div>
+      </div>
+    </section>
 
-        <div class="plots-row">
-          <div class="plot-panel">
-            <div id="plot-eta" class="plot-div"></div>
+    <!-- =========================
+         PLOTS
+         ========================= -->
+    <section class="section-stack">
+      <div class="plots-row">
+        <div class="plot-panel">
+          <div id="plot-eta" class="plot-div"></div>
+          <div class="panel-actions">
             <button id="btn-download-eta" disabled>Download CSV</button>
           </div>
-          <div class="plot-panel">
-            <div id="plot-det" class="plot-div"></div>
+        </div>
+
+        <div class="plot-panel">
+          <div id="plot-det" class="plot-div"></div>
+          <div class="panel-actions">
             <button id="btn-download-det" disabled>Download CSV</button>
           </div>
-          <div class="plot-panel">
-            <div id="plot-dtp" class="plot-div"></div>
+        </div>
+
+        <div class="plot-panel">
+          <div id="plot-dtp" class="plot-div"></div>
+          <div class="panel-actions">
             <button id="btn-download-dtp" disabled>Download CSV</button>
           </div>
-          <div class="plot-panel">
-            <div id="plot-pond" class="plot-div"></div>
+        </div>
+
+        <div class="plot-panel">
+          <div id="plot-pond" class="plot-div"></div>
+          <div class="panel-actions">
             <button id="btn-download-pond" disabled>Download CSV</button>
           </div>
         </div>
+      </div>
 
-        <div class="hydro-panel">
-          <div class="hydro-header">
-            <div id="hydro-title">Hydrographs — no scenario selected yet</div>
-            <button id="btn-download" disabled>Download CSV</button>
-          </div>
-          <div id="hydro-plot"></div>
-          <div id="status" class="status">Loading data…</div>
-          <div class="legend-note">
-            Markers with outline only correspond to designs for which the solver failed or violated
-            ponding constraints. Hydrographs are shown in normalized flux units (mm/h) over the LID
-            surface. Due to size limitations, only solutions with peak flow reductions of 20–50%
-            are stored for the first 24 h, although the model is run for 48 h.
-          </div>
+      <div class="hydro-panel">
+        <div class="hydro-header">
+          <div class="title" id="hydro-title">Hydrographs — no scenario selected yet</div>
+          <button id="btn-download" disabled>Download CSV</button>
         </div>
+        <div id="hydro-plot"></div>
+        <div id="status" class="status">Loading data…</div>
+        <div class="legend-note">
+          Markers with outline only correspond to designs for which the solver failed or violated
+          ponding constraints. Hydrographs are shown in normalized flux units (mm/h) over the LID
+          surface. Due to size limitations, only solutions with peak-flow reductions of 20–50% are
+          stored for the first 24 h, although the model is run for 48 h.
+        </div>
+      </div>
 
-        <div class="cost-panel">
-          <div class="hydro-header">
-            <div id="cost-title">Lifecycle cost — no feasible set yet</div>
-            <button id="btn-download-cost" disabled>Download CSV</button>
-          </div>
-          <div id="cost-plot"></div>
-          <div id="cost-status" class="status">
-            Set hydrologic filters and select a soil and Pef to see cost–performance results.
-          </div>
+      <div class="cost-panel">
+        <div class="hydro-header">
+          <div class="title" id="cost-title">Lifecycle cost — no feasible set yet</div>
+          <button id="btn-download-cost" disabled>Download CSV</button>
+        </div>
+        <div id="cost-plot"></div>
+        <div id="cost-status" class="status">
+          Set hydrologic filters and select a soil and Pef to see cost–performance results.
         </div>
       </div>
     </section>
 
-    <section id="about-project">
-      <div class="section-title">
-        <div>
-          <div class="section-kicker">Project context</div>
-          <h2>About this explorer</h2>
-        </div>
+    <!-- =========================
+         METHODS
+         ========================= -->
+    <section id="methods-background" class="method-panel rich-text">
+      <h2>How the model works</h2>
+      <p>
+        The <strong>DRAIN-LID Designer</strong> toolbox is built on a physics-based numerical
+        framework that represents vertical water movement through engineered bioretention media,
+        the inflow hydrograph from the contributing catchment, and the lifecycle costs of
+        alternative designs. This interface allows users to interpret the resulting database
+        through hydrologically meaningful metrics and cost-performance tradeoffs.
+      </p>
+
+      <h3>Richards-based vertical flow model</h3>
+      <p>
+        Vertical flow through the media is represented using the one-dimensional mixed-form
+        Richards equation with pressure head \(h(z,t)\) as the primary state variable:
+      </p>
+      <div class="math">
+        \[
+          \frac{\partial \theta(h)}{\partial t}
+          + S_s \frac{\partial h}{\partial t}
+          =
+          \frac{\partial}{\partial z}
+          \left[
+            K(h)\left(\frac{\partial h}{\partial z} + 1\right)
+          \right]
+          + S(z,t).
+        \]
       </div>
 
-      <div class="about-box">
-        <p>
-          <strong>DRAIN-LID Design Performance Explorer</strong> was developed to visualize the design
-          space of infiltration-based Low Impact Development systems simulated with the DRAIN-LID model.
-          Each point represents a numerical solution of a mixed-form Richards equation coupled to a structural
-          drainage module under a specified inflow hydrograph and media configuration. The area-ratio axis
-          shows the ratio between the LID surface and the contributing catchment area.
-        </p>
+      <p>
+        Here \(z\) is depth, \(\theta(h)\) is volumetric water content, \(K(h)\) is hydraulic
+        conductivity, \(S_s\) is specific storage, and \(S(z,t)\) represents sources and sinks
+        linked to drainage and exchange processes. Soil hydraulic behavior is represented through
+        van Genuchten–Mualem constitutive relationships.
+      </p>
+
+      <div class="math">
+        \[
+          \theta(h) =
+          \begin{cases}
+            \theta_r + (\theta_s - \theta_r)\left[1 + (\alpha |h|)^n\right]^{-m}, & h < 0,\\[4pt]
+            \theta_s, & h \ge 0,
+          \end{cases}
+        \]
+        \[
+          K(h) =
+          \begin{cases}
+            K_s
+            \left[1 + (\alpha |h|)^n\right]^{-m l}
+            \left\{
+              1 - (\alpha |h|)^{n-1}
+              \left[1 + (\alpha |h|)^n\right]^{-m}
+            \right\}^2, & h < 0,\\[4pt]
+            K_s, & h \ge 0.
+          \end{cases}
+        \]
+      </div>
+
+      <p>
+        The model is solved with an implicit finite-volume formulation and adaptive Newton–Raphson
+        iteration, so each point in the database corresponds to a full Richards-equation simulation.
+      </p>
+
+      <h3>Design hydrograph and catchment inputs</h3>
+      <p>
+        Inflow to the LID cell is represented through a synthetic design hydrograph driven by:
+      </p>
+      <ul>
+        <li>effective rainfall depth \(P_{\mathrm{eff}}\),</li>
+        <li>upstream contributing area \(A_{\mathrm{up}}\), and</li>
+        <li>hydrograph time to peak \(t_{\mathrm{p}}\).</li>
+      </ul>
+
+      <p>A Nash-type formulation is used for the inflow hydrograph:</p>
+      <div class="math">
+        \[
+          Q_{\mathrm{in}}(t) =
+          Q_{\mathrm{p}}
+          \left(
+            \frac{t}{t_{\mathrm{p}}}
+            \exp\left[1 - \frac{t}{t_{\mathrm{p}}}\right]
+          \right)^{m-1}.
+        \]
+      </div>
+
+      <p>
+        For each combination of \((P_{\mathrm{eff}}, A_{\mathrm{up}}, t_{\mathrm{p}})\),
+        area ratio \(r = A/A_{\mathrm{up}}\), media depth \(L_d\), and soil type, the model
+        routes the hydrograph through the bioretention profile.
+      </p>
+
+      <h3>Hydrologic performance metrics</h3>
+
+      <h4>Peak flow reduction</h4>
+      <div class="math">
+        \[
+          \eta_{\mathrm{p}} =
+          100 \,
+          \frac{Q_{\mathrm{p}}^{\,i} - Q_{\mathrm{p}}^{\,o}}
+               {Q_{\mathrm{p}}^{\,i}}.
+        \]
+      </div>
+
+      <h4>Time-to-peak delay</h4>
+      <div class="math">
+        \[
+          \Delta t_{\mathrm{p}} = t_{\mathrm{p}}^{\,o} - t_{\mathrm{p}}^{\,i}.
+        \]
+      </div>
+
+      <h4>Detention time</h4>
+      <div class="math">
+        \[
+          \Delta t_{\mathrm{d}} =
+            t\bigl(Q_{\mathrm{out}}(t) \le \tau\bigr) - t_{\mathrm{p}}^{\,i}.
+        \]
+      </div>
+
+      <p>
+        These metrics allow users to screen feasible solutions and compare designs without
+        rerunning the numerical model.
+      </p>
+
+      <h3>Lifecycle cost model</h3>
+      <p>
+        Construction and maintenance are represented using a simple but interpretable lifecycle
+        cost framework.
+      </p>
+
+      <h4>Construction cost</h4>
+      <div class="math">
+        \[
+          C_{\mathrm{CapEx}} =
+            c_{\mathrm{vol}} \, A \, L_{\mathrm d}
+            + c_{\mathrm{surf}} \, A.
+        \]
+      </div>
+
+      <h4>Annual O&amp;M cost</h4>
+      <div class="math">
+        \[
+          C_{\mathrm{O\&M,annual}} = c_{\mathrm{O\&M}} \, A.
+        \]
+      </div>
+
+      <h4>Present-value factor</h4>
+      <div class="math">
+        \[
+          F(i,T) = \frac{1 - (1 + i)^{-T}}{i}.
+        \]
+      </div>
+
+      <h4>Net present value</h4>
+      <div class="math">
+        \[
+          C_{\mathrm{NPV}} =
+            C_{\mathrm{CapEx}}
+            + F(i,T)\, c_{\mathrm{O\&M}} \, A.
+        \]
+      </div>
+
+      <h3>Modeling assumptions</h3>
+      <ul>
+        <li>Initial conditions correspond to an unsaturated hydrostatic profile.</li>
+        <li>The system is modeled as laterally lined.</li>
+        <li>The underdrain behaves as a free-drain boundary.</li>
+        <li>The vertical profile is discretized with nonuniform finite-volume nodes.</li>
+        <li>Hydraulic properties are homogeneous within each simulation.</li>
+        <li>Evapotranspiration is neglected over event-scale simulations.</li>
+        <li>Flow is treated as one-dimensional in the vertical direction.</li>
+      </ul>
+    </section>
+
+    <!-- =========================
+         REFERENCES
+         ========================= -->
+    <section class="reference-panel rich-text">
+      <h2>References</h2>
+      <div class="refs-list">
+        <div class="ref-item">
+          <strong>Published paper</strong><br>
+          Gomes Jr, M.N., Brasil, J.A.T., Johnson, D., Papagiannakis, A.T. and Giacomoni, M.H., 2025.
+          A coupled Darcy-Richards framework for hydrological modeling of permeable pavements, green roofs,
+          and bioretention systems. <em>Environmental Modelling &amp; Software</em>, p.106766.
+        </div>
+        <div class="ref-item">
+          <strong>Paper under review</strong><br>
+          Gomes Jr., M.N. <em>LID-Design Atlas (LIDA): Mapping Hydrologic Performance and Cost Tradeoffs
+          in Infiltration-Based LID Design</em>, <em>Journal of Hydrologic Engineering</em> (under review).
+        </div>
       </div>
     </section>
 
-    <section>
-      <div class="surface-card references-card">
-        <div class="panel-header">
-          <h3>References</h3>
-          <span class="section-kicker">Related publications</span>
-        </div>
-        <div class="panel-body">
-          <p>
-            Gomes Jr., M.N. LID-Design Atlas (LIDA): Mapping Hydrologic Performance and Cost Tradeoffs in Infiltration-Based LID Design. <em>Journal of Hydrologic Engineering</em> (under review).
-          </p>
-          <p>
-            Gomes Jr, M.N., Brasil, J.A.T., Johnson, D., Papagiannakis, A.T. and Giacomoni, M.H., 2025. A coupled Darcy-Richards framework for hydrological modeling of permeable pavements, green roofs, and bioretention systems. <em>Environmental Modelling &amp; Software</em>, p.106766.
-          </p>
-        </div>
-      </div>
+    <!-- =========================
+         ABOUT
+         ========================= -->
+    <section id="about" class="about-panel">
+      <p>
+        <strong>About this explorer.</strong>
+        This interactive tool was developed by Marcus N. Gomes Jr., PhD, to visualize the
+        design space of infiltration-based low impact development systems simulated with the
+        DRAIN-LID model. Each point represents a numerical realization of a mixed-form
+        Richards equation coupled to a structural drainage representation under a specified
+        inflow hydrograph and media configuration.
+      </p>
     </section>
 
-    <section id="methods">
-      <div class="section-title">
-        <div>
-          <div class="section-kicker">Scientific documentation</div>
-          <h2>Underlying model and assumptions</h2>
-        </div>
-      </div>
-      <section id="methods-background" class="method-panel">
-    <h2>How the Model Works</h2>
-    <p>
-      The <strong>DRAIN-LID_Designer</strong> toolbox is built on a physics-based numerical
-      model that represents vertical water movement through the bioretention media,
-      the inflow hydrograph from the contributing catchment, and the lifecycle
-      costs of alternative designs. This section gives a compact overview of the
-      underlying equations and performance metrics so users can interpret the
-      database and cost-performance plots.
-    </p>
-
-    <h3>Richards-based Vertical Flow Model</h3>
-    <p>
-      Vertical flow through the engineered media is described by the
-      one-dimensional mixed-form Richards equation, with pressure head
-      \(h(z,t)\) as the primary state variable:
-    </p>
-    <div class="math">
-      \[
-        \frac{\partial \theta(h)}{\partial t}
-        + S_s \frac{\partial h}{\partial t}
-        =
-        \frac{\partial}{\partial z}
-        \left[
-          K(h)\left(\frac{\partial h}{\partial z} + 1\right)
-        \right]
-        + S(z,t).
-      \]
-    </div>
-    <p>
-      Here \(z\) is depth, \(\theta(h)\) is volumetric water content,
-      \(K(h)\) is hydraulic conductivity, \(S_s\) is specific storage,
-      and \(S(z,t)\) represents sources and sinks associated with drainage
-      and lateral exchange. The soil hydraulic properties are obtained
-      from the van Genuchten–Mualem constitutive relationships:
-    </p>
-    <div class="math">
-      \[
-        \theta(h) =
-        \begin{cases}
-          \theta_r + (\theta_s - \theta_r)
-          \left[1 + (\alpha |h|)^n\right]^{-m}, & h &lt; 0,\\[4pt]
-          \theta_s, & h \ge 0,
-        \end{cases}
-      \]
-      \[
-        K(h) =
-        \begin{cases}
-          K_s
-          \left[1 + (\alpha |h|)^n\right]^{-m l}
-          \left\{
-            1 - (\alpha |h|)^{n-1}
-            \left[1 + (\alpha |h|)^n\right]^{-m}
-          \right\}^2, & h &lt; 0,\\[4pt]
-          K_s, & h \ge 0,
-        \end{cases}
-      \]
-    </div>
-    <p>
-      with \(\theta_r\), \(\theta_s\), \(\alpha\), \(n\), and \(K_s\)
-      taken from representative USDA soil textural classes (Hydrus soil
-      catalog). The model is solved with an implicit finite-volume scheme
-      and a Newton–Raphson iteration with adaptive time stepping, so that
-      each design configuration in the database corresponds to a full
-      Richards-equation simulation.
-    </p>
-
-    <h3>Design Hydrograph and Catchment Inputs</h3>
-    <p>
-      The inflow to the bioretention cell is represented by a synthetic
-      design hydrograph that depends on three catchment-scale descriptors:
-    </p>
-    <ul>
-      <li>Effective rainfall depth \(P_{\mathrm{eff}}\) (runoff-producing depth)</li>
-      <li>Upstream contributing area \(A_{\mathrm{up}}\)</li>
-      <li>Time to peak \(t_{\mathrm{p}}\) of the runoff hydrograph</li>
-    </ul>
-    <p>
-      A Nash unit-hydrograph formulation is used:
-    </p>
-    <div class="math">
-      \[
-        Q_{\mathrm{in}}(t) =
-        Q_{\mathrm{p}}
-        \left(
-          \frac{t}{t_{\mathrm{p}}}
-          \exp\left[1 - \frac{t}{t_{\mathrm{p}}}\right]
-        \right)^{m-1},
-      \]
-    </div>
-    <p>
-      where \(m\) is a shape parameter and \(Q_{\mathrm{p}}\) is chosen so
-      that the total runoff volume equals
-      \(V_{\mathrm{r}} = P_{\mathrm{eff}} \, A_{\mathrm{up}}\).
-      For each combination of \((P_{\mathrm{eff}}, A_{\mathrm{up}}, t_{\mathrm{p}})\),
-      bioretention surface area \(A\) (via area ratio \(r = A / A_{\mathrm{up}}\)),
-      media depth \(L_d\), and soil type, the model routes the design hydrograph
-      through the bioretention profile.
-    </p>
-
-    <h3>Hydrologic Performance Metrics</h3>
-    <p>
-      The database stores several hydrologic performance metrics for
-      each realization, allowing users to screen designs without rerunning
-      the numerical model. The main quantities used in the interface are:
-    </p>
-
-    <h4>Peak Flow Reduction</h4>
-    <p>
-      Peak attenuation is defined as the percentage reduction in peak discharge
-      between inflow and outflow:
-    </p>
-    <div class="math">
-      \[
-        \eta_{\mathrm{p}} =
-        100 \,
-        \frac{Q_{\mathrm{p}}^{\,i} - Q_{\mathrm{p}}^{\,o}}
-             {Q_{\mathrm{p}}^{\,i}},
-      \]
-    </div>
-    <p>
-      where \(Q_{\mathrm{p}}^{\,i}\) and \(Q_{\mathrm{p}}^{\,o}\) are the inflow
-      and outflow peaks, respectively. Larger values of \(\eta_{\mathrm{p}}\)
-      indicate stronger flood-peak mitigation.
-    </p>
-
-    <h4>Time-to-Peak Delay</h4>
-    <p>
-      The shift in the hydrograph peak due to storage and infiltration is
-      measured as
-    </p>
-    <div class="math">
-      \[
-        \Delta t_{\mathrm{p}} = t_{\mathrm{p}}^{\,o} - t_{\mathrm{p}}^{\,i},
-      \]
-    </div>
-    <p>
-      where \(t_{\mathrm{p}}^{\,i}\) and \(t_{\mathrm{p}}^{\,o}\) are the
-      times of the inflow and outflow peaks. Positive values indicate a
-      delayed outflow peak, which can help desynchronize flows in
-      downstream networks.
-    </p>
-
-    <h4>Detention Time</h4>
-    <p>
-      Detention time characterizes the drawdown period over which the
-      bioretention system continues to release flow after the inflow peak:
-    </p>
-    <div class="math">
-      \[
-        \Delta t_{\mathrm{d}} =
-          t\bigl(Q_{\mathrm{out}}(t) \le \tau\bigr) - t_{\mathrm{p}}^{\,i},
-      \]
-    </div>
-    <p>
-      where \(\tau\) is a small threshold discharge. In the simulations,
-      \(\tau\) is set to a fraction of the inflow peak
-      (e.g., \(0.25\%\times Q_{\mathrm{p}}^{\,i}\)), so that
-      \(\Delta t_{\mathrm{d}}\) represents the time needed for outflow
-      to decay to nearly negligible levels.
-    </p>
-
-    <h3>Lifecycle Cost Model</h3>
-    <p>
-      The hydrologic analysis by associating each
-      hydrologically feasible design is coupled with a simplified lifecycle cost.
-      The toolbox distinguishes between construction (capital expenditure)
-      and recurring operation and maintenance (O&amp;M):
-    </p>
-
-    <h4>Construction Cost (CapEx)</h4>
-    <p>
-      Construction cost is parameterized as a combination of
-      volume-based and area-based components:
-    </p>
-    <div class="math">
-      \[
-        C_{\mathrm{CapEx}} =
-          c_{\mathrm{vol}} \, A \, L_{\mathrm d}
-          + c_{\mathrm{surf}} \, A,
-      \]
-    </div>
-    <p>
-      where:
-    </p>
-    <ul>
-      <li>\(A\): bioretention surface area,</li>
-      <li>\(L_{\mathrm d}\): media depth,</li>
-      <li>\(c_{\mathrm{vol}}\): unit cost of excavation and media installation [\$/m\(^3\)],</li>
-      <li>\(c_{\mathrm{surf}}\): unit cost of surface preparation and planting [\$/m\(^2\)].</li>
-    </ul>
-    <p>
-      These coefficients are exposed as user-editable parameters in the
-      toolbox, so they can be calibrated to local bid prices or cost
-      worksheets.
-    </p>
-
-    <h4>Operation and Maintenance (O&amp;M)</h4>
-    <p>
-      Annual O&amp;M costs are assumed proportional to the footprint area:
-    </p>
-    <div class="math">
-      \[
-        C_{\mathrm{O\&M,annual}} = c_{\mathrm{O\&M}} \, A,
-      \]
-    </div>
-    <p>
-      where \(c_{\mathrm{O\&M}}\) is a per-area annual maintenance cost
-      [\$/m\(^2\)/year]. To express O&amp;M in present-value terms over a
-      design life \(T\) with discount rate \(i\), a standard annuity factor
-      is used:
-    </p>
-    <div class="math">
-      \[
-        F(i,T) =
-        \frac{1 - (1 + i)^{-T}}{i}.
-      \]
-    </div>
-
-    <h4>Net Present Value (NPV)</h4>
-    <p>
-      The total lifecycle cost for a design is then
-    </p>
-    <div class="math">
-      \[
-        C_{\mathrm{NPV}} =
-          C_{\mathrm{CapEx}}
-          + F(i,T) \, c_{\mathrm{O\&M}} \, A.
-      \]
-    </div>
-    <p>
-In the interface, these cost calculations are applied only to the
-subset of simulations that satisfy minimum hydrologic performance
-criteria (e.g., a given peak reduction and detention time), enabling
-users to compare how different soil types, area ratios, and media
-depths trade off between cost and hydrologic benefit.
-</p>
- 
-  </section>
-
-    <h3>Modeling Assumptions</h3>
-    <p>
-      The simulations underlying the DRAIN-LID design database rely on a set of 
-      simplifying but physically motivated assumptions intended to capture 
-      first-order hydrologic behavior while maintaining computational tractability 
-      for the full design space of soil types, rainfall inputs, and geometries. 
-      The principal assumptions are:
-    </p>
-    
-    <ul>
-      <li>
-        <strong>Initial soil conditions.</strong> 
-        All simulations begin from a hydrostatic pressure profile with the water 
-        table located well below the bioretention profile, producing an initially 
-        unsaturated soil column with 50% of effective saturation. No antecedent rainfall or pre-event surface water
-        is imposed.
-      </li>
-    
-      <li>
-        <strong>Lined system.</strong> 
-        The bioretention cell is modeled as laterally lined, eliminating 
-        exfiltration to the native subgrade. All outflow occurs through the 
-        underdrain/bottom seepage or surface overflow.
-      </li>
-    
-      <li>
-        <strong>Underdrain boundary condition.</strong>
-        The underdrain invert is treated as a free-drain (unit gradient) boundary,
-        justified because underdrain hydraulic capacity is assumed to far exceed 
-        the seepage-rate capacity of the media. As a result, the underdrain does 
-        not behave as a throttling control.
-      </li>
-    
-      <li>
-        <strong>Spatial discretization.</strong> 
-        The vertical soil column is discretized using ~20 finite-volume nodes, 
-        distributed non-uniformly with refinement near the soil surface and near 
-        the underdrain. The distribution follows the node-spacing strategy used in 
-        <em>Hydrus-1D</em> to improve stability during sharp wetting‐front movement.
-      </li>
-    
-      <li>
-        <strong>Homogeneous soil properties.</strong> 
-        Hydraulic parameters are spatially invariant; no layering or vertical 
-        heterogeneity is represented. Media are assumed to behave as homogeneous 
-        USDA textural classes following van Genuchten–Mualem relations. Engineered 
-        media mixes may therefore differ from the parameter sets used here.
-      </li>
-    
-      <li>
-        <strong>No evapotranspiration.</strong> 
-        Evapotranspiration is omitted because storm durations (≤ 48 h) are short relative to 
-        atmospheric‐demand timescales, and because the surface is assumed fully 
-        wetted during the event, suppressing root water uptake.
-      </li>
-    
-      <li>
-        <strong>1D approximation.</strong>  
-        Flow is vertical (1-D), neglecting lateral divergence and sidewall 
-        interactions. This is consistent with lined systems and large plan-form 
-        aspect ratios.
-      </li>
-    
-      <li>
-        <strong>Representative USDA soils.</strong>  
-        Simulations use Carsel–Parrish (1988) USDA hydraulic parameter sets.  
-        Fully engineered bioretention media may exhibit higher conductivity, 
-        altered retention curves, or different pore-size distributions, which 
-        could shift results outside this parameter envelope.
-      </li>
-    </ul>
-    
-    <p>
-      These assumptions should be considered when interpreting design performance. 
-      They ensure internal consistency across all ~10⁵ simulations while producing 
-      physically realistic inflow–outflow responses for feasibility screening and 
-      cost-performance analysis.
-    </p>
-    </section>
   </main>
 
-  <footer class="shared-footer">
+  <footer>
     <div class="footer-inner">
-      <div class="footer-brand">DRAIN-LID<span class="accent-dot">.</span></div>
-      <div class="footer-meta">Interactive explorer · GitHub Pages ready · Stanford + UArizona logo placeholders included</div>
+      Interactive explorer · Developed by Marcus N. Gomes Jr., PhD
     </div>
   </footer>
 
   <script>
-    // ========= CONFIG =======================================================
+    // ============================================================
+    // CONFIG
+    // ============================================================
     const DATA_URL = 'drain_lid_database.json';
-    const LOGO_URL = 'drainlid_logo.png'; // can also be .svg
-    const STANFORD_LOGO_URL = 'stanford_logo.svg';
-    const UOFA_LOGO_URL = 'uofa_logo.svg';
 
-    // Hard-coded van Genuchten–Mualem parameters (Carsel & Parrish, 1988)
-    // alpha [1/m], Ks_mm_per_h [mm/h], theta_r, theta_s [-]
     const SOIL_PROPS = {
       "Sand":             { theta_r: 0.045, theta_s: 0.43, alpha: 14.5, n: 2.68, Ks_mm_per_h: 297.0 },
       "Loamy Sand":       { theta_r: 0.057, theta_s: 0.41, alpha: 12.4, n: 2.28, Ks_mm_per_h: 145.8 },
@@ -1464,7 +1230,7 @@ depths trade off between cost and hydrologic benefit.
       "Loam":             { theta_r: 0.078, theta_s: 0.43, alpha: 3.6,  n: 1.56, Ks_mm_per_h: 10.4  },
       "Silt":             { theta_r: 0.034, theta_s: 0.46, alpha: 1.6,  n: 1.37, Ks_mm_per_h: 2.5   },
       "Silty Loam":       { theta_r: 0.067, theta_s: 0.45, alpha: 2.0,  n: 1.41, Ks_mm_per_h: 4.5   },
-      "Sandy Clay Loam":  { theta_r: 0.100, theta_s: 0.39, alpha: 5.9,  n: 1.48, Ks_mm_per_h: 13.1 },
+      "Sandy Clay Loam":  { theta_r: 0.100, theta_s: 0.39, alpha: 5.9,  n: 1.48, Ks_mm_per_h: 13.1  },
       "Clay Loam":        { theta_r: 0.095, theta_s: 0.41, alpha: 1.9,  n: 1.31, Ks_mm_per_h: 2.6   },
       "Silty Clay Loam":  { theta_r: 0.089, theta_s: 0.43, alpha: 1.0,  n: 1.23, Ks_mm_per_h: 0.7   },
       "Sandy Clay":       { theta_r: 0.100, theta_s: 0.38, alpha: 2.7,  n: 1.23, Ks_mm_per_h: 1.2   },
@@ -1472,7 +1238,6 @@ depths trade off between cost and hydrologic benefit.
       "Clay":             { theta_r: 0.068, theta_s: 0.38, alpha: 0.8,  n: 1.09, Ks_mm_per_h: 0.6   }
     };
 
-    // Custom Turbo-like colorscale for peak-flow reduction
     const TURBO_SCALE = [
       [0.00, '#30123b'],
       [0.15, '#4145ab'],
@@ -1484,7 +1249,6 @@ depths trade off between cost and hydrologic benefit.
       [1.00, '#f1605d']
     ];
 
-    // Metric configuration for the 3D design plots
     const METRIC_INFO = {
       eta_p_pct: {
         label: 'Peak flow reduction [%]',
@@ -1496,13 +1260,13 @@ depths trade off between cost and hydrologic benefit.
         label: 'Detention time [h]',
         shortTitle: 'Detention time',
         colorscale: 'Viridis',
-        toColorValue: v => v / 60.0 // min -> h
+        toColorValue: v => v / 60.0
       },
       Delta_tp_min: {
         label: 'Time-to-peak delay [h]',
         shortTitle: 'Time-to-peak delay',
         colorscale: 'Cividis',
-        toColorValue: v => v / 60.0 // min -> h
+        toColorValue: v => v / 60.0
       },
       max_ponding: {
         label: 'Maximum ponding depth [m]',
@@ -1512,77 +1276,29 @@ depths trade off between cost and hydrologic benefit.
       }
     };
 
-    // Default cost parameters (per m² of LID / catchment)
     const COST_DEFAULTS = {
-      cVol: 210,        // [$/m3]
-      cSurf: 55,        // [$/m2]
-      cOM: 6,           // [$/m2/yr]
-      lifeYears: 30,    // [yr]
+      cVol: 210,
+      cSurf: 55,
+      cOM: 6,
+      lifeYears: 30,
       discountRate: 0.03
     };
 
-    function getHydroFilters() {
-      const minEta = parseFloat(document.getElementById('min-eta-input')?.value);
-      const minDetH = parseFloat(document.getElementById('min-det-h-input')?.value);
-      const minDelayH = parseFloat(document.getElementById('min-delay-h-input')?.value);
-      const maxPondM = parseFloat(document.getElementById('max-pond-m-input')?.value);
+    const METRIC_BUTTON_IDS = {
+      eta_p_pct: 'btn-download-eta',
+      DetTime_min: 'btn-download-det',
+      Delta_tp_min: 'btn-download-dtp',
+      max_ponding: 'btn-download-pond'
+    };
 
-      return {
-        minEta: isNaN(minEta) ? 0 : minEta,
-        minDetH: isNaN(minDetH) ? 0 : minDetH,
-        minDelayH: isNaN(minDelayH) ? 0 : minDelayH,
-        maxPondM: isNaN(maxPondM) ? Infinity : maxPondM
-      };
-    }
-
-    function getCostSettings() {
-      const cVol = parseFloat(document.getElementById('c-vol-input')?.value);
-      const cSurf = parseFloat(document.getElementById('c-surf-input')?.value);
-      const cOM = parseFloat(document.getElementById('c-om-input')?.value);
-      const lifeYears = parseFloat(document.getElementById('design-life-input')?.value);
-      const discountRate = parseFloat(document.getElementById('discount-rate-input')?.value);
-
-      return {
-        cVol: isNaN(cVol) ? COST_DEFAULTS.cVol : cVol,
-        cSurf: isNaN(cSurf) ? COST_DEFAULTS.cSurf : cSurf,
-        cOM: isNaN(cOM) ? COST_DEFAULTS.cOM : cOM,
-        lifeYears: isNaN(lifeYears) ? COST_DEFAULTS.lifeYears : lifeYears,
-        discountRate: isNaN(discountRate) ? COST_DEFAULTS.discountRate : discountRate
-      };
-    }
-
-    function getTpRange() {
-      const tpMinEl = document.getElementById('tp-min-input');
-      const tpMaxEl = document.getElementById('tp-max-input');
-
-      let tpMin = parseFloat(tpMinEl?.value);
-      let tpMax = parseFloat(tpMaxEl?.value);
-
-      // Fallback to global range if inputs are empty/NaN
-      if (isNaN(tpMin)) tpMin = globalTpMin;
-      if (isNaN(tpMax)) tpMax = globalTpMax;
-
-      // If still null (e.g. no data), just return as-is
-      if (tpMin == null || tpMax == null) {
-        return { tpMin, tpMax };
-      }
-
-      // Ensure tpMin <= tpMax
-      if (tpMin > tpMax) {
-        const tmp = tpMin;
-        tpMin = tpMax;
-        tpMax = tmp;
-      }
-
-      return { tpMin, tpMax };
-    }
-
-
-    // ========= GLOBAL STATE =================================================
+    // ============================================================
+    // GLOBAL STATE
+    // ============================================================
     let dbMetrics = [];
-    let QinHydro = null;   // [nSteps][nKeep]
-    let QoutHydro = null;  // [nSteps][nKeep]
+    let QinHydro = null;
+    let QoutHydro = null;
     let tMinutesHydro = null;
+
     let metricsByIdx = new Map();
     let currentSubset = [];
     let currentSoil = null;
@@ -1602,14 +1318,14 @@ depths trade off between cost and hydrologic benefit.
 
     let costPlotData = null;
 
-    const METRIC_BUTTON_IDS = {
-      eta_p_pct: 'btn-download-eta',
-      DetTime_min: 'btn-download-det',
-      Delta_tp_min: 'btn-download-dtp',
-      max_ponding: 'btn-download-pond'
-    };
-
-    // ========= HELPERS ======================================================
+    // ============================================================
+    // HELPERS
+    // ============================================================
+    function setStatus(msg, isError = false) {
+      const el = document.getElementById('status');
+      el.textContent = msg;
+      el.className = 'status' + (isError ? ' error' : '');
+    }
 
     function mmToInch(mm) {
       return mm / 25.4;
@@ -1620,10 +1336,8 @@ depths trade off between cost and hydrologic benefit.
       return `${mmVal.toFixed(1)} mm (${inch.toFixed(2)} in)`;
     }
 
-    function setStatus(msg, isError = false) {
-      const el = document.getElementById('status');
-      el.textContent = msg;
-      el.className = 'status' + (isError ? ' error' : '');
+    function uniqueSortedNumeric(arr) {
+      return Array.from(new Set(arr)).sort((a, b) => a - b);
     }
 
     function updateSoilParamsLine(soilName) {
@@ -1631,12 +1345,12 @@ depths trade off between cost and hydrologic benefit.
       const p = SOIL_PROPS[soilName];
 
       if (!p) {
-        el.textContent = soilName;
+        el.textContent = soilName || '';
         return;
       }
 
       const dtheta = p.theta_s - p.theta_r;
-      const Ks_mps = p.Ks_mm_per_h / 1000 / 3600; // mm/h -> m/s
+      const Ks_mps = p.Ks_mm_per_h / 1000 / 3600;
 
       const tex =
         `${soilName} \\(\\; -\\; \\alpha = ${p.alpha.toFixed(2)}\\,\\mathrm{m}^{-1},` +
@@ -1644,202 +1358,62 @@ depths trade off between cost and hydrologic benefit.
         `\\; \\Delta\\theta = ${dtheta.toFixed(3)},` +
         `\\; K_s = ${Ks_mps.toExponential(2)}\\,\\mathrm{m}\\,\\mathrm{s}^{-1}\\)`;
 
+
       el.innerHTML = tex;
+
       if (window.MathJax && window.MathJax.typesetPromise) {
         MathJax.typesetPromise([el]).catch(() => {});
       }
     }
 
-    function uniqueSortedNumeric(arr) {
-      return Array.from(new Set(arr)).sort((a, b) => a - b);
+    function getHydroFilters() {
+      const minEta = parseFloat(document.getElementById('min-eta-input').value);
+      const minDetH = parseFloat(document.getElementById('min-det-h-input').value);
+      const minDelayH = parseFloat(document.getElementById('min-delay-h-input').value);
+      const maxPondM = parseFloat(document.getElementById('max-pond-m-input').value);
+
+      return {
+        minEta: isNaN(minEta) ? 0 : minEta,
+        minDetH: isNaN(minDetH) ? 0 : minDetH,
+        minDelayH: isNaN(minDelayH) ? 0 : minDelayH,
+        maxPondM: isNaN(maxPondM) ? Infinity : maxPondM
+      };
     }
 
-    // ========= HYDROGRAPH HANDLING =========================================
+    function getCostSettings() {
+      const cVol = parseFloat(document.getElementById('c-vol-input').value);
+      const cSurf = parseFloat(document.getElementById('c-surf-input').value);
+      const cOM = parseFloat(document.getElementById('c-om-input').value);
+      const lifeYears = parseFloat(document.getElementById('design-life-input').value);
+      const discountRate = parseFloat(document.getElementById('discount-rate-input').value);
 
-    function getHydroDataFromScenario(m) {
-      if (!m || m.hydroIndex === undefined || m.hydroIndex < 0) return null;
-      if (!QinHydro || !QoutHydro || !tMinutesHydro) return null;
-
-      const col = m.hydroIndex; // 0-based column in QinHydro/QoutHydro
-      const area = m.ATC_m2;
-      if (!area || area <= 0) return null;
-
-      const tHours = tMinutesHydro.map(v => v / 60.0);
-
-      const inflow = QinHydro.map(row => {
-        const q = row[col] || 0;
-        return q / area * 1000 * 3600; // m3/s -> mm/h
-      });
-
-      const outflow = QoutHydro.map(row => {
-        const q = row[col] || 0;
-        return q / area * 1000 * 3600;
-      });
-
-      return { tHours, inflow, outflow };
+      return {
+        cVol: isNaN(cVol) ? COST_DEFAULTS.cVol : cVol,
+        cSurf: isNaN(cSurf) ? COST_DEFAULTS.cSurf : cSurf,
+        cOM: isNaN(cOM) ? COST_DEFAULTS.cOM : cOM,
+        lifeYears: isNaN(lifeYears) ? COST_DEFAULTS.lifeYears : lifeYears,
+        discountRate: isNaN(discountRate) ? COST_DEFAULTS.discountRate : discountRate
+      };
     }
 
-    function renderHydrographForScenario(m) {
-      const div = document.getElementById('hydro-plot');
-      const btn = document.getElementById('btn-download');
+    function getTpRange() {
+      let tpMin = parseFloat(document.getElementById('tp-min-input').value);
+      let tpMax = parseFloat(document.getElementById('tp-max-input').value);
 
-      // Case 1: no scenario at all (e.g. initial state)
-      if (!m) {
-        currentHydroScenario = null;
-        currentHydroData = null;
-        btn.disabled = true;
+      if (isNaN(tpMin)) tpMin = globalTpMin;
+      if (isNaN(tpMax)) tpMax = globalTpMax;
 
-        const emptyData = [{
-          x: [0],
-          y: [0],
-          mode: 'lines',
-          line: { color: '#cccccc' },
-          hoverinfo: 'skip',
-          showlegend: false
-        }];
-
-        const layout = {
-          title: 'Hydrographs — no scenario selected',
-          margin: { l: 60, r: 10, t: 40, b: 45 },
-          xaxis: {
-            title: 'Time [h]',
-            zeroline: false,
-            showgrid: false,
-            ticks: 'outside',
-            tickwidth: 2,
-            linewidth: 2,
-            linecolor: '#000000'
-          },
-          yaxis: {
-            title: 'Flux [mm/h]',
-            zeroline: false,
-            showgrid: false,
-            ticks: 'outside',
-            tickwidth: 2,
-            linewidth: 2,
-            linecolor: '#000000'
-          },
-          showlegend: false
-        };
-
-        Plotly.react(div, emptyData, layout, { responsive: true });
-        document.getElementById('hydro-title').textContent =
-          'Hydrographs — no scenario selected';
-        return;
+      if (tpMin != null && tpMax != null && tpMin > tpMax) {
+        const tmp = tpMin;
+        tpMin = tpMax;
+        tpMax = tmp;
       }
 
-      // Case 2: scenario exists but no stored hydrograph
-      const hData = getHydroDataFromScenario(m);
-      if (!hData) {
-        currentHydroScenario = m;
-        currentHydroData = null;
-        btn.disabled = true;
-
-        const emptyData = [{
-          x: [0],
-          y: [0],
-          mode: 'lines',
-          line: { color: '#cccccc' },
-          hoverinfo: 'skip',
-          showlegend: false
-        }];
-
-        const layout = {
-          title: 'Hydrographs — no stored hydrograph data for this scenario',
-          margin: { l: 60, r: 10, t: 40, b: 45 },
-          xaxis: {
-            title: 'Time [h]',
-            zeroline: false,
-            showgrid: false,
-            ticks: 'outside',
-            tickwidth: 2,
-            linewidth: 2,
-            linecolor: '#000000'
-          },
-          yaxis: {
-            title: 'Flux [mm/h]',
-            zeroline: false,
-            showgrid: false,
-            ticks: 'outside',
-            tickwidth: 2,
-            linewidth: 2,
-            linecolor: '#000000'
-          },
-          showlegend: false
-        };
-
-        Plotly.react(div, emptyData, layout, { responsive: true });
-        document.getElementById('hydro-title').textContent =
-          'Hydrographs — no stored hydrograph data for this scenario';
-        return;
-      }
-
-      // Case 3: full hydrograph is available
-      currentHydroScenario = m;
-      currentHydroData = hData;
-      btn.disabled = false;
-
-      const traceIn = {
-        x: hData.tHours,
-        y: hData.inflow,
-        mode: 'lines',
-        name: 'Inflow',
-        line: { color: '#BC262D', width: 2.5, dash: 'dash' }
-      };
-
-      const traceOut = {
-        x: hData.tHours,
-        y: hData.outflow,
-        mode: 'lines',
-        name: 'Outflow',
-        line: { color: '#0000A3', width: 2.5 }
-      };
-
-      const pond =
-        (m.max_ponding !== undefined && m.max_ponding !== null)
-          ? m.max_ponding.toFixed(3)
-          : 'NA';
-
-      const layout = {
-        title:
-          `Hydrographs — ${m.soilName}, ` +
-          `area-ratio = ${(m.area_ratio * 100).toFixed(1)}%, ` +
-          `LID depth = ${m.Ld_m.toFixed(2)} m, ` +
-          `tp = ${m.tp_min.toFixed(1)} min, ` +
-          `max ponding = ${pond} m`,
-        margin: { l: 60, r: 10, t: 50, b: 45 },
-        xaxis: {
-          title: 'Time [h]',
-          zeroline: false,
-          showgrid: false,
-          ticks: 'outside',
-          tickwidth: 2,
-          linewidth: 2,
-          linecolor: '#000000'
-        },
-        yaxis: {
-          title: 'Flux [mm/h]',
-          zeroline: false,
-          showgrid: false,
-          ticks: 'outside',
-          tickwidth: 2,
-          linewidth: 2,
-          linecolor: '#000000'
-        },
-        legend: {
-          x: 0.02,
-          y: 0.98,
-          bgcolor: 'rgba(255,255,255,0.8)'
-        }
-      };
-
-      Plotly.react(div, [traceIn, traceOut], layout, { responsive: true });
-      document.getElementById('hydro-title').textContent =
-        'Hydrographs — inflow and outflow (mm/h)';
+      return { tpMin, tpMax };
     }
 
-    function downloadCSVFile(filename, csv) {
-      const blob = new Blob([csv], { type: 'text/csv' });
+    function downloadCSVFile(filename, csvText) {
+      const blob = new Blob([csvText], { type: 'text/csv;charset=utf-8;' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
@@ -1850,45 +1424,318 @@ depths trade off between cost and hydrologic benefit.
       URL.revokeObjectURL(url);
     }
 
+    // ============================================================
+    // HYDROGRAPH
+    // ============================================================
+    function getHydroDataFromScenario(m) {
+      if (!m || m.hydroIndex === undefined || m.hydroIndex === null || m.hydroIndex < 0) return null;
+      if (!QinHydro || !QoutHydro || !tMinutesHydro) return null;
+
+      const col = m.hydroIndex;
+      const area = m.ATC_m2;
+      if (!area || area <= 0) return null;
+
+      const tHours = tMinutesHydro.map(v => v / 60.0);
+      const inflow = QinHydro.map(row => ((row[col] || 0) / area) * 1000 * 3600);
+      const outflow = QoutHydro.map(row => ((row[col] || 0) / area) * 1000 * 3600);
+
+      return { tHours, inflow, outflow };
+    }
+
+    function renderEmptyHydro(titleText) {
+      const div = document.getElementById('hydro-plot');
+
+      Plotly.react(div, [{
+        x: [0],
+        y: [0],
+        mode: 'lines',
+        line: { color: '#d7e0ea', width: 2 },
+        hoverinfo: 'skip',
+        showlegend: false
+      }], {
+        title: { text: titleText, font: { size: 16, color: '#16314f' } },
+        paper_bgcolor: '#ffffff',
+        plot_bgcolor: '#ffffff',
+        margin: { l: 70, r: 20, t: 50, b: 60 },
+        xaxis: {
+          title: 'Time [h]',
+          showgrid: false,
+          zeroline: false,
+          linecolor: '#203f65',
+          linewidth: 2,
+          ticks: 'outside',
+          tickwidth: 2
+        },
+        yaxis: {
+          title: 'Flux [mm/h]',
+          showgrid: false,
+          zeroline: false,
+          linecolor: '#203f65',
+          linewidth: 2,
+          ticks: 'outside',
+          tickwidth: 2
+        },
+        showlegend: false
+      }, { responsive: true });
+    }
+
+    function renderHydrographForScenario(m) {
+      const btn = document.getElementById('btn-download');
+
+      if (!m) {
+        currentHydroScenario = null;
+        currentHydroData = null;
+        btn.disabled = true;
+        document.getElementById('hydro-title').textContent = 'Hydrographs — no scenario selected yet';
+        renderEmptyHydro('Hydrographs — no scenario selected');
+        return;
+      }
+
+      const hData = getHydroDataFromScenario(m);
+      if (!hData) {
+        currentHydroScenario = m;
+        currentHydroData = null;
+        btn.disabled = true;
+        document.getElementById('hydro-title').textContent = 'Hydrographs — no stored hydrograph for this scenario';
+        renderEmptyHydro('Hydrographs — no stored hydrograph data for this scenario');
+        return;
+      }
+
+      currentHydroScenario = m;
+      currentHydroData = hData;
+      btn.disabled = false;
+
+      const traceIn = {
+        x: hData.tHours,
+        y: hData.inflow,
+        mode: 'lines',
+        name: 'Inflow',
+        line: { color: '#b22b38', width: 3, dash: 'dash' }
+      };
+
+      const traceOut = {
+        x: hData.tHours,
+        y: hData.outflow,
+        mode: 'lines',
+        name: 'Outflow',
+        line: { color: '#1f4f9a', width: 3 }
+      };
+
+      const layout = {
+        title: {
+          text:
+            `${m.soilName}, area-ratio = ${(m.area_ratio * 100).toFixed(1)}%, ` +
+            `LID depth = ${m.Ld_m.toFixed(2)} m, ` +
+            `tp = ${m.tp_min.toFixed(1)} min`,
+          font: { size: 16, color: '#16314f' }
+        },
+        paper_bgcolor: '#ffffff',
+        plot_bgcolor: '#ffffff',
+        margin: { l: 70, r: 20, t: 55, b: 60 },
+        xaxis: {
+          title: 'Time [h]',
+          showgrid: false,
+          zeroline: false,
+          linecolor: '#203f65',
+          linewidth: 2,
+          ticks: 'outside',
+          tickwidth: 2
+        },
+        yaxis: {
+          title: 'Flux [mm/h]',
+          showgrid: false,
+          zeroline: false,
+          linecolor: '#203f65',
+          linewidth: 2,
+          ticks: 'outside',
+          tickwidth: 2
+        },
+        legend: {
+          x: 0.02,
+          y: 0.98,
+          bgcolor: 'rgba(255,255,255,0.86)',
+          bordercolor: '#dbe4ee',
+          borderwidth: 1
+        }
+      };
+
+      Plotly.react(document.getElementById('hydro-plot'), [traceIn, traceOut], layout, { responsive: true });
+      document.getElementById('hydro-title').textContent = 'Hydrographs — inflow and outflow (mm/h)';
+    }
 
     function downloadCurrentHydroCSV() {
       if (!currentHydroScenario || !currentHydroData) return;
 
-      const m = currentHydroScenario;
-      const h = currentHydroData;
-      const header = 'time_h,inflow_mmph,outflow_mmph\n';
-      let rows = '';
-      for (let i = 0; i < h.tHours.length; i++) {
-        rows += `${h.tHours[i]},${h.inflow[i]},${h.outflow[i]}\n`;
+      let csv = 'time_h,inflow_mmph,outflow_mmph\n';
+      for (let i = 0; i < currentHydroData.tHours.length; i++) {
+        csv += `${currentHydroData.tHours[i]},${currentHydroData.inflow[i]},${currentHydroData.outflow[i]}\n`;
       }
-      const csv = header + rows;
 
-      const soilSlug = m.soilName.replace(/\s+/g, '_');
-      const fname =
-        `hydrograph_${soilSlug}_AR${(m.area_ratio * 100).toFixed(1)}_Ld${m.Ld_m.toFixed(2)}.csv`;
-
+      const soilSlug = currentHydroScenario.soilName.replace(/\s+/g, '_');
+      const fname = `hydrograph_${soilSlug}_AR${(currentHydroScenario.area_ratio * 100).toFixed(1)}_Ld${currentHydroScenario.Ld_m.toFixed(2)}.csv`;
       downloadCSVFile(fname, csv);
     }
 
-    function downloadDesignCSV(metricName) {
+    // ============================================================
+    // DESIGN PLOTS
+    // ============================================================
+    function buildDesignPlot(metricName, divId, subset, peffVal) {
       const info = METRIC_INFO[metricName];
+      const div = document.getElementById(divId);
+
+      const rowsForCSV = [];
+      const x = [], y = [], z = [], c = [], custom = [];
+      const xBad = [], yBad = [], zBad = [], customBad = [];
+
+      subset.forEach(m => {
+        const xVal = m.area_ratio * 100.0;
+        const yVal = m.Ld_m;
+        const zVal = m.tp_min;
+        const raw = m[metricName];
+
+        rowsForCSV.push({
+          idx: m.idx,
+          soilName: m.soilName,
+          Peff_mm: m.Peff_catch_mm,
+          area_ratio: m.area_ratio,
+          Ld_m: m.Ld_m,
+          tp_min: m.tp_min,
+          metricValue: raw
+        });
+
+        if (raw === null || raw === undefined || isNaN(raw)) {
+          xBad.push(xVal);
+          yBad.push(yVal);
+          zBad.push(zVal);
+          customBad.push(m.idx);
+        } else {
+          x.push(xVal);
+          y.push(yVal);
+          z.push(zVal);
+          c.push(info.toColorValue(raw));
+          custom.push(m.idx);
+        }
+      });
+
+      const traces = [];
+
+      if (x.length) {
+        traces.push({
+          x, y, z,
+          customdata: custom,
+          type: 'scatter3d',
+          mode: 'markers',
+          name: info.shortTitle,
+          marker: {
+            size: 5,
+            color: c,
+            colorscale: info.colorscale,
+            cmin: Math.min(...c),
+            cmax: Math.max(...c),
+            showscale: true,
+            colorbar: {
+              title: { text: info.label, side: 'right' },
+              thickness: 12,
+              len: 0.9,
+              outlinewidth: 1
+            },
+            line: { color: 'rgba(18,42,69,0.72)', width: 1.2 }
+          },
+          hovertemplate:
+            'Area-ratio: %{x:.1f}%<br>' +
+            'LID depth: %{y:.2f} m<br>' +
+            't_p: %{z:.1f} min<br>' +
+            `${info.label}: %{marker.color:.2f}<extra></extra>`
+        });
+      }
+
+      if (xBad.length) {
+        traces.push({
+          x: xBad, y: yBad, z: zBad,
+          customdata: customBad,
+          type: 'scatter3d',
+          mode: 'markers',
+          name: 'Unavailable / failed',
+          marker: {
+            size: 4,
+            color: 'rgba(220,220,220,0.15)',
+            line: { color: 'rgba(95,95,95,0.70)', width: 1.2 }
+          },
+          hovertemplate:
+            'Area-ratio: %{x:.1f}%<br>' +
+            'LID depth: %{y:.2f} m<br>' +
+            't_p: %{z:.1f} min<br><b>Unavailable / failed</b><extra></extra>'
+        });
+      }
+
+      Plotly.react(div, traces, {
+        title: {
+          text: `${info.shortTitle} — ${currentSoil}, Pef = ${formatPeffLabel(peffVal)}`,
+          font: { size: 16, color: '#16314f' }
+        },
+        paper_bgcolor: '#ffffff',
+        margin: { l: 0, r: 0, t: 44, b: 0 },
+        scene: {
+          bgcolor: '#ffffff',
+          xaxis: {
+            title: 'Area-ratio [%]',
+            showgrid: true,
+            gridcolor: '#e6edf5',
+            zeroline: false,
+            ticks: 'outside',
+            ticklen: 4
+          },
+          yaxis: {
+            title: 'LID depth [m]',
+            showgrid: true,
+            gridcolor: '#e6edf5',
+            zeroline: false,
+            ticks: 'outside',
+            ticklen: 4
+          },
+          zaxis: {
+            title: 'Inflow time to peak [min]',
+            showgrid: true,
+            gridcolor: '#e6edf5',
+            zeroline: false,
+            ticks: 'outside',
+            ticklen: 4
+          },
+          aspectmode: 'cube',
+          camera: { eye: { x: 1.7, y: 1.7, z: 1.45 } }
+        },
+        showlegend: false
+      }, { responsive: true });
+
+      designPlotData[metricName] = {
+        soil: currentSoil,
+        peff: peffVal,
+        rows: rowsForCSV
+      };
+
+      const btn = document.getElementById(METRIC_BUTTON_IDS[metricName]);
+      if (btn) btn.disabled = !rowsForCSV.length;
+
+      div.on('plotly_click', ev => {
+        if (!ev.points || !ev.points.length) return;
+        const idx = ev.points[0].customdata;
+        const scenario = metricsByIdx.get(idx);
+        if (scenario) renderHydrographForScenario(scenario);
+      });
+    }
+
+    function downloadDesignCSV(metricName) {
       const data = designPlotData[metricName];
-      if (!info || !data || !data.rows || !data.rows.length) return;
+      if (!data || !data.rows || !data.rows.length) return;
 
-      const rows = data.rows;
-      const metricLabel = info.label || metricName;
-
-      let csv = 'idx,soil,Peff_mm,area_ratio,area_ratio_pct,LID_depth_m,tp_min_min,' +
-                `${metricName}\n`;
-
-      rows.forEach(r => {
-        const arPct = r.area_ratio * 100.0;
+      let csv = 'idx,soil,Peff_mm,area_ratio,area_ratio_pct,LID_depth_m,tp_min_min,' + metricName + '\n';
+      data.rows.forEach(r => {
         csv += [
           r.idx,
           JSON.stringify(r.soilName),
           r.Peff_mm,
           r.area_ratio,
-          arPct.toFixed(3),
+          (r.area_ratio * 100).toFixed(3),
           r.Ld_m,
           r.tp_min,
           r.metricValue
@@ -1896,31 +1743,178 @@ depths trade off between cost and hydrologic benefit.
       });
 
       const soilSlug = (data.soil || 'soil').replace(/\s+/g, '_');
-      const fname = `design_${metricName}_${soilSlug}_P${data.peff}.csv`;
-      downloadCSVFile(fname, csv);
+      downloadCSVFile(`design_${metricName}_${soilSlug}_P${data.peff}.csv`, csv);
+    }
+
+    // ============================================================
+    // COST PLOT
+    // ============================================================
+    function updateCostPlot() {
+      const div = document.getElementById('cost-plot');
+      const statusDiv = document.getElementById('cost-status');
+      const titleDiv = document.getElementById('cost-title');
+
+      if (!currentSubset.length) {
+        Plotly.react(div, [], { paper_bgcolor: '#ffffff' }, { responsive: true });
+        titleDiv.textContent = 'Lifecycle cost — no feasible set yet';
+        statusDiv.textContent = 'Select a soil and Pef to view cost–performance results.';
+        document.getElementById('btn-download-cost').disabled = true;
+        return;
+      }
+
+      const filters = getHydroFilters();
+      const costSettings = getCostSettings();
+      const { tpMin, tpMax } = getTpRange();
+
+      const i = costSettings.discountRate;
+      const T = costSettings.lifeYears;
+      const F = i > 0 ? (1 - Math.pow(1 + i, -T)) / i : T;
+
+      currentFeasibleSubset = currentSubset.filter(m => {
+        const eta = m.eta_p_pct;
+        const detH = m.DetTime_min != null ? m.DetTime_min / 60.0 : NaN;
+        const delayH = m.Delta_tp_min != null ? m.Delta_tp_min / 60.0 : NaN;
+        const pond = m.max_ponding;
+        const tp = m.tp_min;
+
+        if ([eta, detH, delayH, pond, tp, m.Ld_m, m.area_ratio].some(v => v === null || v === undefined || isNaN(v))) return false;
+        if (eta < filters.minEta) return false;
+        if (detH < filters.minDetH) return false;
+        if (delayH < filters.minDelayH) return false;
+        if (pond > filters.maxPondM) return false;
+        if (tpMin != null && tp < tpMin) return false;
+        if (tpMax != null && tp > tpMax) return false;
+        return true;
+      });
+
+      if (!currentFeasibleSubset.length) {
+        Plotly.react(div, [], {
+          title: { text: 'Lifecycle cost — no design meets current filters', font: { size: 16, color: '#16314f' } },
+          paper_bgcolor: '#ffffff',
+          margin: { l: 70, r: 20, t: 50, b: 60 }
+        }, { responsive: true });
+
+        titleDiv.textContent = 'Lifecycle cost — no feasible set';
+        statusDiv.textContent = 'No feasible design for this soil and Pef with the chosen hydrologic filters.';
+        document.getElementById('btn-download-cost').disabled = true;
+        costPlotData = null;
+        return;
+      }
+
+      const rowsForCSV = [];
+      const x = [], y = [], markerColor = [], custom = [];
+
+      currentFeasibleSubset.forEach(m => {
+        const ar = m.area_ratio;
+        const Ld = m.Ld_m;
+
+        const capexPerM2Catch = ar * (costSettings.cVol * Ld + costSettings.cSurf);
+        const omPerM2Catch = ar * costSettings.cOM;
+        const npvPerM2Catch = capexPerM2Catch + F * omPerM2Catch;
+
+        x.push(npvPerM2Catch);
+        y.push(m.eta_p_pct);
+        markerColor.push(m.DetTime_min / 60.0);
+        custom.push(m.idx);
+
+        rowsForCSV.push({
+          idx: m.idx,
+          soilName: m.soilName,
+          Peff_mm: m.Peff_catch_mm,
+          area_ratio: m.area_ratio,
+          Ld_m: m.Ld_m,
+          tp_min: m.tp_min,
+          eta_p_pct: m.eta_p_pct,
+          DetTime_h: m.DetTime_min / 60.0,
+          Delta_tp_h: m.Delta_tp_min / 60.0,
+          max_ponding_m: m.max_ponding,
+          npv_per_m2_catch: npvPerM2Catch
+        });
+      });
+
+      Plotly.react(div, [{
+        x,
+        y,
+        customdata: custom,
+        mode: 'markers',
+        type: 'scatter',
+        marker: {
+          size: 10,
+          color: markerColor,
+          colorscale: 'Viridis',
+          showscale: true,
+          colorbar: {
+            title: { text: 'Detention time [h]' },
+            thickness: 12,
+            len: 0.85
+          },
+          line: {
+            color: 'rgba(18,42,69,0.65)',
+            width: 1.1
+          }
+        },
+        hovertemplate:
+          'NPV: %{x:.2f} $/m² catchment<br>' +
+          'Peak flow reduction: %{y:.2f}%<br>' +
+          'Detention time: %{marker.color:.2f} h<extra></extra>'
+      }], {
+        title: {
+          text: `Lifecycle cost vs hydrologic benefit — ${currentSoil}, Pef = ${formatPeffLabel(currentPeff)}`,
+          font: { size: 16, color: '#16314f' }
+        },
+        paper_bgcolor: '#ffffff',
+        plot_bgcolor: '#ffffff',
+        margin: { l: 80, r: 30, t: 54, b: 64 },
+        xaxis: {
+          title: 'NPV [$/m² catchment]',
+          showgrid: false,
+          zeroline: false,
+          linecolor: '#203f65',
+          linewidth: 2,
+          ticks: 'outside',
+          tickwidth: 2
+        },
+        yaxis: {
+          title: 'Peak flow reduction [%]',
+          showgrid: false,
+          zeroline: false,
+          linecolor: '#203f65',
+          linewidth: 2,
+          ticks: 'outside',
+          tickwidth: 2
+        }
+      }, { responsive: true });
+
+      div.on('plotly_click', ev => {
+        if (!ev.points || !ev.points.length) return;
+        const idx = ev.points[0].customdata;
+        const scenario = metricsByIdx.get(idx);
+        if (scenario) renderHydrographForScenario(scenario);
+      });
+
+      titleDiv.textContent = 'Lifecycle cost — feasible hydrologic solutions';
+      statusDiv.textContent = `${currentFeasibleSubset.length} solutions satisfy the current hydrologic filters.`;
+
+      document.getElementById('btn-download-cost').disabled = false;
+
+      costPlotData = {
+        soil: currentSoil,
+        peff: currentPeff,
+        rows: rowsForCSV
+      };
     }
 
     function downloadCostCSV() {
       if (!costPlotData || !costPlotData.rows || !costPlotData.rows.length) return;
 
-      const rows = costPlotData.rows;
-
-      // Header: geometry + all hydrologic metrics + cost
-      let csv =
-        'idx,soil,Peff_mm,' +
-        'area_ratio,area_ratio_pct,' +
-        'LID_depth_m,tp_min_min,' +
-        'eta_p_pct,DetTime_h,Delta_tp_h,max_ponding_m,' +
-        'NPV_per_m2_catch\n';
-
-      rows.forEach(r => {
-        const arPct = r.area_ratio * 100.0;
+      let csv = 'idx,soil,Peff_mm,area_ratio,area_ratio_pct,LID_depth_m,tp_min_min,eta_p_pct,DetTime_h,Delta_tp_h,max_ponding_m,NPV_per_m2_catch\n';
+      costPlotData.rows.forEach(r => {
         csv += [
           r.idx,
           JSON.stringify(r.soilName),
           r.Peff_mm,
           r.area_ratio,
-          arPct.toFixed(3),
+          (r.area_ratio * 100).toFixed(3),
           r.Ld_m,
           r.tp_min,
           r.eta_p_pct,
@@ -1932,673 +1926,60 @@ depths trade off between cost and hydrologic benefit.
       });
 
       const soilSlug = (costPlotData.soil || 'soil').replace(/\s+/g, '_');
-      const fname = `cost_${soilSlug}_P${costPlotData.peff}.csv`;
-      downloadCSVFile(fname, csv);
+      downloadCSVFile(`cost_${soilSlug}_P${costPlotData.peff}.csv`, csv);
     }
 
-    // ========= DESIGN PLOTS =================================================
+    // ============================================================
+    // UI / DATA FLOW
+    // ============================================================
+    function updatePlotsAndHydro() {
+      if (currentSoil == null || currentPeff == null) return;
 
-    function buildDesignPlot(metricName, divId, subset, peffVal) {
-      const info = METRIC_INFO[metricName];
-      const div = document.getElementById(divId);
-      const rowsForCSV = [];
-
-      const x = [];
-      const y = [];
-      const z = [];
-      const c = [];
-      const custom = [];
-
-      const xUn = [];
-      const yUn = [];
-      const zUn = [];
-      const customUn = [];
-
-      subset.forEach(m => {
-        const xVal = m.area_ratio * 100.0; // percentage
-        const yVal = m.Ld_m;
-        const zVal = m.tp_min;
-        const raw = m[metricName];
-        
-        // Store a CSV row for this scenario
-        rowsForCSV.push({
-          idx: m.idx,
-          soilName: m.soilName,
-          Peff_mm: m.Peff_catch_mm,
-          area_ratio: m.area_ratio,
-          Ld_m: m.Ld_m,
-          tp_min: m.tp_min,
-          metricName,
-          metricValue: raw
-        });
-
-        if (raw === null || raw === undefined || isNaN(raw)) {
-          xUn.push(xVal);
-          yUn.push(yVal);
-          zUn.push(zVal);
-          customUn.push(m.idx);
-        } else {
-          x.push(xVal);
-          y.push(yVal);
-          z.push(zVal);
-          c.push(info.toColorValue(raw));
-          custom.push(m.idx);
-        }
-      });
-
-      const cmin = c.length ? Math.min(...c) : 0;
-      const cmax = c.length ? Math.max(...c) : 1;
-      const peffLabel = formatPeffLabel(peffVal);
-
-      const traceFeasible = {
-        x, y, z,
-        mode: 'markers',
-        type: 'scatter3d',
-        name: 'Feasible',
-        customdata: custom,
-        marker: {
-          size: 5,
-          color: c,
-          colorscale: info.colorscale,
-          cmin,
-          cmax,
-          showscale: true,
-          colorbar: {
-            title: {
-              text: info.label,
-              side: 'right'
-            },
-            thickness: 12,
-            len: 0.9,
-            outlinewidth: 2,
-            ticks: 'inside'
-          },
-          line: {
-            width: 1.5,
-            color: 'rgba(0,0,0,0.7)'
-          }
-        },
-        hovertemplate:
-          'Area-ratio: %{x:.1f}%<br>' +
-          'LID depth: %{y:.2f} m<br>' +
-          't_p: %{z:.1f} min<br>' +
-          `${info.label}: %{marker.color:.2f}<extra></extra>`
-      };
-
-      const traceUnfeasible = {
-        x: xUn,
-        y: yUn,
-        z: zUn,
-        mode: 'markers',
-        type: 'scatter3d',
-        name: 'Unfeasible / failed',
-        customdata: customUn,
-        marker: {
-          size: 4,
-          color: 'rgba(220,220,220,0.1)',
-          showscale: false,
-          line: {
-            width: 1.3,
-            color: 'rgba(80,80,80,0.7)'
-          }
-        },
-        hovertemplate:
-          'Area-ratio: %{x:.1f}%<br>' +
-          'LID depth: %{y:.2f} m<br>' +
-          't_p: %{z:.1f} min<br>' +
-          '<b>Unfeasible / failed</b><extra></extra>'
-      };
-
-      // Compute global min/max to set full ranges (include feasible + unfeasible)
-      const allX = x.concat(xUn);
-      const allY = y.concat(yUn);
-      const allZ = z.concat(zUn);
-
-      let xRange = null, yRange = null, zRange = null;
-      if (allX.length > 0) {
-        const xMin = Math.min(...allX);
-        const xMax = Math.max(...allX);
-        const dx = (xMax - xMin) * 0.05 || 1;
-        xRange = [xMin - dx, xMax + dx];
-      }
-      if (allY.length > 0) {
-        const yMin = Math.min(...allY);
-        const yMax = Math.max(...allY);
-        const dy = (yMax - yMin) * 0.05 || 0.1;
-        yRange = [yMin - dy, yMax + dy];
-      }
-      if (allZ.length > 0) {
-        const zMin = Math.min(...allZ);
-        const zMax = Math.max(...allZ);
-        const dz = (zMax - zMin) * 0.05 || 1;
-        zRange = [zMin - dz, zMax + dz];
-      }
-
-      const layout = {
-        title: `${info.shortTitle} — ${currentSoil}, Pef = ${peffLabel}`,
-        margin: { l: 0, r: 0, t: 40, b: 0 },
-        scene: {
-          xaxis: {
-            title: 'Area-ratio [%]',
-            zeroline: false,
-            showgrid: true,
-            gridcolor: '#e0e0e0',
-            ticks: 'outside',
-            ticklen: 4,
-            range: xRange || undefined
-          },
-          yaxis: {
-            title: 'LID depth [m]',
-            zeroline: false,
-            showgrid: true,
-            gridcolor: '#e0e0e0',
-            ticks: 'outside',
-            ticklen: 4,
-            range: yRange || undefined
-          },
-          zaxis: {
-            title: 'Inflow time to peak [min]',
-            zeroline: false,
-            showgrid: true,
-            gridcolor: '#e0e0e0',
-            ticks: 'outside',
-            ticklen: 4,
-            range: zRange || undefined
-          },
-          aspectmode: 'cube',
-          camera: {
-            eye: { x: 1.7, y: 1.7, z: 1.5 }
-          }
-        },
-        showlegend: false
-      };
-
-      const data = [];
-      if (x.length) data.push(traceFeasible);
-      if (xUn.length) data.push(traceUnfeasible);
-
-      Plotly.react(div, data, layout, { responsive: true });
-
-      // Store data for CSV download
-      designPlotData[metricName] = {
-        soil: currentSoil,
-        peff: peffVal,
-        rows: rowsForCSV
-      };
-
-      // Enable / disable corresponding download button
-      const btnId = METRIC_BUTTON_IDS[metricName];
-      const btn = btnId ? document.getElementById(btnId) : null;
-      if (btn) {
-        btn.disabled = !rowsForCSV.length;
-      }
-      // Clicking on a point updates the hydrograph
-      if (div && typeof div.on === 'function') {
-        div.on('plotly_click', ev => {
-          if (!ev.points || !ev.points.length) return;
-          const idx = ev.points[0].customdata;
-          if (idx === undefined || idx === null) return;
-          const scenario = metricsByIdx.get(idx);
-          if (!scenario) return;
-          renderHydrographForScenario(scenario);
-        });
-      }
-    }
-
-    // ========= COST PLOT (per m² catchment) ================================
-
-    function updateCostPlot() {
-      const div = document.getElementById('cost-plot');
-      const statusDiv = document.getElementById('cost-status');
-      const titleDiv = document.getElementById('cost-title');
-
-      if (!div || !statusDiv || !titleDiv) return;
-
-      if (!dbMetrics.length || currentSoil === null || currentPeff === null) {
-        Plotly.react(div, [], { title: '' }, { responsive: true });
-        statusDiv.textContent = 'Select a soil and Pef to view cost–performance results.';
-        titleDiv.textContent = 'Lifecycle cost — no feasible set yet';
-        return;
-      }
-
-      const filters = getHydroFilters();
-      const costSettings = getCostSettings();
       const { tpMin, tpMax } = getTpRange();
 
-      // Present-value factor F(i,T)
-      const i = costSettings.discountRate;
-      const T = costSettings.lifeYears;
-      const F = i > 0 ? (1 - Math.pow(1 + i, -T)) / i : T;
-
-      // Filter currentSubset by hydrologic criteria
-      currentFeasibleSubset = currentSubset.filter(m => {
-        if (!m) return false;
-
-        const eta   = m.eta_p_pct;
-        const detH  = m.DetTime_min != null ? m.DetTime_min / 60.0 : NaN;
-        const delayH = m.Delta_tp_min != null ? m.Delta_tp_min / 60.0 : NaN;
-        const pond  = m.max_ponding;
-        const Ld    = m.Ld_m;
-        const ar    = m.area_ratio;   // dimensionless (0–1)
-        const tp    = m.tp_min;       // [min]
-
-        if (eta == null || isNaN(eta))   return false;
-        if (detH == null || isNaN(detH)) return false;
-        if (delayH == null || isNaN(delayH)) return false;
-        if (pond == null || isNaN(pond)) return false;
-        if (Ld == null || isNaN(Ld) || Ld <= 0) return false;
-        if (ar == null || isNaN(ar) || ar <= 0) return false;
-        if (tp == null || isNaN(tp)) return false;
-
-        if (eta   < filters.minEta)      return false;
-        if (detH  < filters.minDetH)     return false;
-        if (delayH < filters.minDelayH)  return false;
-        if (pond  > filters.maxPondM)    return false;
-
-        // Enforce selected t_p range
-        if (tpMin != null && tp < tpMin) return false;
-        if (tpMax != null && tp > tpMax) return false;
-
+      currentSubset = dbMetrics.filter(m => {
+        if (m.soilName !== currentSoil) return false;
+        if (Math.abs(m.Peff_catch_mm - currentPeff) > 1e-9) return false;
+        if (tpMin != null && m.tp_min < tpMin) return false;
+        if (tpMax != null && m.tp_min > tpMax) return false;
         return true;
       });
 
-      if (!currentFeasibleSubset.length) {
-        Plotly.react(div, [], {
-          title: `Lifecycle cost — no design meets current filters`,
-          margin: { l: 60, r: 10, t: 50, b: 45 }
-        }, { responsive: true });
-        statusDiv.textContent =
-          'No feasible design for this soil and Pef with the chosen hydrologic filters.';
-        titleDiv.textContent = 'Lifecycle cost — no feasible set';
-        return;
-      }
+      updateSoilParamsLine(currentSoil);
 
-      // Collapse feasible simulations to unique geometries (area_ratio + Ld_m)
-      const geometryMap = new Map();
-      currentFeasibleSubset.forEach(m => {
-        const key = `${m.area_ratio}-${m.Ld_m}`;
-        if (!geometryMap.has(key)) geometryMap.set(key, m);
-      });
-      const uniqueFeasible = Array.from(geometryMap.values());
-      const uniqueCount = uniqueFeasible.length;
+      buildDesignPlot('eta_p_pct', 'plot-eta', currentSubset, currentPeff);
+      buildDesignPlot('DetTime_min', 'plot-det', currentSubset, currentPeff);
+      buildDesignPlot('Delta_tp_min', 'plot-dtp', currentSubset, currentPeff);
+      buildDesignPlot('max_ponding', 'plot-pond', currentSubset, currentPeff);
 
-      // Compute cost PER UNIT CATCHMENT AREA for each unique feasible geometry
-      const x = [];
-      const y = [];
-      const z = [];
-      const custom = [];
-      const rowsForCSV = [];
-
-      let minCost = Infinity;
-      let minIdx = -1;
-
-      uniqueFeasible.forEach((m, k) => {
-        const ar = m.area_ratio;
-        const Ld = m.Ld_m;
-
-        // Hydrologic metrics for this design
-        const eta   = m.eta_p_pct;
-        const detH  = m.DetTime_min != null ? m.DetTime_min / 60.0 : null;   // h
-        const dtpH  = m.Delta_tp_min != null ? m.Delta_tp_min / 60.0 : null; // h
-        const pond  = m.max_ponding;
-
-        const capex_per_m2_catch =
-          costSettings.cVol * ar * Ld +
-          costSettings.cSurf * ar;
-
-        const om_per_m2_catch =
-          F * costSettings.cOM * ar;
-
-        const npv_per_m2_catch = capex_per_m2_catch + om_per_m2_catch;
-
-        x.push(ar * 100.0);
-        y.push(Ld);
-        z.push(npv_per_m2_catch);
-
-        // customdata: [idx, eta, detH, dtpH, pond]
-        custom.push([m.idx, eta, detH, dtpH, pond]);
-
-        // Row for CSV: geometry + all metrics + cost
-        rowsForCSV.push({
-          idx: m.idx,
-          soilName: m.soilName,
-          Peff_mm: m.Peff_catch_mm,
-          area_ratio: ar,
-          Ld_m: Ld,
-          tp_min: m.tp_min,          // [min]
-          eta_p_pct: eta,            // [%]
-          DetTime_h: detH,           // [h]
-          Delta_tp_h: dtpH,          // [h]
-          max_ponding_m: pond,       // [m]
-          npv_per_m2_catch           // [$/m² catchment]
-        });
-
-        if (npv_per_m2_catch < minCost) {
-          minCost = npv_per_m2_catch;
-          minIdx = k;
-        }
-      });
-
-      // Trace for all feasible designs
-      const traceAll = {
-        x, y, z,
-        mode: 'markers',
-        type: 'scatter3d',
-        name: 'Feasible designs',
-        customdata: custom,
-        marker: {
-          size: 5,
-          color: z,
-          colorscale: 'Viridis',
-          showscale: true,
-          colorbar: {
-            title: { text: 'NPV [$/m²]', side: 'right' },
-            thickness: 14,
-            len: 0.8,
-            outlinewidth: 2,
-            ticks: 'inside',
-            tickformat: '.0f'
-          },
-          line: {
-            width: 1.2,
-            color: 'rgba(0,0,0,0.6)'
-          }
-        },
-        hovertemplate:
-          'Area-ratio: %{x:.1f}%<br>' +
-          'LID depth: %{y:.2f} m<br>' +
-          'NPV cost: $%{z:.1f} per m² catchment<br>' +
-          'Peak reduction η_p: %{customdata[1]:.1f} %<br>' +
-          'Detention time: %{customdata[2]:.2f} h<br>' +
-          'Time-to-peak delay: %{customdata[3]:.2f} h<br>' +
-          'Max ponding depth: %{customdata[4]:.3f} m<extra></extra>'
-      };
-
-      // Highlight the minimum-cost design
-      let traceMin = null;
-      if (minIdx >= 0) {
-        traceMin = {
-          x: [x[minIdx]],
-          y: [y[minIdx]],
-          z: [z[minIdx]],
-          mode: 'markers',
-          type: 'scatter3d',
-          name: 'Min cost',
-          customdata: [custom[minIdx]],
-          marker: {
-            size: 7,
-            symbol: 'diamond',
-            color: 'red',
-            line: { width: 2, color: 'black' }
-          },
-          hovertemplate:
-            '<b>Minimum-cost design</b><br>' +
-            'Area-ratio: %{x:.1f}%<br>' +
-            'LID depth: %{y:.2f} m<br>' +
-            'NPV cost: $%{z:.1f} per m² catchment<br>' +
-            'Peak reduction η_p: %{customdata[1]:.1f} %<br>' +
-            'Detention time: %{customdata[2]:.2f} h<br>' +
-            'Time-to-peak delay: %{customdata[3]:.2f} h<br>' +
-            'Max ponding depth: %{customdata[4]:.3f} m<extra></extra>'
-        };
-      }
-
-      const peffLabel = formatPeffLabel(currentPeff);
-      const layout = {
-        title: `Lifecycle cost per catchment area — ${currentSoil}, Pef = ${peffLabel}`,
-        margin: { l: 0, r: 0, t: 40, b: 0 },
-        scene: {
-          xaxis: {
-            title: 'Area-ratio [%]',
-            zeroline: false,
-            showgrid: true,
-            gridcolor: '#e0e0e0',
-            ticks: 'outside',
-            ticklen: 4
-          },
-          yaxis: {
-            title: 'LID depth [m]',
-            zeroline: false,
-            showgrid: true,
-            gridcolor: '#e0e0e0',
-            ticks: 'outside',
-            ticklen: 4
-          },
-          zaxis: {
-            title: 'NPV cost [$/m² catchment]',
-            zeroline: false,
-            showgrid: true,
-            gridcolor: '#e0e0e0',
-            ticks: 'outside',
-            ticklen: 4
-          },
-          aspectmode: 'cube',
-          camera: {
-            eye: { x: 1.7, y: 1.7, z: 1.5 }
-          }
-        },
-        showlegend: true,
-        legend: {
-          x: 0.02,
-          y: 0.98,
-          bgcolor: 'rgba(255,255,255,0.8)',
-          borderwidth: 0
-        }
-      };
-
-      const data = traceMin ? [traceAll, traceMin] : [traceAll];
-
-      Plotly.react(div, data, layout, { responsive: true });
-
-      // Store data for CSV download
-      costPlotData = {
-        soil: currentSoil,
-        peff: currentPeff,
-        rows: rowsForCSV
-      };
-      const btnCost = document.getElementById('btn-download-cost');
-      if (btnCost) btnCost.disabled = !rowsForCSV.length;
-
-      // Clicking a cost point should also update the hydrograph
-      if (div && typeof div.on === 'function') {
-        div.on('plotly_click', ev => {
-          if (!ev.points || !ev.points.length) return;
-          const cd = ev.points[0].customdata;
-          const idx = Array.isArray(cd) ? cd[0] : cd;  // first element of [idx, eta, detH, ...]
-          if (idx === undefined || idx === null) return;
-          const scenario = metricsByIdx.get(idx);
-          if (!scenario) return;
-          renderHydrographForScenario(scenario);
-        });
-      }
-
-      // Update status text
-      const best = uniqueFeasible[minIdx];
-      if (best) {
-        statusDiv.textContent =
-          `Feasible designs (unique geometries): ${uniqueCount}. ` +
-          `Underlying feasible simulations: ${currentFeasibleSubset.length}. ` +
-          `Minimum NPV ≈ $${minCost.toFixed(1)} per m² of catchment at ` +
-          `area-ratio ${(best.area_ratio * 100).toFixed(1)}% and ` +
-          `LID depth ${best.Ld_m.toFixed(2)} m.`;
-      } else {
-        statusDiv.textContent =
-          `Feasible designs (unique geometries): ${uniqueCount}. ` +
-          `Underlying feasible simulations: ${currentFeasibleSubset.length}.`;
-      }
-
-      titleDiv.textContent =
-        `Lifecycle cost per catchment area — ${currentSoil}, Pef = ${peffLabel}`;
-    }
-
-    // ========= UPDATE PLOTS & HYDRO ========================================
-
-    function updatePlotsAndHydro() {
-      if (!dbMetrics.length || currentSoil === null || currentPeff === null) return;
-
-      currentSubset = dbMetrics.filter(m =>
-        m.soilName === currentSoil &&
-        m.Peff_catch_mm === currentPeff
-      );
-
-      buildDesignPlot('eta_p_pct',   'plot-eta',  currentSubset, currentPeff);
-      buildDesignPlot('DetTime_min', 'plot-det',  currentSubset, currentPeff);
-      buildDesignPlot('Delta_tp_min','plot-dtp',  currentSubset, currentPeff);
-      buildDesignPlot('max_ponding','plot-pond', currentSubset, currentPeff);
-
-      // Pick default scenario with hydroIndex >= 0 for current view
-      let candidate = null;
-      if (currentHydroScenario &&
-          currentHydroScenario.soilName === currentSoil &&
-          currentHydroScenario.Peff_catch_mm === currentPeff &&
-          currentHydroScenario.hydroIndex !== undefined &&
-          currentHydroScenario.hydroIndex >= 0) {
-        candidate = currentHydroScenario;
-      } else {
-        candidate = currentSubset.find(
-          m => m.hydroIndex !== undefined && m.hydroIndex >= 0
-        ) || null;
-      }
-      renderHydrographForScenario(candidate);
+      renderHydrographForScenario(null);
       updateCostPlot();
     }
-
-    // ========= UI INIT ======================================================
 
     function initUI() {
       const soilSel = document.getElementById('soil-select');
       const peffSel = document.getElementById('peff-select');
-      const btnDownload = document.getElementById('btn-download');        // hydro CSV
-      const btnEtaCSV   = document.getElementById('btn-download-eta');
-      const btnDetCSV   = document.getElementById('btn-download-det');
-      const btnDtpCSV   = document.getElementById('btn-download-dtp');
-      const btnPondCSV  = document.getElementById('btn-download-pond');
-      const btnCostCSV  = document.getElementById('btn-download-cost');
 
-      const minEtaInput     = document.getElementById('min-eta-input');
-      const minDetHInput    = document.getElementById('min-det-h-input');
-      const minDelayHInput  = document.getElementById('min-delay-h-input');
-      const maxPondMInput   = document.getElementById('max-pond-m-input');
-      const tpMinInput      = document.getElementById('tp-min-input');
-      const tpMaxInput      = document.getElementById('tp-max-input');
-      const cVolInput       = document.getElementById('c-vol-input');
-      const cSurfInput      = document.getElementById('c-surf-input');
-      const cOMInput        = document.getElementById('c-om-input');
-      const lifeInput       = document.getElementById('design-life-input');
-      const discRateInput   = document.getElementById('discount-rate-input');
+      const soils = Array.from(new Set(dbMetrics.map(m => m.soilName))).sort();
+      const peffs = uniqueSortedNumeric(dbMetrics.map(m => m.Peff_catch_mm));
 
+      soilSel.innerHTML = soils.map(s => `<option value="${s}">${s}</option>`).join('');
+      peffSel.innerHTML = peffs.map(p => `<option value="${p}">${formatPeffLabel(p)}</option>`).join('');
 
-      if (!soilSel || !peffSel) return;
+      soilSel.disabled = soils.length === 0;
+      peffSel.disabled = peffs.length === 0;
 
-      // Soils: start with sandy → clayey ordering
-      const soilNames = Array.from(new Set(dbMetrics.map(m => m.soilName)));
-      const sortedSoils = soilNames.slice().sort((a, b) => a.localeCompare(b));
-      const sandyFirst = sortedSoils.sort((a, b) => {
-        const sandyA = /sand/i.test(a);
-        const sandyB = /sand/i.test(b);
-        if (sandyA && !sandyB) return -1;
-        if (!sandyA && sandyB) return 1;
-        return a.localeCompare(b);
-      });
+      if (soils.length) currentSoil = soils[0];
+      if (peffs.length) currentPeff = peffs[0];
 
-      soilSel.innerHTML = '';
-      sandyFirst.forEach(name => {
-        const opt = document.createElement('option');
-        opt.value = name;
-        opt.textContent = name;
-        soilSel.appendChild(opt);
-      });
-
-      btnDownload.addEventListener('click', downloadCurrentHydroCSV);
-
-      btnEtaCSV?.addEventListener('click', () => downloadDesignCSV('eta_p_pct'));
-      btnDetCSV?.addEventListener('click', () => downloadDesignCSV('DetTime_min'));
-      btnDtpCSV?.addEventListener('click', () => downloadDesignCSV('Delta_tp_min'));
-      btnPondCSV?.addEventListener('click', () => downloadDesignCSV('max_ponding'));
-      btnCostCSV?.addEventListener('click', () => downloadCostCSV());
-
-      const replotCost = () => updateCostPlot();
-
-      minEtaInput?.addEventListener('change', replotCost);
-      minDetHInput?.addEventListener('change', replotCost);
-      minDelayHInput?.addEventListener('change', replotCost);
-      maxPondMInput?.addEventListener('change', replotCost);
-
-      // NEW: t_p range inputs
-      if (tpMinInput && tpMaxInput) {
-        if (globalTpMin != null && globalTpMax != null) {
-          tpMinInput.value = globalTpMin.toFixed(1);
-          tpMaxInput.value = globalTpMax.toFixed(1);
-        }
-        tpMinInput.addEventListener('change', replotCost);
-        tpMaxInput.addEventListener('change', replotCost);
-      }
-
-      cVolInput?.addEventListener('change', replotCost);
-      cSurfInput?.addEventListener('change', replotCost);
-      cOMInput?.addEventListener('change', replotCost);
-      lifeInput?.addEventListener('change', replotCost);
-      discRateInput?.addEventListener('change', replotCost);
-
-      // Initial empty cost plot
-      updateCostPlot();
-
-      currentSoil = sandyFirst[0] || null;
       soilSel.value = currentSoil;
+      peffSel.value = String(currentPeff);
 
-      // Peff options for current soil
-      function refreshPeffOptions() {
-        const filtered = dbMetrics.filter(m => m.soilName === currentSoil);
-        const peffs = uniqueSortedNumeric(filtered.map(m => m.Peff_catch_mm));
-
-        peffSel.innerHTML = '';
-        peffs.forEach(v => {
-          const opt = document.createElement('option');
-          opt.value = v;
-          opt.textContent = formatPeffLabel(v);
-          peffSel.appendChild(opt);
-        });
-
-        // choose default Pef closest to 25.4 mm (≈ 1 inch)
-        const targetMm = 25.4;
-        if (peffs.length > 0) {
-          let best = peffs[0];
-          let bestDiff = Math.abs(peffs[0] - targetMm);
-          for (let i = 1; i < peffs.length; i++) {
-            const diff = Math.abs(peffs[i] - targetMm);
-            if (diff < bestDiff) {
-              bestDiff = diff;
-              best = peffs[i];
-            }
-          }
-          currentPeff = best;
-          peffSel.value = String(best);
-        } else {
-          currentPeff = null;
-        }
-      }
-
-      refreshPeffOptions();
-      soilSel.disabled = false;
-      peffSel.disabled = false;
-
-      updateSoilParamsLine(currentSoil);
-      updatePlotsAndHydro();
+      if (globalTpMin != null) document.getElementById('tp-min-input').value = globalTpMin;
+      if (globalTpMax != null) document.getElementById('tp-max-input').value = globalTpMax;
 
       soilSel.addEventListener('change', () => {
         currentSoil = soilSel.value;
-        updateSoilParamsLine(currentSoil);
-        const filtered = dbMetrics.filter(m => m.soilName === currentSoil);
-        const peffs = uniqueSortedNumeric(filtered.map(m => m.Peff_catch_mm));
-        peffSel.innerHTML = '';
-        peffs.forEach(v => {
-          const opt = document.createElement('option');
-          opt.value = v;
-          opt.textContent = formatPeffLabel(v);
-          peffSel.appendChild(opt);
-        });
-        currentPeff = peffs[0] || null;
-        if (currentPeff !== null) peffSel.value = String(currentPeff);
         updatePlotsAndHydro();
       });
 
@@ -2606,28 +1987,51 @@ depths trade off between cost and hydrologic benefit.
         currentPeff = parseFloat(peffSel.value);
         updatePlotsAndHydro();
       });
-    }
 
-    // ========= DATA LOADING =================================================
+      [
+        'tp-min-input',
+        'tp-max-input',
+        'min-eta-input',
+        'min-det-h-input',
+        'min-delay-h-input',
+        'max-pond-m-input',
+        'c-vol-input',
+        'c-surf-input',
+        'c-om-input',
+        'design-life-input',
+        'discount-rate-input'
+      ].forEach(id => {
+        document.getElementById(id).addEventListener('input', () => updatePlotsAndHydro());
+      });
+
+      document.getElementById('btn-download').addEventListener('click', downloadCurrentHydroCSV);
+      document.getElementById('btn-download-cost').addEventListener('click', downloadCostCSV);
+      document.getElementById('btn-download-eta').addEventListener('click', () => downloadDesignCSV('eta_p_pct'));
+      document.getElementById('btn-download-det').addEventListener('click', () => downloadDesignCSV('DetTime_min'));
+      document.getElementById('btn-download-dtp').addEventListener('click', () => downloadDesignCSV('Delta_tp_min'));
+      document.getElementById('btn-download-pond').addEventListener('click', () => downloadDesignCSV('max_ponding'));
+
+      updatePlotsAndHydro();
+    }
 
     async function loadData() {
       try {
         setStatus('Loading data…');
+
         const resp = await fetch(DATA_URL, { cache: 'no-cache' });
-        if (!resp.ok) {
-          throw new Error(`HTTP ${resp.status} while fetching ${DATA_URL}`);
-        }
+        if (!resp.ok) throw new Error(`HTTP ${resp.status} while fetching ${DATA_URL}`);
+
         const raw = await resp.json();
 
         dbMetrics = raw.metrics || [];
         if (!Array.isArray(dbMetrics) || !dbMetrics.length) {
-          throw new Error('No "metrics" array in JSON.');
+          throw new Error('No "metrics" array found in the JSON file.');
         }
 
-        // Compute global tp_min range across all metrics
         const tpVals = dbMetrics
           .map(m => m.tp_min)
           .filter(v => v !== null && v !== undefined && !isNaN(v));
+
         if (tpVals.length) {
           globalTpMin = Math.min(...tpVals);
           globalTpMax = Math.max(...tpVals);
@@ -2637,12 +2041,9 @@ depths trade off between cost and hydrologic benefit.
         QoutHydro = raw.Qout_all || null;
         tMinutesHydro = raw.t_minutes || null;
 
-
-        // Build idx map
         metricsByIdx.clear();
         dbMetrics.forEach(m => {
-          if (m.idx === undefined) return;
-          metricsByIdx.set(m.idx, m);
+          if (m.idx !== undefined) metricsByIdx.set(m.idx, m);
         });
 
         setStatus('Data loaded. Use the controls to explore the design space.');
@@ -2650,46 +2051,17 @@ depths trade off between cost and hydrologic benefit.
       } catch (err) {
         console.error(err);
         setStatus(`Error loading data: ${err.message}`, true);
+
+        renderEmptyHydro('Hydrographs — data could not be loaded');
+        Plotly.react('cost-plot', [], {
+          title: { text: 'Lifecycle cost — data could not be loaded' },
+          paper_bgcolor: '#ffffff'
+        }, { responsive: true });
       }
     }
 
-    // ========= BOOTSTRAP ====================================================
-
     document.addEventListener('DOMContentLoaded', () => {
-      // Logo insertion
-      if (LOGO_URL) {
-        const box = document.getElementById('logo-box');
-        if (box) {
-          const img = document.createElement('img');
-          img.src = LOGO_URL;
-          img.alt = 'DRAIN-LID logo';
-          box.appendChild(img);
-        }
-      }
-
       loadData();
-    });
-  </script>
-
-  <script>
-    function injectOptionalLogo(targetId, src, alt) {
-      if (!src) return;
-      const box = document.getElementById(targetId);
-      if (!box) return;
-
-      const img = document.createElement('img');
-      img.src = src;
-      img.alt = alt;
-      img.onload = () => {
-        box.innerHTML = '';
-        box.appendChild(img);
-      };
-      img.onerror = () => {};
-    }
-
-    document.addEventListener('DOMContentLoaded', () => {
-      injectOptionalLogo('stanford-logo-box', STANFORD_LOGO_URL, 'Stanford logo');
-      injectOptionalLogo('uofa-logo-box', UOFA_LOGO_URL, 'University of Arizona logo');
     });
   </script>
 </body>

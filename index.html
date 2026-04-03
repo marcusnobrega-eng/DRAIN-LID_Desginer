@@ -256,39 +256,47 @@
       font-size: 0.95rem;
     }
 
-    .institution-logos {
-      display: flex;
-      gap: 0.9rem;
-      flex-wrap: wrap;
-      align-items: center;
+    .institutional-strip {
+      background: var(--navy);
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      padding: 1.05rem 0;
     }
 
-    .inst-logo {
-      background: rgba(255,255,255,0.95);
-      border-radius: 14px;
-      padding: 0.55rem 0.8rem;
-      min-height: 72px;
-      min-width: 128px;
+    .institutional-strip-inner {
+      width: min(1400px, calc(100% - 2rem));
+      margin: 0 auto;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 3.5rem;
+      flex-wrap: wrap;
+    }
+
+    .inst-strip-logo {
       display: flex;
       align-items: center;
       justify-content: center;
-      border: 1px solid rgba(255,255,255,0.25);
+      min-height: 60px;
+      padding: 0.25rem 0;
     }
 
-    .inst-logo img {
-      max-height: 42px;
+    .inst-strip-logo img {
+      max-height: 46px;
       width: auto;
       display: block;
       object-fit: contain;
+      filter: brightness(0) invert(1);
     }
 
-    .inst-logo.placeholder {
-      color: var(--navy);
+    .inst-strip-logo.placeholder {
+      color: rgba(255,255,255,0.9);
       font-size: 0.8rem;
       text-align: center;
       line-height: 1.35;
       font-weight: 700;
       font-family: var(--font-mono);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
     }
 
     .hero-logo-main {
@@ -422,7 +430,7 @@
 
     .figure-row {
       display: grid;
-      grid-template-columns: minmax(280px, 1fr) minmax(0, 2fr);
+      grid-template-columns: minmax(440px, 1.18fr) minmax(0, 1.82fr);
       gap: 1rem;
       align-items: stretch;
     }
@@ -435,6 +443,9 @@
       border-radius: var(--radius-md);
       padding: 1rem;
       height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
     }
 
     .concept-figure img {
@@ -452,7 +463,9 @@
 
     .summary-stack {
       display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: 1rem;
+      align-items: stretch;
     }
 
     .mini-card {
@@ -746,6 +759,30 @@
         grid-template-columns: 1fr;
       }
     }
+
+    .project-note {
+      display: none;
+    }
+
+    .references-card p {
+      margin: 0 0 0.7rem 0;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    .references-card p:last-child {
+      margin-bottom: 0;
+    }
+
+    @media (max-width: 1180px) {
+      .summary-stack {
+        grid-template-columns: 1fr;
+      }
+
+      .figure-row {
+        grid-template-columns: 1fr;
+      }
+    }
   </style>
 </head>
 <body>
@@ -757,6 +794,17 @@
       <li><a href="#about-project">About</a></li>
     </ul>
   </nav>
+
+  <div class="institutional-strip">
+    <div class="institutional-strip-inner">
+      <div class="inst-strip-logo" id="uofa-logo-box">
+        <div class="inst-strip-logo placeholder">UOFA</div>
+      </div>
+      <div class="inst-strip-logo" id="stanford-logo-box">
+        <div class="inst-strip-logo placeholder">STANFORD</div>
+      </div>
+    </div>
+  </div>
 
   <section class="hero">
     <div class="hero-inner">
@@ -801,29 +849,26 @@
       <div class="hero-card">
         <div class="hero-logo-main" id="logo-box"></div>
         <div>
-          <h3>Institutional context</h3>
+          <h3>Project identity</h3>
           <p>
-            This interface can display your project logo together with Stanford and University of Arizona
-            logos. Add the PNG files to your GitHub page directory and they will appear automatically.
+            Add your project logo to the same folder as this HTML file and it will appear here automatically.
+            The institutional logos are displayed in the top blue strip.
           </p>
         </div>
 
-        <div class="institution-logos">
-          <div class="inst-logo" id="stanford-logo-box">
-            <div class="inst-logo placeholder">STANFORD<br>PNG</div>
-          </div>
-          <div class="inst-logo" id="uofa-logo-box">
-            <div class="inst-logo placeholder">UOFA<br>PNG</div>
-          </div>
+        <div class="mini-card">
+          <h4>Recommended logo format</h4>
+          <p>
+            SVG is preferred for Stanford and UofA because it stays crisp at any size. PNG also works well if it has a transparent background and high resolution.
+          </p>
         </div>
 
         <div class="mini-card">
           <h4>Suggested filenames</h4>
           <p>
-            <code>drainlid_logo.png</code>,
-            <code>stanford_logo.png</code>,
-            <code>uofa_logo.png</code>.
-            You can keep them in the same folder as this HTML file for the simplest GitHub Pages setup.
+            <code>drainlid_logo.png</code> or <code>drainlid_logo.svg</code>,
+            <code>stanford_logo.svg</code>,
+            <code>uofa_logo.svg</code>.
           </p>
         </div>
       </div>
@@ -862,11 +907,6 @@
           <h2>Explore the simulated design landscape</h2>
         </div>
       </div>
-      <p class="section-intro">
-        The layout below was reworked to feel more like a polished scientific web application:
-        a strong hero, cleaner card hierarchy, consistent typography, clearer grouping of controls,
-        and a more deliberate visual rhythm inspired by your previous X-WHAT project.
-      </p>
 
       <div class="explorer-shell">
         <div class="surface-card">
@@ -904,10 +944,10 @@
                   </p>
                 </div>
                 <div class="mini-card">
-                  <h4>Why the layout changed</h4>
+                  <h4>What you can export</h4>
                   <p>
-                    The page now separates overview, controls, plots, diagnostics, and documentation
-                    into distinct surfaces with stronger typography, spacing, and institutional branding.
+                    Each performance panel, the selected hydrograph, and the cost-screening view can be
+                    downloaded directly as CSV for reporting, comparison, and further analysis.
                   </p>
                 </div>
               </div>
@@ -1053,11 +1093,23 @@
           drainage module under a specified inflow hydrograph and media configuration. The area-ratio axis
           shows the ratio between the LID surface and the contributing catchment area.
         </p>
-        <p>
-          The revised interface emphasizes clearer visual hierarchy, more professional typography,
-          stronger dashboard grouping, and built-in placeholders for Stanford and University of Arizona
-          branding alongside the project logo.
-        </p>
+      </div>
+    </section>
+
+    <section>
+      <div class="surface-card references-card">
+        <div class="panel-header">
+          <h3>References</h3>
+          <span class="section-kicker">Related publications</span>
+        </div>
+        <div class="panel-body">
+          <p>
+            Gomes Jr., M.N. LID-Design Atlas (LIDA): Mapping Hydrologic Performance and Cost Tradeoffs in Infiltration-Based LID Design. <em>Journal of Hydrologic Engineering</em> (under review).
+          </p>
+          <p>
+            Gomes Jr, M.N., Brasil, J.A.T., Johnson, D., Papagiannakis, A.T. and Giacomoni, M.H., 2025. A coupled Darcy-Richards framework for hydrological modeling of permeable pavements, green roofs, and bioretention systems. <em>Environmental Modelling &amp; Software</em>, p.106766.
+          </p>
+        </div>
       </div>
     </section>
 
@@ -1399,7 +1451,9 @@ depths trade off between cost and hydrologic benefit.
   <script>
     // ========= CONFIG =======================================================
     const DATA_URL = 'drain_lid_database.json';
-    const LOGO_URL = 'drainlid_logo.png'; // leave '' if none
+    const LOGO_URL = 'drainlid_logo.png'; // can also be .svg
+    const STANFORD_LOGO_URL = 'stanford_logo.svg';
+    const UOFA_LOGO_URL = 'uofa_logo.svg';
 
     // Hard-coded van Genuchten–Mualem parameters (Carsel & Parrish, 1988)
     // alpha [1/m], Ks_mm_per_h [mm/h], theta_r, theta_s [-]
@@ -2618,9 +2672,6 @@ depths trade off between cost and hydrologic benefit.
   </script>
 
   <script>
-    const STANFORD_LOGO_URL = 'stanford_logo.png';
-    const UOFA_LOGO_URL = 'uofa_logo.png';
-
     function injectOptionalLogo(targetId, src, alt) {
       if (!src) return;
       const box = document.getElementById(targetId);
